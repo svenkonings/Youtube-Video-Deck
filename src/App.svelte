@@ -1,12 +1,14 @@
 <script lang="ts">
   import logo from './assets/svelte.png'
   import Counter from './lib/Counter.svelte'
+  import Gapi from "./lib/Gapi.svelte";
 </script>
 
 <main>
   <img src={logo} alt="Svelte Logo" />
   <h1>Hello Typescript!</h1>
 
+  <Gapi />
   <Counter />
 
   <p>
