@@ -1,11 +1,10 @@
 <script lang="ts">
-  import type GoogleAuth = gapi.auth2.GoogleAuth;
-  import type Batch = gapi.client.Batch;
-  import type PlaylistListResponse = gapi.client.youtube.PlaylistListResponse;
+  import {Subscriptions} from "../model/Subscriptions";
+  import {Subscription} from "../model/Subscription";
 
   const scope = 'https://www.googleapis.com/auth/youtube.readonly';
 
-  let googleAuth: GoogleAuth = null;
+  let googleAuth: gapi.auth2.GoogleAuth = null;
   let isSignedIn: boolean = null;
   let isAuthorized: boolean = null;
 
@@ -25,75 +24,65 @@
     googleAuth.currentUser.listen(user => isAuthorized = user.hasGrantedScopes(scope));
   }
 
-  async function listSubscriptions(pageToken?: string) {
+  async function getSubscriptions(pageToken?: string): Promise<Subscriptions> {
+    const subscriptions = await listSubscriptions(pageToken);
+    let nextPage: Promise<Subscriptions>;
+    if (subscriptions.nextPageToken) {
+      nextPage = getSubscriptions(subscriptions.nextPageToken);
+    }
+    const channels = await listChannels(subscriptions);
+    const subscriptionList = new Subscriptions(subscriptions, channels);
+    loadUploads(subscriptionList).then();
+    if (nextPage) {
+      nextPage.then(nextPage => subscriptionList.addSubscriptions(nextPage));
+    }
+    return subscriptionList;
+  }
+
+  async function loadUploads(subscriptions: Subscriptions): Promise<void> {
+    const batchRequest: gapi.client.Batch<gapi.client.youtube.PlaylistListResponse> = gapi.client.newBatch();
+    const batchSubscriptions = subscriptions.items.map(subscription => {
+      // @ts-ignore
+      batchRequest.add(listPlaylistItems(subscription), {id: subscription.uploadsPlaylistId});
+      return subscription;
+    });
+    const batchResponse = await batchRequest;
+    const batch = batchResponse.result;
+    return batchSubscriptions.forEach(subscription => {
+      const uploads = batch[subscription.uploadsPlaylistId].result;
+      subscription.addUploads(uploads);
+    });
+  }
+
+  async function listSubscriptions(pageToken?: string): Promise<gapi.client.youtube.SubscriptionListResponse> {
     // TODO: Cache response with etags
     const subscriptionsResponse = await gapi.client.youtube.subscriptions.list({
       part: 'snippet',
-      fields: 'items(etag,snippet(title,description,resourceId/channelId)),nextPageToken',
+      fields: 'etag,items(snippet(title,description,resourceId/channelId)),nextPageToken',
       mine: true,
       maxResults: 50,
       ...pageToken && {pageToken: pageToken}
     });
-    const subscriptions = subscriptionsResponse.result;
-    let nextPagesPromise;
-    if (subscriptions.nextPageToken) {
-      nextPagesPromise = listSubscriptions(subscriptions.nextPageToken)
-    }
-    const channelIds = subscriptions.items.map(subscription => subscription.snippet.resourceId.channelId).join(',');
+    return subscriptionsResponse.result;
+  }
+
+  async function listChannels(subscriptions: gapi.client.youtube.SubscriptionListResponse): Promise<Map<string, gapi.client.youtube.Channel>> {
     const channelResponse = await gapi.client.youtube.channels.list({
       part: 'contentDetails',
       fields: 'items(id,contentDetails/relatedPlaylists/uploads)',
-      id: channelIds,
+      id: subscriptions.items.map(subscription => subscription.snippet.resourceId.channelId).join(','),
       maxResults: 50,
-    })
-    const channels = new Map(channelResponse.result.items.map(channel => [channel.id, channel]))
-    const subscriptionList = subscriptions.items.map(subscription => {
-      return {
-        title: subscription.snippet.title,
-        description: subscription.snippet.description,
-        uploadsPlaylistId: channels.get(subscription.snippet.resourceId.channelId).contentDetails.relatedPlaylists.uploads,
-      }
-    })
-    if (nextPagesPromise) {
-      const nextPages = await nextPagesPromise
-      return subscriptionList.concat(nextPages);
-    } else {
-      return subscriptionList;
-    }
+    });
+    return new Map(channelResponse.result.items.map(channel => [channel.id, channel]))
   }
 
-  async function getUploads() {
-    const subscriptions = await listSubscriptions();
-    const batchRequest: Batch<PlaylistListResponse> = gapi.client.newBatch();
-    subscriptions.forEach(subscription => {
-      const request = gapi.client.youtube.playlistItems.list({
-        part: 'snippet',
-        fields: 'etag,items(snippet(title,description,publishedAt,resourceId/videoId)),nextPageToken',
-        playlistId: subscription.uploadsPlaylistId,
-        maxResults: 50,
-      });
-      // @ts-ignore
-      batchRequest.add(request, {id: subscription.uploadsPlaylistId})
-    });
-    const batchResponse = await batchRequest;
-    const batch = batchResponse.result;
-    return subscriptions.map(subscription => {
-      const uploads = batch[subscription.uploadsPlaylistId].result;
-      return {
-        ...subscription,
-        // TODO: Extend existing uploads
-        uploads: uploads.items.map(upload => {
-          // @ts-ignore
-          return {
-            title: upload.snippet.title,
-            description: upload.snippet.description,
-            publishedAt: upload.snippet.publishedAt,
-            videoId: upload.snippet.resourceId.videoId,
-          }
-        }),
-        uploadsEtag: uploads.etag,
-        nextUploadsPageToken: uploads.nextPageToken,
-      }
+  function listPlaylistItems(subscription: Subscription): gapi.client.Request<gapi.client.youtube.PlaylistItemListResponse> {
+    return gapi.client.youtube.playlistItems.list({
+      part: 'snippet',
+      fields: 'etag,items(snippet(title,description,publishedAt,thumbnails/default/url,resourceId/videoId)),nextPageToken',
+      playlistId: subscription.uploadsPlaylistId,
+      maxResults: 50,
+      ...subscription.nextUploadPageToken && {pageToken: subscription.nextUploadPageToken},
     });
   }
 </script>
@@ -104,6 +93,5 @@
 {#if isSignedIn === true}
   <button id="sign-out-button" on:click={() => googleAuth.signOut()} class="bg-blue-600 text-white p-1.5 rounded-2xl hover:bg-blue-700">Sign out</button>
   <button id="revoke-button" on:click={() => googleAuth.disconnect()} class="bg-blue-600 text-white p-1.5 rounded-2xl hover:bg-blue-700">Revoke access</button>
-  <button on:click={async () => console.log(await listSubscriptions())}>List subscriptions</button>
-  <button on:click={async () => console.log(await getUploads())}>Get uploads</button>
+  <button on:click={async () => console.log(await getSubscriptions())}>List subscriptions</button>
 {/if}
