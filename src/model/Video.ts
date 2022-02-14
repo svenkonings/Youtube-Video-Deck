@@ -5,12 +5,11 @@ export class Video {
   public readonly thumbnailUrl: string;
   public readonly videoId: string;
 
-  constructor(playlistItem: gapi.client.youtube.Playlist) {
+  constructor(playlistItem: gapi.client.youtube.PlaylistItem) {
     this.title = playlistItem.snippet.title;
     this.description = playlistItem.snippet.description;
     this.publishedAt = playlistItem.snippet.publishedAt;
     this.thumbnailUrl = playlistItem.snippet.thumbnails.default.url;
-    // @ts-ignore
     this.videoId = playlistItem.snippet.resourceId.videoId;
   }
 }

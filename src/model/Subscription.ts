@@ -15,7 +15,7 @@ export class Subscription {
     this.uploads = [];
   }
 
-  public addUploads(uploads: gapi.client.youtube.PlaylistListResponse): void {
+  public addUploads(uploads: gapi.client.youtube.PlaylistItemListResponse): void {
     if (this.uploadsEtag == null) {
       this.uploadsEtag = uploads.etag;
     }
