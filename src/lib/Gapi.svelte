@@ -10,7 +10,11 @@
   let isSignedIn: boolean = null;
   let isAuthorized: boolean = null;
 
-  gapi.load('client:auth2', initClient);
+  function loadGapi(): Promise<void> {
+    return new Promise<void>(((resolve, reject) => {
+      gapi.load('client:auth2', () => initClient().then(() => resolve()).catch(e => reject(e)));
+    }));
+  }
 
   async function initClient(): Promise<void> {
     await gapi.client.init({
@@ -96,12 +100,17 @@
     });
   }
 </script>
-
-{#if isAuthorized === false}
-  <button id="sign-in-or-authorize-button" on:click={() => googleAuth.signIn()} class="bg-blue-600 text-white p-1.5 rounded-2xl hover:bg-blue-700">{isSignedIn ? 'Authorize' : 'Sign in'}</button>
-{/if}
-{#if isSignedIn === true}
-  <button id="sign-out-button" on:click={() => googleAuth.signOut()} class="bg-blue-600 text-white p-1.5 rounded-2xl hover:bg-blue-700">Sign out</button>
-  <button id="revoke-button" on:click={() => googleAuth.disconnect()} class="bg-blue-600 text-white p-1.5 rounded-2xl hover:bg-blue-700">Revoke access</button>
-  <button on:click={logData}>List subscriptions</button>
-{/if}
+{#await loadGapi()}
+  <h1>LOADING...</h1>
+{:then _}
+  {#if isAuthorized === false}
+    <button id="sign-in-or-authorize-button" on:click={() => googleAuth.signIn()} class="bg-blue-600 text-white p-1.5 rounded-2xl hover:bg-blue-700">{isSignedIn ? 'Authorize' : 'Sign in'}</button>
+  {/if}
+  {#if isSignedIn === true}
+    <button id="sign-out-button" on:click={() => googleAuth.signOut()} class="bg-blue-600 text-white p-1.5 rounded-2xl hover:bg-blue-700">Sign out</button>
+    <button id="revoke-button" on:click={() => googleAuth.disconnect()} class="bg-blue-600 text-white p-1.5 rounded-2xl hover:bg-blue-700">Revoke access</button>
+    <button on:click={logData}>List subscriptions</button>
+  {/if}
+{:catch error}
+  <p style="color: red">{JSON.stringify(error)}</p>
+{/await}
