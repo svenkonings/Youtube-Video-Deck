@@ -3,6 +3,7 @@
   import {Subscription} from "../model/Subscription";
   import type {SubscriptionsList} from "../types/SubscriptionsList";
   import type {ChannelMap} from "../types/ChannelMap";
+  import PrimaryButton from "./PrimaryButton.svelte";
 
   const scope = 'https://www.googleapis.com/auth/youtube.readonly';
 
@@ -104,12 +105,12 @@
   <h1>LOADING...</h1>
 {:then _}
   {#if isAuthorized === false}
-    <button id="sign-in-or-authorize-button" on:click={() => googleAuth.signIn()} class="bg-blue-600 text-white p-1.5 rounded-2xl hover:bg-blue-700">{isSignedIn ? 'Authorize' : 'Sign in'}</button>
+    <PrimaryButton on:click={googleAuth.signIn}>{isSignedIn ? 'Authorize' : 'Sign in'}</PrimaryButton>
   {/if}
   {#if isSignedIn === true}
-    <button id="sign-out-button" on:click={() => googleAuth.signOut()} class="bg-blue-600 text-white p-1.5 rounded-2xl hover:bg-blue-700">Sign out</button>
-    <button id="revoke-button" on:click={() => googleAuth.disconnect()} class="bg-blue-600 text-white p-1.5 rounded-2xl hover:bg-blue-700">Revoke access</button>
-    <button on:click={logData}>List subscriptions</button>
+    <PrimaryButton on:click={googleAuth.signOut}>Sign out</PrimaryButton>
+    <PrimaryButton on:click={googleAuth.disconnect}>Revoke access</PrimaryButton>
+    <PrimaryButton on:click={logData}>List subscriptions</PrimaryButton>
   {/if}
 {:catch error}
   <p style="color: red">{JSON.stringify(error)}</p>
