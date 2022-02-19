@@ -1,41 +1,15 @@
 <script lang="ts">
   import {Subscriptions} from "../model/Subscriptions";
-  import {Subscription} from "../model/Subscription";
+  import type {Subscription} from "../model/Subscription";
   import type {SubscriptionsList} from "../types/SubscriptionsList";
   import type {ChannelMap} from "../types/ChannelMap";
-  import PrimaryButton from "./PrimaryButton.svelte";
+  import Spinner from "./components/Spinner.svelte";
+  import SubscriptionOverview from "./SubscriptionOverview.svelte";
 
-  const scope = 'https://www.googleapis.com/auth/youtube.readonly';
-
-  let googleAuth: gapi.auth2.GoogleAuth = null;
-  let isSignedIn: boolean = null;
-  let isAuthorized: boolean = null;
-
-  function loadGapi(): Promise<void> {
-    return new Promise<void>(((resolve, reject) => {
-      gapi.load('client:auth2', () => initClient().then(() => resolve()).catch(e => reject(e)));
-    }));
-  }
-
-  async function initClient(): Promise<void> {
-    await gapi.client.init({
-      'apiKey': 'AIzaSyBAHcJ9fPTrCjDExl1NZkF4fZd15fICEFI',
-      'clientId': '789354109817-qrqoqtfj1k3gvs01gufrpqlv38g0bi9p.apps.googleusercontent.com',
-      'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest'],
-      'scope': scope,
-    });
-    googleAuth = gapi.auth2.getAuthInstance();
-    isSignedIn = googleAuth.isSignedIn.get();
-    googleAuth.isSignedIn.listen(signInStatus => isSignedIn = signInStatus);
-    isAuthorized = googleAuth.currentUser.get().hasGrantedScopes(scope);
-    googleAuth.currentUser.listen(user => isAuthorized = user.hasGrantedScopes(scope));
-  }
-
-  async function logData(): Promise<void> {
+  async function init(): Promise<Subscriptions> {
     const subscriptions = await getSubscriptions();
-    console.log(subscriptions);
     await listAllPlaylistItems(subscriptions);
-    console.log(subscriptions);
+    return subscriptions;
   }
 
   async function getSubscriptions(): Promise<Subscriptions> {
@@ -96,22 +70,22 @@
       part: 'snippet',
       fields: 'etag,items(snippet(title,description,publishedAt,thumbnails/default/url,resourceId/videoId)),nextPageToken',
       playlistId: subscription.uploadsPlaylistId,
-      maxResults: 50,
+      // maxResults: 50, FIXME: Use max videos when done testing
+      maxResults: 10,
       ...subscription.nextUploadPageToken && {pageToken: subscription.nextUploadPageToken},
     });
   }
 </script>
-{#await loadGapi()}
-  <h1>LOADING...</h1>
-{:then _}
-  {#if isAuthorized === false}
-    <PrimaryButton on:click={googleAuth.signIn}>{isSignedIn ? 'Authorize' : 'Sign in'}</PrimaryButton>
-  {/if}
-  {#if isSignedIn === true}
-    <PrimaryButton on:click={googleAuth.signOut}>Sign out</PrimaryButton>
-    <PrimaryButton on:click={googleAuth.disconnect}>Revoke access</PrimaryButton>
-    <PrimaryButton on:click={logData}>List subscriptions</PrimaryButton>
-  {/if}
+{#await init()}
+  <Spinner/>
+{:then subscriptions}
+  <div class="w-full overflow-x-scroll" style="height: calc(100% - 4px);">
+    <div class="h-full w-max">
+      {#each subscriptions.items as subscription (subscription.uploadsPlaylistId)}
+        <SubscriptionOverview {subscription}/>
+      {/each}
+    </div>
+  </div>
 {:catch error}
-  <p style="color: red">{JSON.stringify(error)}</p>
+  <p class="text-center">{error}</p>
 {/await}

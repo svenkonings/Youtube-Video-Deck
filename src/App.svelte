@@ -1,67 +1,48 @@
 <script lang="ts">
-  import logo from './assets/svelte.png'
-  import Counter from './lib/Counter.svelte'
-  import Gapi from "./lib/Gapi.svelte";
+  import Spinner from "./lib/components/Spinner.svelte";
+  import LoginScreen from "./lib/LoginScreen.svelte";
+  import Header from "./lib/Header.svelte";
+  import SubscriptionsDeck from "./lib/SubscriptionsDeck.svelte";
+
+  const scope = 'https://www.googleapis.com/auth/youtube.readonly';
+
+  let isSignedIn: boolean;
+  let isAuthorized: boolean;
+
+  function loadGapi(): Promise<void> {
+    return new Promise<void>(((resolve, reject) => {
+      gapi.load('client:auth2', () => initClient().then(() => resolve()).catch(e => reject(e)));
+    }));
+  }
+
+  async function initClient(): Promise<void> {
+    await gapi.client.init({
+      'apiKey': 'AIzaSyBAHcJ9fPTrCjDExl1NZkF4fZd15fICEFI',
+      'clientId': '789354109817-qrqoqtfj1k3gvs01gufrpqlv38g0bi9p.apps.googleusercontent.com',
+      'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest'],
+      'scope': scope,
+    });
+    const googleAuth = gapi.auth2.getAuthInstance();
+    isSignedIn = googleAuth.isSignedIn.get();
+    googleAuth.isSignedIn.listen(signInStatus => isSignedIn = signInStatus);
+    isAuthorized = googleAuth.currentUser.get().hasGrantedScopes(scope);
+    googleAuth.currentUser.listen(user => isAuthorized = user.hasGrantedScopes(scope));
+  }
 </script>
 
-<main>
-  <img src={logo} alt="Svelte Logo" />
-  <h1>Hello Typescript!</h1>
-
-  <Gapi />
-  <Counter />
-
-  <p>
-    Visit <a href="https://svelte.dev">svelte.dev</a> to learn how to build Svelte
-    apps.
-  </p>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme">SvelteKit</a> for
-    the officially supported framework, also powered by Vite!
-  </p>
+<main class="w-screen h-screen bg-neutral-700 text-white">
+  <Header {isSignedIn}/>
+  <section style="height: calc(100% - 3rem);">
+    {#await loadGapi()}
+      <Spinner/>
+    {:then _}
+      {#if isAuthorized}
+        <SubscriptionsDeck/>
+      {:else}
+        <LoginScreen {isSignedIn}/>
+      {/if}
+    {:catch error}
+      <p class="text-center">{error}</p>
+    {/await}
+  </section>
 </main>
-
-<style lang="postcss">
-  :root {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  }
-
-  main {
-    text-align: center;
-    padding: 1em;
-    margin: 0 auto;
-  }
-
-  img {
-    height: 16rem;
-    width: 16rem;
-  }
-
-  h1 {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4rem;
-    font-weight: 100;
-    line-height: 1.1;
-    margin: 2rem auto;
-    max-width: 14rem;
-  }
-
-  p {
-    max-width: 14rem;
-    margin: 1rem auto;
-    line-height: 1.35;
-  }
-
-  @media (min-width: 480px) {
-    h1 {
-      max-width: none;
-    }
-
-    p {
-      max-width: none;
-    }
-  }
-</style>
