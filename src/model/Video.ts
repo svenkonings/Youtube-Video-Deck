@@ -7,9 +7,9 @@ export class Video {
 
   constructor(playlistItem: gapi.client.youtube.PlaylistItem) {
     this.title = playlistItem.snippet.title;
-    this.description = playlistItem.snippet.description;
+    this.description = playlistItem.snippet.description.substring(0, 313); // Maximum length measured by maximum number of | characters displayed
     this.publishedAt = playlistItem.snippet.publishedAt;
-    this.thumbnailUrl = playlistItem.snippet.thumbnails.default.url;
+    this.thumbnailUrl = playlistItem.snippet.thumbnails.medium.url;
     this.videoId = playlistItem.snippet.resourceId.videoId;
   }
 }

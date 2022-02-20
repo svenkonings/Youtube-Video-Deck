@@ -69,7 +69,7 @@
     // TODO: Cache response with etags
     return gapi.client.youtube.playlistItems.list({
       part: 'snippet',
-      fields: 'etag,items(snippet(title,description,publishedAt,thumbnails/default/url,resourceId/videoId)),nextPageToken',
+      fields: 'etag,items(snippet(title,description,publishedAt,thumbnails/medium/url,resourceId/videoId)),nextPageToken',
       playlistId: subscription.uploadsPlaylistId,
       // maxResults: 50, FIXME: Use max videos when done testing
       maxResults: 10,

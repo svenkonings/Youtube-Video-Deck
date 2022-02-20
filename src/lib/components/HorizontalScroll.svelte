@@ -3,7 +3,8 @@
   import {onDestroy, onMount} from "svelte";
 
   let container: HTMLDivElement;
-  const scroll = tweened(0, {duration: 100});
+  const duration = 100;
+  const scroll = tweened(0, {duration: duration});
   let scrollWheelActive = false;
   let scrollSyncTimeout;
 
@@ -24,7 +25,7 @@
     scrollSyncTimeout = setTimeout(() => {
       scrollWheelActive = false;
       scroll.set(container.scrollLeft, {duration: 0});
-    }, 100);
+    }, duration);
   }
 </script>
 <div bind:this={container} class="w-full h-full overflow-x-scroll" on:wheel|preventDefault={updateScroll} on:scroll={scrollSync}>
