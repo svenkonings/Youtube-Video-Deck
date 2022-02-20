@@ -5,8 +5,7 @@
   import type {ChannelMap} from "../types/ChannelMap";
   import Spinner from "./components/Spinner.svelte";
   import SubscriptionOverview from "./SubscriptionOverview.svelte";
-  import {tweened} from "svelte/motion";
-  import {onDestroy} from "svelte";
+  import HorizontalScroll from "./components/HorizontalScroll.svelte";
 
   async function init(): Promise<Subscriptions> {
     const subscriptions = await getSubscriptions();
@@ -77,34 +76,18 @@
       ...subscription.nextUploadPageToken && {pageToken: subscription.nextUploadPageToken},
     });
   }
-
-  let scrollWindow: HTMLDivElement;
-  const scroll = tweened(0, {duration: 100});
-  const unsubscribe = scroll.subscribe(value => {
-    if (scrollWindow) scrollWindow.scrollLeft = value;
-  });
-  onDestroy(unsubscribe);
-
-  function updateScroll(event: WheelEvent): void {
-    scroll.update(value => Math.max(0, Math.min(value + event.deltaY, scrollWindow.scrollWidth - scrollWindow.clientWidth)));
-  }
-
-  let scrollSyncTimeout;
-  function scrollSync() {
-    clearTimeout(scrollSyncTimeout);
-    scrollSyncTimeout = setTimeout(() => scroll.set(scrollWindow.scrollLeft, {duration: 0}), 100);
-  }
-
 </script>
 {#await init()}
   <Spinner/>
 {:then subscriptions}
-  <div bind:this={scrollWindow} class="w-full overflow-x-scroll" style="height: calc(100% - 4px);" on:wheel|preventDefault={updateScroll} on:scroll={scrollSync}>
-    <div class="h-full w-max">
-      {#each subscriptions.items as subscription (subscription.uploadsPlaylistId)}
-        <SubscriptionOverview {subscription}/>
-      {/each}
-    </div>
+  <div class="w-full" style="height: calc(100% - 4px);">
+    <HorizontalScroll>
+      <div class="w-max h-full">
+        {#each subscriptions.items as subscription (subscription.uploadsPlaylistId)}
+          <SubscriptionOverview {subscription}/>
+        {/each}
+      </div>
+    </HorizontalScroll>
   </div>
 {:catch error}
   <p class="text-center">{error}</p>
