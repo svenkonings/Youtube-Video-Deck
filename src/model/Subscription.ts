@@ -6,7 +6,7 @@ export class Subscription {
   public readonly uploadsPlaylistId: string;
   public uploadsEtag?: string;
   public nextUploadPageToken?: string;
-  public readonly uploads: Video[];
+  public uploads: Video[];
 
   constructor(subscription: gapi.client.youtube.Subscription, channel: gapi.client.youtube.Channel) {
     this.title = subscription.snippet.title;

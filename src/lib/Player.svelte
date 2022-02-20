@@ -31,6 +31,11 @@
         },
         events: {
           onReady: () => playerInitState = PlayerInitState.INITIALISED,
+          onStateChange: state => {
+            if (hidden && (state.data === YT.PlayerState.BUFFERING || state.data === YT.PlayerState.PLAYING)) {
+              hidden = false;
+            }
+          },
         },
       }
       if (args.videoId) {
@@ -40,6 +45,7 @@
         playerArgs.playerVars.list = args.playlistId;
       }
       player = new YT.Player('player', playerArgs);
+      hidden = false;
     } else if (playerInitState === PlayerInitState.INITIALISING) {
       setTimeout(() => play(args), 100);
     } else if (playerInitState === PlayerInitState.INITIALISED) {
@@ -58,7 +64,6 @@
     if (videoId) {
       videoIdStore.set(null);
       play({videoId: videoId});
-      hidden = false;
     }
   }));
 
@@ -66,7 +71,6 @@
     if (playlistId) {
       playlistIdStore.set(null);
       play({playlistId: playlistId});
-      hidden = false;
     }
   }));
 
