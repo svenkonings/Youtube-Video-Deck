@@ -1,6 +1,6 @@
 <script lang="ts">
   import {tweened} from "svelte/motion";
-  import {onDestroy, onMount} from "svelte";
+  import {onDestroy} from "svelte";
 
   let container: HTMLDivElement;
   const duration = 100;
@@ -8,12 +8,10 @@
   let scrollWheelActive = false;
   let scrollSyncTimeout;
 
-  onMount(() => {
-    const unsubscribe = scroll.subscribe(value => {
-      if (scrollWheelActive) container.scrollLeft = value;
-    });
-    onDestroy(unsubscribe);
+  const unsubscribe = scroll.subscribe(value => {
+    if (scrollWheelActive) container.scrollLeft = value;
   });
+  onDestroy(unsubscribe);
 
   function updateScroll(event: WheelEvent): void {
     scrollWheelActive = true;

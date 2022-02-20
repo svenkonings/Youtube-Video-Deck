@@ -3,6 +3,7 @@
   import LoginScreen from "./lib/LoginScreen.svelte";
   import Header from "./lib/Header.svelte";
   import SubscriptionsDeck from "./lib/SubscriptionsDeck.svelte";
+  import Player from "./lib/Player.svelte";
 
   const scope = 'https://www.googleapis.com/auth/youtube.readonly';
 
@@ -37,6 +38,7 @@
       <Spinner/>
     {:then _}
       {#if isAuthorized}
+        <Player/>
         <SubscriptionsDeck/>
       {:else}
         <LoginScreen {isSignedIn}/>
