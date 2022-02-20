@@ -80,7 +80,7 @@
 {#await init()}
   <Spinner/>
 {:then subscriptions}
-  <div class="w-full" style="height: calc(100% - 4px);">
+  <div class="w-full" style="height: calc(100% - 6px);">
     <HorizontalScroll>
       <div class="w-max h-full">
         {#each subscriptions.items as subscription (subscription.uploadsPlaylistId)}

@@ -14,7 +14,15 @@
     <p class="text-ellipsis truncate-lines">{video.description}</p>
   </div>
 </div>
-<style lang="postcss">
+<style>
+  .m-2:first-child {
+    margin-top: 0;
+  }
+
+  .m-2:last-child {
+    margin-bottom: 0;
+  }
+
   .w-card {
     width: 35rem;
   }

@@ -31,3 +31,17 @@
 <div bind:this={container} class="w-full h-full overflow-x-scroll" on:wheel|preventDefault={updateScroll} on:scroll={scrollSync}>
   <slot/>
 </div>
+<style>
+  .overflow-x-scroll {
+    padding-bottom: 2px;
+  }
+
+  .overflow-x-scroll::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  .overflow-x-scroll::-webkit-scrollbar-thumb {
+    background: #FF3D00;
+    border-radius: 1rem;
+  }
+</style>
