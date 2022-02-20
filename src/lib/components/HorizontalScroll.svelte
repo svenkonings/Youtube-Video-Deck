@@ -8,10 +8,9 @@
   let scrollWheelActive = false;
   let scrollSyncTimeout;
 
-  const unsubscribe = scroll.subscribe(value => {
+  onDestroy(scroll.subscribe(value => {
     if (scrollWheelActive) container.scrollLeft = value;
-  });
-  onDestroy(unsubscribe);
+  }));
 
   function updateScroll(event: WheelEvent): void {
     scrollWheelActive = true;

@@ -1,11 +1,19 @@
 <script lang="ts">
   import type {Subscription} from "../model/Subscription";
   import VideoCard from "./VideoCard.svelte";
+  import {playlistIdStore} from "../util/stores";
 
   export let subscription: Subscription
+
+  function play(): void {
+    playlistIdStore.set(subscription.uploadsPlaylistId);
+  }
 </script>
 <div class="inline-block h-full bg-neutral-800 p-1 ml-1 mr-1 rounded-2xl">
-  <p class="text-center font-bold h-8">{subscription.title}</p>
+  <p class="text-center font-bold h-8">
+    {subscription.title}
+    <span class="float-right cursor-pointer pr-2" on:click={play}>🞂</span>
+  </p>
   <!--<p>{subscription.description}</p>-->
   <div class="overflow-y-scroll" style="height: calc(100% - 1.5rem);" on:wheel|stopPropagation>
     {#each subscription.uploads as video (video.videoId)}

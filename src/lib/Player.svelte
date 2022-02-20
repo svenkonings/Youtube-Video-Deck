@@ -3,7 +3,7 @@
   //    after the API code downloads.
   import {onDestroy} from "svelte";
   import {fade} from 'svelte/transition';
-  import {videoIdStore} from "../util/stores.js";
+  import {playlistIdStore, videoIdStore} from "../util/stores.js";
 
   enum PlayerInitState {
     UNINITIALISED,
@@ -46,19 +46,29 @@
       if (args.videoId) {
         player.loadVideoById(args.videoId);
       } else if (args.playlistId) {
-        player.loadPlaylist(args.playlistId);
+        player.loadPlaylist({
+          listType: 'playlist',
+          list: args.playlistId,
+        });
       }
     }
   }
 
-  const unsubscribe = videoIdStore.subscribe(async (videoId: string) => {
+  onDestroy(videoIdStore.subscribe((videoId: string) => {
     if (videoId) {
       videoIdStore.set(null);
       play({videoId: videoId});
       hidden = false;
     }
-  });
-  onDestroy(unsubscribe);
+  }));
+
+  onDestroy(playlistIdStore.subscribe((playlistId: string) => {
+    if (playlistId) {
+      playlistIdStore.set(null);
+      play({playlistId: playlistId});
+      hidden = false;
+    }
+  }));
 
   $: if (playerInitState === PlayerInitState.INITIALISED && hidden) {
     player.stopVideo();

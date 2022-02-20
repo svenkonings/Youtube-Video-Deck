@@ -9,7 +9,7 @@
     videoIdStore.set(video.videoId);
   }
 </script>
-<div class="w-card bg-neutral-600 p-2 m-2 rounded-2xl" on:click={play}>
+<div class="w-card bg-neutral-600 p-2 m-2 rounded-2xl cursor-pointer" on:click={play}>
   <div class="inline-block w-image align-text-bottom p-1">
     <img src="{video.thumbnailUrl}" alt=""/>
   </div>
@@ -30,7 +30,6 @@
 
   .w-card {
     width: 35rem;
-    cursor: pointer;
   }
 
   .w-image {
