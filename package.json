@@ -15,6 +15,7 @@
     "@types/gapi": "^0.0.41",
     "@types/gapi.auth2": "^0.0.56",
     "@types/gapi.client": "^1.0.5",
+    "@types/gapi.client.drive": "^3.0.13",
     "@types/gapi.client.youtube": "^3.0.2",
     "@types/youtube": "^0.0.46",
     "autoprefixer": "^10.4.4",

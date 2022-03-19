@@ -14,7 +14,6 @@
 
   function updateScroll(event: WheelEvent): void {
     if (!event.deltaX) {
-      event.preventDefault();
       scrollWheelActive = true;
       scroll.update(value => Math.max(0, Math.min(value + event.deltaY, container.scrollWidth - container.clientWidth)));
     }
@@ -28,7 +27,7 @@
     }, duration);
   }
 </script>
-<div bind:this={container} class="w-full h-full overflow-x-scroll" on:wheel={updateScroll} on:scroll={scrollSync}>
+<div bind:this={container} class="w-full h-full overflow-x-scroll" on:wheel|passive={updateScroll} on:scroll={scrollSync}>
   <slot/>
 </div>
 <style>

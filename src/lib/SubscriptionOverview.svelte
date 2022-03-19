@@ -33,7 +33,7 @@
     {subscription.title}
     <span class="float-right cursor-pointer pl-2 pr-2 -ml-8" title="" on:click={play}>🞂</span>
   </p>
-  <div class="overflow-y-scroll overflow-x-hidden" style="height: calc(100% - 1.5rem);" on:wheel|stopPropagation on:scroll={loadMoreOnBottom}>
+  <div class="overflow-y-scroll overflow-x-hidden" style="height: calc(100% - 1.5rem);" on:wheel|stopPropagation|passive on:scroll={loadMoreOnBottom}>
     {#each subscription.uploads as video (video.videoId)}
       <VideoCard {video}/>
     {/each}
