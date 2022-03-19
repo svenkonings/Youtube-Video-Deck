@@ -3,7 +3,7 @@
   import Spinner from "./components/Spinner.svelte";
   import SubscriptionOverview from "./SubscriptionOverview.svelte";
   import HorizontalScroll from "./components/HorizontalScroll.svelte";
-  import {listAllChannels, listAllPlaylistItems, listAllSubscriptions} from "./YouTube";
+  import {listAllChannels, listAllPlaylistItems, listAllSubscriptions} from "../api/YouTube";
 
   async function init(): Promise<Subscriptions> {
     const subscriptions = await getSubscriptions();

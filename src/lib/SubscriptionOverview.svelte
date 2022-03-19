@@ -2,7 +2,7 @@
   import type {Subscription} from "../model/Subscription";
   import VideoCard from "./VideoCard.svelte";
   import {playlistIdStore} from "../util/stores";
-  import {listPlaylistItems} from "./YouTube";
+  import {listPlaylistItems} from "../api/YouTube";
 
   export let subscription: Subscription
   let currentPageLoadToken: string;
