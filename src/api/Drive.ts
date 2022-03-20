@@ -1,4 +1,4 @@
-import {request} from "./Gapi";
+import {jsonBlob, request} from "./Gapi";
 
 const subscriptionFileName = 'subscriptions.json';
 let subscriptionFileId: string;
@@ -13,7 +13,7 @@ async function getSubscriptionFileId(): Promise<void> {
       pageSize: '1',
     },
   });
-  const result = await response.json()
+  const result: gapi.client.drive.FileList = await response.json()
   if (result.files.length > 0) {
     subscriptionFileId = result.files[0].id;
   } else {
@@ -35,7 +35,7 @@ export async function readSubscriptions(): Promise<any> {
   return response.json();
 }
 
-export async function writeSubscriptions(content: any): Promise<any> {
+export async function writeSubscriptions(content: any): Promise<void> {
   if (subscriptionFileId === undefined) {
     await getSubscriptionFileId();
   }
@@ -53,27 +53,26 @@ async function createSubscriptions(content: any): Promise<void> {
     parents: ['appDataFolder'],
   };
   const form = new FormData();
-  form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
-  form.append('file', new Blob([JSON.stringify(content)], {type: 'application/json'}));
+  form.append('metadata', jsonBlob(metadata));
+  form.append('file', jsonBlob(content), subscriptionFileName);
   const response = await request('upload/drive/v3/files', {
     method: 'POST',
     query: {'uploadType': 'multipart'},
     body: form,
   });
-  const result = await response.json();
+  const result: gapi.client.drive.File = await response.json();
   subscriptionFileId = result.id;
 }
 
-async function updateSubscriptions(content: any) {
+async function updateSubscriptions(content: any): Promise<void> {
   await request(`upload/drive/v3/files/${subscriptionFileId}`, {
     method: 'PATCH',
-    headers: {'Content-Type': 'application/json; charset=UTF-8'},
     query: {'uploadType': 'media'},
-    body: JSON.stringify(content),
+    body: jsonBlob(content),
   });
 }
 
-export async function deleteSubscriptions() {
+export async function deleteSubscriptions(): Promise<void> {
   if (subscriptionFileId === undefined) {
     await getSubscriptionFileId();
   }

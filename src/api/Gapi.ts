@@ -12,5 +12,12 @@ export function request(input: string, init: GapiRequestInit = {}): Promise<Resp
     init.query = new URLSearchParams(init.query);
     input += `?${init.query}`;
   }
-  return fetch(input, init)
+  return fetch(input, init).then(res => {
+    if (!res.ok) throw res;
+    return res;
+  });
+}
+
+export function jsonBlob(content: any): Blob {
+  return new Blob([JSON.stringify(content)], {type: 'application/json'})
 }
