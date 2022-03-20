@@ -1,15 +1,17 @@
+import {request} from "./Gapi";
+
 const subscriptionFileName = 'subscriptions.json';
 let subscriptionFileId: string;
 
 async function getSubscriptionFileId(): Promise<void> {
-  const response = await fetch('https://www.googleapis.com/drive/v3/files?' + new URLSearchParams({
-    spaces: 'appDataFolder',
-    fields: 'files(id)',
-    q: `name = '${subscriptionFileName}'`,
-    pageSize: '1',
-  }), {
+  const response = await request('drive/v3/files', {
     method: 'GET',
-    headers: {'Authorization': 'Bearer ' + gapi.auth.getToken().access_token},
+    query: {
+      spaces: 'appDataFolder',
+      fields: 'files(id)',
+      q: `name = '${subscriptionFileName}'`,
+      pageSize: '1',
+    },
   });
   const result = await response.json()
   if (result.files.length > 0) {
@@ -26,9 +28,9 @@ export async function readSubscriptions(): Promise<any> {
   if (subscriptionFileId == null) {
     return null;
   }
-  const response = await fetch(`https://www.googleapis.com/drive/v3/files/${subscriptionFileId}?alt=media`, {
+  const response = await request(`drive/v3/files/${subscriptionFileId}`, {
     method: 'GET',
-    headers: {'Authorization': 'Bearer ' + gapi.auth.getToken().access_token},
+    query: {'alt': 'media'},
   })
   return response.json();
 }
@@ -53,9 +55,9 @@ async function createSubscriptions(content: any): Promise<void> {
   const form = new FormData();
   form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
   form.append('file', new Blob([JSON.stringify(content)], {type: 'application/json'}));
-  const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+  const response = await request('upload/drive/v3/files', {
     method: 'POST',
-    headers: {'Authorization': 'Bearer ' + gapi.auth.getToken().access_token},
+    query: {'uploadType': 'multipart'},
     body: form,
   });
   const result = await response.json();
@@ -63,12 +65,10 @@ async function createSubscriptions(content: any): Promise<void> {
 }
 
 async function updateSubscriptions(content: any) {
-  await fetch(`https://www.googleapis.com/upload/drive/v3/files/${subscriptionFileId}?uploadType=media`, {
+  await request(`upload/drive/v3/files/${subscriptionFileId}`, {
     method: 'PATCH',
-    headers: {
-      'Authorization': 'Bearer ' + gapi.auth.getToken().access_token,
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
+    headers: {'Content-Type': 'application/json; charset=UTF-8'},
+    query: {'uploadType': 'media'},
     body: JSON.stringify(content),
   });
 }
@@ -78,9 +78,8 @@ export async function deleteSubscriptions() {
     await getSubscriptionFileId();
   }
   if (subscriptionFileId != null) {
-    await fetch(`https://www.googleapis.com/drive/v3/files/${subscriptionFileId}`, {
+    await request(`drive/v3/files/${subscriptionFileId}`, {
       method: 'DELETE',
-      headers: {'Authorization': 'Bearer ' + gapi.auth.getToken().access_token,},
     });
     subscriptionFileId = null;
   }
