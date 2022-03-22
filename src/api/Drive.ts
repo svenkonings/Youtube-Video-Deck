@@ -4,7 +4,7 @@ const subscriptionFileName = 'subscriptions.json';
 let subscriptionFileId: string;
 
 async function getSubscriptionFileId(): Promise<void> {
-  const response = await request('drive/v3/files', {
+  const response = await request('/drive/v3/files', {
     method: 'GET',
     query: {
       spaces: 'appDataFolder',
@@ -28,7 +28,7 @@ export async function readSubscriptions(): Promise<any> {
   if (subscriptionFileId == null) {
     return null;
   }
-  const response = await request(`drive/v3/files/${subscriptionFileId}`, {
+  const response = await request(`/drive/v3/files/${subscriptionFileId}`, {
     method: 'GET',
     query: {'alt': 'media'},
   })
@@ -55,7 +55,7 @@ async function createSubscriptions(content: any): Promise<void> {
   const form = new FormData();
   form.append('metadata', jsonBlob(metadata));
   form.append('file', jsonBlob(content), subscriptionFileName);
-  const response = await request('upload/drive/v3/files', {
+  const response = await request('/upload/drive/v3/files', {
     method: 'POST',
     query: {'uploadType': 'multipart'},
     body: form,
@@ -65,7 +65,7 @@ async function createSubscriptions(content: any): Promise<void> {
 }
 
 async function updateSubscriptions(content: any): Promise<void> {
-  await request(`upload/drive/v3/files/${subscriptionFileId}`, {
+  await request(`/upload/drive/v3/files/${subscriptionFileId}`, {
     method: 'PATCH',
     query: {'uploadType': 'media'},
     body: jsonBlob(content),
@@ -77,7 +77,7 @@ export async function deleteSubscriptions(): Promise<void> {
     await getSubscriptionFileId();
   }
   if (subscriptionFileId != null) {
-    await request(`drive/v3/files/${subscriptionFileId}`, {
+    await request(`/drive/v3/files/${subscriptionFileId}`, {
       method: 'DELETE',
     });
     subscriptionFileId = null;

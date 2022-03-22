@@ -20,10 +20,6 @@
     await gapi.client.init({
       'apiKey': 'AIzaSyBAHcJ9fPTrCjDExl1NZkF4fZd15fICEFI',
       'clientId': '789354109817-qrqoqtfj1k3gvs01gufrpqlv38g0bi9p.apps.googleusercontent.com',
-      'discoveryDocs': [
-          'https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest',
-          'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest',
-      ],
       'scope': scope,
     });
     const googleAuth = gapi.auth2.getAuthInstance();

@@ -21,8 +21,7 @@
   async function loadNextPage(): Promise<void> {
     if (subscription.nextUploadPageToken && subscription.nextUploadPageToken !== currentPageLoadToken) {
       currentPageLoadToken = subscription.nextUploadPageToken;
-      const nextPage = await listPlaylistItems(subscription);
-      subscription.addUploads(nextPage.result)
+      await listPlaylistItems(subscription);
       subscription.uploads = subscription.uploads // Trigger refresh
     }
   }
