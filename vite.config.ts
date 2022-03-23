@@ -4,6 +4,7 @@ import preprocess from 'svelte-preprocess';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '',
   build: {
     outDir: 'docs',
   },
