@@ -13,27 +13,23 @@ function appendQuery(url: string, query?: URLSearchParamsInit): string {
   }
 }
 
-export async function request(path: string, init: GapiRequestInit = {}): Promise<Response> {
+export function toRequest(path: string, init: GapiRequestInit = {}): Request {
   const input = appendQuery('https://www.googleapis.com' + path, init.query);
-  if (!(init.headers instanceof Headers)) {
-    init.headers = new Headers(init.headers);
-  }
+  init.headers = new Headers(init.headers);
   init.headers.append('Authorization', 'Bearer ' + gapi.auth.getToken().access_token);
-  const response = await fetch(input, init);
+  return new Request(input, init);
+}
+
+export async function request(input: RequestInfo, init: GapiRequestInit = {}): Promise<Response> {
+  if (typeof input === 'string') {
+    input = toRequest(input, init);
+  }
+  const response = await fetch(input);
   if (!response.ok) throw response;
   return response;
 }
 
-export interface BatchRequest {
-  id: string;
-  method: string;
-  path: string;
-  headers?: HeadersInit;
-  query?: URLSearchParamsInit;
-  body?: any;
-}
-
-export async function batchRequest(api: string, requests: BatchRequest[]): Promise<Map<string, Response>> {
+export async function batchRequest(api: string, requests: Map<string, Request>): Promise<Map<string, Response>> {
   const boundary = `boundary${Date.now()}`;
   const input = '/batch' + api;
   const response = await request(input, {
@@ -41,24 +37,21 @@ export async function batchRequest(api: string, requests: BatchRequest[]): Promi
     headers: {
       'Content-Type': `multipart/mixed; boundary=${boundary}`,
     },
-    body: batchRequestsToBody(requests, boundary),
+    body: await batchRequestsToBody(requests, boundary),
   });
   return batchResponseToMap(response);
 }
 
-function batchRequestsToBody(requests: BatchRequest[], boundary) {
+async function batchRequestsToBody(requests: Map<string, Request>, boundary: string): Promise<string> {
   let lines = [];
-  for (const request of requests) {
-    if (request.body) {
-      request.body = JSON.stringify(request.body);
-    }
+  for (const [id, request] of requests) {
     lines.push(`--${boundary}`);
 
     // Multipart headers
     lines.push('Content-Type: application/http');
-    lines.push(`Content-ID: ${request.id}`);
-    if (request.body) {
-      lines.push(`Content-Length: ${new Blob([request.body]).size}`);
+    lines.push(`Content-ID: ${id}`);
+    if (request.bodyUsed) {
+      lines.push(`Content-Length: ${(await request.blob()).size}`);
     }
 
     // Multipart header-body separator
@@ -66,21 +59,20 @@ function batchRequestsToBody(requests: BatchRequest[], boundary) {
 
     // Multipart application/http body
     // Request location
-    lines.push(`${request.method} ${appendQuery(request.path, request.query)}`);
+    lines.push(`${request.method} ${request.url}`);
 
     // Request headers
     if (request.headers) {
-      const headers = new Headers(request.headers);
-      for (const [name, value] of headers.entries()) {
+      for (const [name, value] of request.headers.entries()) {
         lines.push(`${name}: ${value}`);
       }
     }
 
     // Request body
-    if (request.body) {
+    if (request.bodyUsed) {
       // Request header-body separator
       lines.push('')
-      lines.push(request.body);
+      lines.push(await request.text());
     }
   }
   lines.push(`--${boundary}--`);
