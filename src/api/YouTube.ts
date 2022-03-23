@@ -25,7 +25,7 @@ function listSubscriptionsRequest(pageToken?: string): Request {
     method: 'GET',
     query: {
       part: 'snippet',
-      fields: 'etag,items(snippet(title,description,resourceId/channelId)),nextPageToken',
+      fields: 'etag,items(snippet(title,resourceId/channelId)),nextPageToken',
       mine: 'true',
       maxResults: '50',
       ...pageToken && {pageToken: pageToken},

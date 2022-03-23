@@ -28,9 +28,11 @@
 
 </script>
 <div class="inline-block h-full bg-neutral-800 p-1 ml-1 mr-1 rounded-2xl">
-  <p class="text-center font-bold h-8" title="{subscription.description}">
-    {subscription.title}
-    <span class="float-right cursor-pointer pl-2 pr-2 -ml-8" title="" on:click={play}>🞂</span>
+  <p class="text-center font-bold h-8">
+    <a href="https://www.youtube.com/channel/{subscription.channelId}">{subscription.title}</a>
+    {#if subscription.uploads.length > 0}
+      <a class="float-right pl-2 pr-2 -ml-8" href="https://www.youtube.com/watch?v={subscription.uploads[0].videoId}&list={subscription.uploadsPlaylistId}" on:click|preventDefault={play}>🞂</a>
+    {/if}
   </p>
   <div class="overflow-y-scroll overflow-x-hidden" style="height: calc(100% - 1.5rem);" on:wheel|stopPropagation|passive on:scroll={loadMoreOnBottom}>
     {#each subscription.uploads as video (video.videoId)}
