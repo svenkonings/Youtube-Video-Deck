@@ -29,7 +29,7 @@
   }
 
   .w-card {
-    width: 35rem;
+    width: 30rem;
   }
 
   .w-image {
@@ -37,7 +37,7 @@
   }
 
   .w-text {
-    width: 22rem;
+    width: 17rem;
   }
 
   .truncate-line {
