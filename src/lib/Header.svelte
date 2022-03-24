@@ -15,7 +15,7 @@
 
 <header class="h-12">
   <Center>
-    <span class="font-extrabold">Youtube Video Deck</span>
+    <a class="font-extrabold" href="{'#'}">Youtube Video Deck</a>
     <div slot="inline" class="float-right p-1">
       {#if isSignedIn}
         <PrimaryButton class="w-36 m-1" on:click={signOut}>Sign out</PrimaryButton>
