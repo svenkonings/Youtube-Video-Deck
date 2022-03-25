@@ -4,6 +4,8 @@
   import SubscriptionOverview from "./SubscriptionOverview.svelte";
   import HorizontalScroll from "./components/HorizontalScroll.svelte";
   import {listAllChannels, listAllPlaylistItems, listAllSubscriptions} from "../api/YouTube";
+  import {subscriptions} from "../util/stores";
+  import {NOT_MODIFIED} from "../api/Gapi";
 
   async function init(): Promise<Subscriptions> {
     const subscriptions = await getSubscriptions();
@@ -12,9 +14,14 @@
   }
 
   async function getSubscriptions(): Promise<Subscriptions> {
-    const subscriptionsList = await listAllSubscriptions();
-    const channelMap = await listAllChannels(subscriptionsList.items);
-    return Subscriptions(subscriptionsList, channelMap);
+    try {
+      const subscriptionsList = await listAllSubscriptions($subscriptions?.etag);
+      const channelMap = await listAllChannels(subscriptionsList.items);
+      $subscriptions = Subscriptions(subscriptionsList, channelMap);
+    } catch (e) {
+      if (e !== NOT_MODIFIED) throw e;
+    }
+    return $subscriptions;
   }
 </script>
 {#await init()}

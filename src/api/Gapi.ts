@@ -1,7 +1,10 @@
+export const NOT_MODIFIED = 'Not Modified';
+
 export type URLSearchParamsInit = string[][] | Record<string, string> | string | URLSearchParams;
 
 export interface GapiRequestInit extends RequestInit {
   query?: URLSearchParamsInit,
+  etag?: string,
 }
 
 function appendQuery(url: string, query?: URLSearchParamsInit): string {
@@ -17,6 +20,9 @@ export function toRequest(path: string, init: GapiRequestInit = {}): Request {
   const input = appendQuery('https://www.googleapis.com' + path, init.query);
   init.headers = new Headers(init.headers);
   init.headers.append('Authorization', 'Bearer ' + gapi.auth.getToken().access_token);
+  if (init.etag) {
+    init.headers.append('If-None-Match', init.etag);
+  }
   return new Request(input, init);
 }
 
@@ -25,6 +31,7 @@ export async function request(input: RequestInfo, init: GapiRequestInit = {}): P
     input = toRequest(input, init);
   }
   const response = await fetch(input);
+  if (response.status === 304) throw NOT_MODIFIED;
   if (!response.ok) throw response;
   return response;
 }
@@ -34,9 +41,7 @@ export async function batchRequest(api: string, requests: Map<string, Request>):
   const input = '/batch' + api;
   const response = await request(input, {
     method: 'POST',
-    headers: {
-      'Content-Type': `multipart/mixed; boundary=${boundary}`,
-    },
+    headers: {'Content-Type': `multipart/mixed; boundary=${boundary}`},
     body: await batchRequestsToBody(requests, boundary),
   });
   return batchResponseToMap(response);
