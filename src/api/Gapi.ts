@@ -90,7 +90,7 @@ async function batchResponseToMap(response: Response): Promise<Map<string, Respo
   const parts = text.split(new RegExp(`\r\n--${boundary}(?:--)?\r\n`, 'g')).slice(1, -1);
   const responseMap = new Map<string, Response>();
   for (const part of parts) {
-    const [partHeaderString, responseHead, responseBody] = part.split('\r\n\r\n', 3);
+    const [partHeaderString, responseHead, responseBodyString] = part.split('\r\n\r\n', 3);
 
     const partHeaders = headerStringToHeaders(partHeaderString);
     const id = partHeaders.get('Content-ID').match(/^response-(.+)$/)[1];
@@ -98,6 +98,8 @@ async function batchResponseToMap(response: Response): Promise<Map<string, Respo
     const [responseStats, responseHeaderString] = responseHead.split('\r\n', 2);
     const [httpVersion, responseStatusCode, responseStatusText] = responseStats.split(' ', 3);
     const responseHeaders = headerStringToHeaders(responseHeaderString);
+
+    const responseBody = responseBodyString.length === 0 ? null : responseBodyString
 
     const response = new Response(responseBody, {
       status: parseInt(responseStatusCode, 10),

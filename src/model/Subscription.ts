@@ -25,3 +25,9 @@ export function addUploads(subscription: Subscription, uploads: gapi.client.yout
   subscription.nextUploadPageToken = uploads.nextPageToken;
   uploads.items.forEach(upload => subscription.uploads.push(Video(upload)));
 }
+
+export function clearUploads(subscription: Subscription) {
+  subscription.uploadsEtag = null;
+  subscription.nextUploadPageToken = null;
+  subscription.uploads = [];
+}

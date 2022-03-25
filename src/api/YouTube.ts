@@ -2,7 +2,7 @@ import type {Subscriptions} from "../model/Subscriptions";
 import type {SubscriptionsList} from "../types/SubscriptionsList";
 import type {ChannelMap} from "../types/ChannelMap";
 import type {Subscription} from "../model/Subscription";
-import {addUploads} from "../model/Subscription";
+import {addUploads, clearUploads} from "../model/Subscription";
 import {batchRequest, request, toRequest} from "./Gapi";
 
 export async function listAllSubscriptions(storedEtag?: string): Promise<SubscriptionsList> {
@@ -61,19 +61,17 @@ function listChannelsRequest(subscriptions: gapi.client.youtube.Subscription[]):
 }
 
 export async function listAllPlaylistItems(subscriptions: Subscriptions): Promise<void> {
-  // TODO: Cache response with etags
-  const requests = new Map(subscriptions.items.map(subscription => [subscription.uploadsPlaylistId, listPlaylistItemsRequest(subscription)]));
+  const requests = new Map(subscriptions.items.map(subscription => [subscription.uploadsPlaylistId, listPlaylistItemsRequest(subscription, true)]));
   const responses = await batchRequest('/youtube/v3', requests);
-  await Promise.all(subscriptions.items.map(async subscription => addUploads(subscription, await responses.get(subscription.uploadsPlaylistId).json())));
+  await Promise.all(subscriptions.items.map(subscription => listPlaylistItemsResponse(subscription, responses.get(subscription.uploadsPlaylistId), true)));
 }
 
 export async function listPlaylistItems(subscription: Subscription): Promise<void> {
-  const response = await request(listPlaylistItemsRequest(subscription));
-  const result = await response.json();
-  addUploads(subscription, result);
+  const response = await request(listPlaylistItemsRequest(subscription, false));
+  await listPlaylistItemsResponse(subscription, response, false)
 }
 
-function listPlaylistItemsRequest(subscription: Subscription): Request {
+function listPlaylistItemsRequest(subscription: Subscription, initial: boolean): Request {
   return toRequest('/youtube/v3/playlistItems', {
     method: 'GET',
     query: {
@@ -81,7 +79,17 @@ function listPlaylistItemsRequest(subscription: Subscription): Request {
       fields: 'etag,items(snippet(title,description,publishedAt,thumbnails/medium/url,resourceId/videoId)),nextPageToken',
       playlistId: subscription.uploadsPlaylistId,
       maxResults: '50',
-      ...subscription.nextUploadPageToken && {pageToken: subscription.nextUploadPageToken},
+      ...!initial && subscription.nextUploadPageToken && {pageToken: subscription.nextUploadPageToken},
     },
+    ...initial && subscription.uploadsEtag && {etag: subscription.uploadsEtag},
   });
+}
+
+async function listPlaylistItemsResponse(subscription: Subscription, response: Response, initial: boolean): Promise<void> {
+  if (initial) {
+    if (subscription.uploadsEtag && response.status === 304) return; // Not Modified
+    clearUploads(subscription);
+  }
+  if (!response.ok) throw response;
+  addUploads(subscription, await response.json());
 }
