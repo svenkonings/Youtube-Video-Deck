@@ -14,7 +14,7 @@
   async function getSubscriptions(): Promise<Subscriptions> {
     const subscriptionsList = await listAllSubscriptions();
     const channelMap = await listAllChannels(subscriptionsList.items);
-    return new Subscriptions(subscriptionsList, channelMap);
+    return Subscriptions(subscriptionsList, channelMap);
   }
 </script>
 {#await init()}

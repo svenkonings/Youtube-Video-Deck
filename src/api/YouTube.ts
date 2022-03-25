@@ -2,6 +2,7 @@ import type {Subscriptions} from "../model/Subscriptions";
 import type {SubscriptionsList} from "../types/SubscriptionsList";
 import type {ChannelMap} from "../types/ChannelMap";
 import type {Subscription} from "../model/Subscription";
+import {addUploads} from "../model/Subscription";
 import {batchRequest, request, toRequest} from "./Gapi";
 
 export async function listAllSubscriptions(): Promise<SubscriptionsList> {
@@ -60,14 +61,14 @@ function listChannelsRequest(subscriptions: gapi.client.youtube.Subscription[]):
 export async function listAllPlaylistItems(subscriptions: Subscriptions): Promise<void> {
   const requests = new Map(subscriptions.items.map(subscription => [subscription.uploadsPlaylistId, listPlaylistItemsRequest(subscription)]));
   const responses = await batchRequest('/youtube/v3', requests);
-  await Promise.all(subscriptions.items.map(async subscription => subscription.addUploads(await responses.get(subscription.uploadsPlaylistId).json())));
+  await Promise.all(subscriptions.items.map(async subscription => addUploads(subscription, await responses.get(subscription.uploadsPlaylistId).json())));
 }
 
 export async function listPlaylistItems(subscription: Subscription): Promise<void> {
   // TODO: Cache response with etags
   const response = await request(listPlaylistItemsRequest(subscription));
   const result = await response.json();
-  subscription.addUploads(result);
+  addUploads(subscription, result);
 }
 
 function listPlaylistItemsRequest(subscription: Subscription): Request {

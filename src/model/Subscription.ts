@@ -1,25 +1,27 @@
 import {Video} from "./Video";
 
-export class Subscription {
-  public readonly channelId: string;
-  public readonly title: string;
-  public readonly uploadsPlaylistId: string;
-  public uploadsEtag?: string;
-  public nextUploadPageToken?: string;
-  public uploads: Video[];
+export type Subscription = {
+  readonly channelId: string;
+  readonly title: string;
+  readonly uploadsPlaylistId: string;
+  uploadsEtag?: string;
+  nextUploadPageToken?: string;
+  uploads: Video[];
+};
 
-  constructor(subscription: gapi.client.youtube.Subscription, channel: gapi.client.youtube.Channel) {
-    this.channelId = subscription.snippet.resourceId.channelId;
-    this.title = subscription.snippet.title;
-    this.uploadsPlaylistId = channel.contentDetails.relatedPlaylists.uploads;
-    this.uploads = [];
-  }
+export function Subscription(subscription: gapi.client.youtube.Subscription, channel: gapi.client.youtube.Channel): Subscription {
+  return {
+    channelId: subscription.snippet.resourceId.channelId,
+    title: subscription.snippet.title,
+    uploadsPlaylistId: channel.contentDetails.relatedPlaylists.uploads,
+    uploads: [],
+  };
+}
 
-  public addUploads(uploads: gapi.client.youtube.PlaylistItemListResponse): void {
-    if (this.uploadsEtag == null) {
-      this.uploadsEtag = uploads.etag;
-    }
-    this.nextUploadPageToken = uploads.nextPageToken;
-    uploads.items.forEach(upload => this.uploads.push(new Video(upload)));
+export function addUploads(subscription: Subscription, uploads: gapi.client.youtube.PlaylistItemListResponse): void {
+  if (subscription.uploadsEtag == null) {
+    subscription.uploadsEtag = uploads.etag;
   }
+  subscription.nextUploadPageToken = uploads.nextPageToken;
+  uploads.items.forEach(upload => subscription.uploads.push(Video(upload)));
 }
