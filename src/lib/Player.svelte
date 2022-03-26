@@ -1,8 +1,5 @@
 <script lang="ts">
-  // 3. This function creates an <iframe> (and YouTube player)
-  //    after the API code downloads.
   import {onDestroy} from "svelte";
-  import {fade} from 'svelte/transition';
   import {playlistIdStore, videoIdStore} from "../util/stores.js";
 
   enum PlayerInitState {
@@ -15,15 +12,32 @@
   let player: YT.Player;
   let playerInitState = PlayerInitState.UNINITIALISED;
 
+  function calcPlayerSize(): number[] {
+    let width = Math.min(document.body.clientWidth, 16 * document.body.clientHeight / 9);
+    let height = Math.min(document.body.clientHeight, 9 * document.body.clientWidth / 16);
+    if (width > 0.9 * document.body.clientWidth && height > 0.9 * document.body.clientHeight) {
+      width *= 0.9;
+      height *= 0.9;
+    }
+    return [width, height];
+  }
+
+  window.addEventListener('resize', () => {
+    if (player) {
+      player.setSize(...calcPlayerSize());
+    }
+  });
+
   function play(args: {
     videoId?: string,
     playlistId?: string,
   }): void {
     if (playerInitState === PlayerInitState.UNINITIALISED) {
       playerInitState = PlayerInitState.INITIALISING;
+      const [width, height] = calcPlayerSize();
       const playerArgs: YT.PlayerOptions = {
-        width: '1280',
-        height: '720',
+        width: width,
+        height: height,
         playerVars: {
           autohide: 1,
           autoplay: 1,
@@ -78,16 +92,21 @@
     player.stopVideo();
   }
 </script>
-<div class="fixed top-0 bottom-0 left-0 right-0 z-10" class:visuallyHidden="{hidden}" style="background-color: rgba(0, 0, 0, 0.8)" transition:fade={{duration: 100}} on:click|self={() => hidden = true}>
-  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+<div class="fixed top-0 bottom-0 left-0 right-0 z-10" class:fadeIn={!hidden} class:fadeOut="{hidden}" style="background-color: rgba(0, 0, 0, 0.8)" on:click|self={() => hidden = true}>
+  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20" class:invisible={hidden}>
     <div id="player"></div>
   </div>
 </div>
 <style>
-  .visuallyHidden:not(:focus):not(:active) {
-    width: 0;
-    height: 0;
-    clip-path: inset(50%);
-    clip: rect(0 0 0 0);
+  .fadeIn {
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0s linear 0s, opacity 300ms;
+  }
+
+  .fadeOut {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s linear 300ms, opacity 300ms;
   }
 </style>
