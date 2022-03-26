@@ -1,7 +1,7 @@
 <script lang="ts">
   import type {Subscription} from "../model/Subscription";
   import VideoCard from "./VideoCard.svelte";
-  import {playlistIdStore} from "../util/stores";
+  import {playerStore} from "../util/stores";
   import {listPlaylistItems} from "../api/YouTube";
   import type {Video} from "../model/Video";
 
@@ -10,7 +10,7 @@
   let currentPageLoadToken: string;
 
   function play(): void {
-    playlistIdStore.set(subscription.uploadsPlaylistId);
+    playerStore.set({playlistId: subscription.uploadsPlaylistId});
   }
 
   function loadMoreOnBottom(event: Event): void {

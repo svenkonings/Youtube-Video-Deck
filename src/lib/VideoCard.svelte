@@ -1,12 +1,12 @@
 <script lang="ts">
   import type {Video} from "../model/Video";
   import {timeAgo} from "../util/TimeAgo.js";
-  import {videoIdStore} from "../util/stores";
+  import {playerStore} from "../util/stores";
 
   export let video: Video;
 
   function play(): void {
-    videoIdStore.set(video.videoId);
+    playerStore.set({videoId: video.videoId});
   }
 </script>
 <a class="block w-card bg-neutral-600 p-2 m-2 rounded-2xl" href="https://www.youtube.com/watch?v={video.videoId}" on:click|preventDefault={play}>

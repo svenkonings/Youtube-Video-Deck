@@ -1,6 +1,12 @@
 <script lang="ts">
   import {onDestroy} from "svelte";
-  import {playlistIdStore, videoIdStore} from "../util/stores.js";
+  import {playerStore} from "../util/stores.js";
+
+  export type PlayerInput = {
+    videoId?: string,
+    playlistId?: string,
+    customPlaylist?: string[],
+  };
 
   enum PlayerInitState {
     UNINITIALISED,
@@ -28,10 +34,7 @@
     }
   });
 
-  function play(args: {
-    videoId?: string,
-    playlistId?: string,
-  }): void {
+  function play(input: PlayerInput): void {
     if (playerInitState === PlayerInitState.UNINITIALISED) {
       playerInitState = PlayerInitState.INITIALISING;
       const [width, height] = calcPlayerSize();
@@ -52,39 +55,36 @@
           },
         },
       }
-      if (args.videoId) {
-        playerArgs.videoId = args.videoId;
-      } else if (args.playlistId) {
+      if (input.videoId) {
+        playerArgs.videoId = input.videoId;
+      } else if (input.playlistId) {
         playerArgs.playerVars.listType = 'playlist';
-        playerArgs.playerVars.list = args.playlistId;
+        playerArgs.playerVars.list = input.playlistId;
+      } else if (input.customPlaylist) {
+        playerArgs.playerVars.playlist = input.customPlaylist.join(',');
       }
       player = new YT.Player('player', playerArgs);
       hidden = false;
     } else if (playerInitState === PlayerInitState.INITIALISING) {
-      setTimeout(() => play(args), 100);
+      setTimeout(() => play(input), 100);
     } else if (playerInitState === PlayerInitState.INITIALISED) {
-      if (args.videoId) {
-        player.loadVideoById(args.videoId);
-      } else if (args.playlistId) {
+      if (input.videoId) {
+        player.loadVideoById(input.videoId);
+      } else if (input.playlistId) {
         player.loadPlaylist({
           listType: 'playlist',
-          list: args.playlistId,
+          list: input.playlistId,
         });
+      } else if (input.customPlaylist) {
+        player.loadPlaylist(input.customPlaylist);
       }
     }
   }
 
-  onDestroy(videoIdStore.subscribe((videoId: string) => {
-    if (videoId) {
-      videoIdStore.set(null);
-      play({videoId: videoId});
-    }
-  }));
-
-  onDestroy(playlistIdStore.subscribe((playlistId: string) => {
-    if (playlistId) {
-      playlistIdStore.set(null);
-      play({playlistId: playlistId});
+  onDestroy(playerStore.subscribe((input: PlayerInput) => {
+    if (input) {
+      playerStore.set(null);
+      play(input);
     }
   }));
 
