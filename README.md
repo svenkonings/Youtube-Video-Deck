@@ -1,7 +1,6 @@
 # Youtube Video Deck
 
 ## TODO
-- Cache subscriptions and (initial) uploads
 - Fix upload date (currently incorrect for livestreams)
 - Allow creating custom lists
   - Custom list should display entries until the end of the first subscription that still has a next page

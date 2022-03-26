@@ -28,6 +28,7 @@ function listSubscriptionsRequest(args: { pageToken?: string, etag?: string } = 
       part: 'snippet',
       fields: 'etag,items(snippet(title,resourceId/channelId)),nextPageToken',
       mine: 'true',
+      order: 'alphabetical',
       maxResults: '50',
       ...args.pageToken && {pageToken: args.pageToken},
     },
