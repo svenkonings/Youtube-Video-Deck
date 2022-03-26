@@ -11,7 +11,7 @@
 </script>
 <a class="block w-card bg-neutral-600 p-2 m-2 rounded-2xl" href="https://www.youtube.com/watch?v={video.videoId}" on:click|preventDefault={play}>
   <div class="inline-block w-image align-text-bottom p-1">
-    <img src="{video.thumbnailUrl}" alt=""/>
+    <img src="{video.thumbnailUrl}" alt="" width="320" height="180"/>
   </div>
   <div class="inline-block w-text align-top text-sm">
     <p class="font-bold w-text truncate-line" title="{video.title}">{video.title}</p>
