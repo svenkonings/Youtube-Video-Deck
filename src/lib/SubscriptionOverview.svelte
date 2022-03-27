@@ -35,7 +35,7 @@
     {:else}
       <span class="cursor-default">{subscriptionGroup.name}</span>
       {#if subscriptionGroup.videos.length > 0}
-        <span class="float-right pl-2 pr-2 -ml-8 play-button cursor-pointer" on:click|preventDefault={play}>▸</span>
+        <span class="float-right pl-2 pr-2 -ml-8 play-button cursor-pointer" on:click={play}>▸</span>
       {/if}
     {/if}
   </p>

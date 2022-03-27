@@ -13,10 +13,17 @@
   }));
 
   function updateScroll(event: WheelEvent): void {
-    if (!event.deltaX) {
+    if (event.deltaX) {
+      scrollWheelActive = false;
+      scroll.update(value => clampToContainer(value + event.deltaX), {duration: 0});
+    } else if (event.deltaY) {
       scrollWheelActive = true;
-      scroll.update(value => Math.max(0, Math.min(value + event.deltaY, container.scrollWidth - container.clientWidth)));
+      scroll.update(value => clampToContainer(value + event.deltaY));
     }
+  }
+
+  function clampToContainer(value: number): number {
+    return Math.max(0, Math.min(value, container.scrollWidth - container.clientWidth));
   }
 
   function scrollSync() {

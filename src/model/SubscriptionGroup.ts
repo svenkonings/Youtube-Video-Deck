@@ -36,14 +36,14 @@ export function addSubscription(subscriptionGroup: SubscriptionGroup, subscripti
   });
 }
 
-export function removeSubscripion(subscriptionGroup: SubscriptionGroup, subscription: Subscription): void {
+export function removeSubscription(subscriptionGroup: SubscriptionGroup, subscription: Subscription): void {
   const index = subscriptionGroup.subscriptions.findIndex(g => g.subscription.channelId === subscription.channelId);
   if (index >= 0) {
-    removeSubscripionByIndex(subscriptionGroup, index);
+    removeSubscriptionByIndex(subscriptionGroup, index);
   }
 }
 
-export function removeSubscripionByIndex(subscriptionGroup: SubscriptionGroup, index: number): void {
+export function removeSubscriptionByIndex(subscriptionGroup: SubscriptionGroup, index: number): void {
   subscriptionGroup.subscriptions.splice(index, 1);
 }
 
