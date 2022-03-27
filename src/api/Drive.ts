@@ -1,85 +1,86 @@
 import {jsonBlob, request} from "./Gapi";
+import type {Settings} from "../model/Settings";
 
-const subscriptionFileName = 'subscriptions.json';
-let subscriptionFileId: string;
+const settingsFileName = 'settings.json';
+let settingsFileId: string;
 
-async function getSubscriptionFileId(): Promise<void> {
+async function getSettingsFileId(): Promise<void> {
   const response = await request('/drive/v3/files', {
     method: 'GET',
     query: {
       spaces: 'appDataFolder',
       fields: 'files(id)',
-      q: `name = '${subscriptionFileName}'`,
+      q: `name = '${settingsFileName}'`,
       pageSize: '1',
     },
   });
   const result: gapi.client.drive.FileList = await response.json()
   if (result.files.length > 0) {
-    subscriptionFileId = result.files[0].id;
+    settingsFileId = result.files[0].id;
   } else {
-    subscriptionFileId = null;
+    settingsFileId = null;
   }
 }
 
-export async function readSubscriptions(): Promise<any> {
-  if (subscriptionFileId === undefined) {
-    await getSubscriptionFileId();
+export async function readSettings(): Promise<Settings> {
+  if (settingsFileId === undefined) {
+    await getSettingsFileId();
   }
-  if (subscriptionFileId == null) {
+  if (settingsFileId == null) {
     return null;
   }
-  const response = await request(`/drive/v3/files/${subscriptionFileId}`, {
+  const response = await request(`/drive/v3/files/${settingsFileId}`, {
     method: 'GET',
     query: {'alt': 'media'},
-  })
+  });
   return response.json();
 }
 
-export async function writeSubscriptions(content: any): Promise<void> {
-  if (subscriptionFileId === undefined) {
-    await getSubscriptionFileId();
+export async function writeSettings(content: Settings): Promise<void> {
+  if (settingsFileId === undefined) {
+    await getSettingsFileId();
   }
-  if (subscriptionFileId == null) {
-    await createSubscriptions(content);
+  if (settingsFileId == null) {
+    await createSettings(content);
   } else {
-    await updateSubscriptions(content);
+    await updateSettings(content);
   }
 }
 
-async function createSubscriptions(content: any): Promise<void> {
+async function createSettings(content: Settings): Promise<void> {
   const metadata = {
-    name: subscriptionFileName,
+    name: settingsFileName,
     mimeType: 'application/json',
     parents: ['appDataFolder'],
   };
   const form = new FormData();
   form.append('metadata', jsonBlob(metadata));
-  form.append('file', jsonBlob(content), subscriptionFileName);
+  form.append('file', jsonBlob(content), settingsFileName);
   const response = await request('/upload/drive/v3/files', {
     method: 'POST',
     query: {'uploadType': 'multipart'},
     body: form,
   });
   const result: gapi.client.drive.File = await response.json();
-  subscriptionFileId = result.id;
+  settingsFileId = result.id;
 }
 
-async function updateSubscriptions(content: any): Promise<void> {
-  await request(`/upload/drive/v3/files/${subscriptionFileId}`, {
+async function updateSettings(content: Settings): Promise<void> {
+  await request(`/upload/drive/v3/files/${settingsFileId}`, {
     method: 'PATCH',
     query: {'uploadType': 'media'},
     body: jsonBlob(content),
   });
 }
 
-export async function deleteSubscriptions(): Promise<void> {
-  if (subscriptionFileId === undefined) {
-    await getSubscriptionFileId();
+export async function deleteSettings(): Promise<void> {
+  if (settingsFileId === undefined) {
+    await getSettingsFileId();
   }
-  if (subscriptionFileId != null) {
-    await request(`/drive/v3/files/${subscriptionFileId}`, {
+  if (settingsFileId != null) {
+    await request(`/drive/v3/files/${settingsFileId}`, {
       method: 'DELETE',
     });
-    subscriptionFileId = null;
+    settingsFileId = null;
   }
 }

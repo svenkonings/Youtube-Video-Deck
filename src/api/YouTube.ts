@@ -4,6 +4,7 @@ import type {ChannelMap} from "../types/ChannelMap";
 import type {Subscription} from "../model/Subscription";
 import {addUploads, clearUploads} from "../model/Subscription";
 import {batchRequest, request, toRequest} from "./Gapi";
+import type {Settings} from "../model/Settings";
 
 export async function listAllSubscriptions(storedEtag?: string): Promise<SubscriptionsList> {
   let subscriptionListResponse = await listSubscriptions({etag: storedEtag});
@@ -61,10 +62,14 @@ function listChannelsRequest(subscriptions: gapi.client.youtube.Subscription[]):
   });
 }
 
-export async function listAllPlaylistItems(subscriptions: Subscriptions): Promise<void> {
-  const requests = new Map(subscriptions.items.map(subscription => [subscription.uploadsPlaylistId, listPlaylistItemsRequest(subscription, true)]));
-  const responses = await batchRequest('/youtube/v3', requests);
-  await Promise.all(subscriptions.items.map(subscription => listPlaylistItemsResponse(subscription, responses.get(subscription.uploadsPlaylistId), true)));
+export async function listAllPlaylistItems(subscriptions: Subscriptions, settings: Settings): Promise<void> {
+  const subscriptionIds = new Set(settings.subscriptionGroups.flatMap(s => s.subscriptionIds));
+  if (subscriptionIds.size > 0) {
+    const activeSubscriptions = subscriptions.items.filter(s => subscriptionIds.has(s.channelId));
+    const requests = new Map(activeSubscriptions.map(subscription => [subscription.uploadsPlaylistId, listPlaylistItemsRequest(subscription, true)]));
+    const responses = await batchRequest('/youtube/v3', requests);
+    await Promise.all(activeSubscriptions.map(subscription => listPlaylistItemsResponse(subscription, responses.get(subscription.uploadsPlaylistId), true)));
+  }
 }
 
 export async function listPlaylistItems(subscription: Subscription): Promise<void> {

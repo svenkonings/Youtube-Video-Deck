@@ -7,16 +7,21 @@
   import {subscriptionsStore} from "../util/stores";
   import {NOT_MODIFIED} from "../api/Gapi";
   import {SubscriptionGroup} from "../model/SubscriptionGroup";
+  import {readSettings} from "../api/Drive";
+  import {Settings} from "../model/Settings";
 
   async function init(): Promise<SubscriptionGroup[]> {
-    const subscriptions = await getSubscriptions();
-    await listAllPlaylistItems(subscriptions);
+    const res = await Promise.all([getSettings(), getSubscriptions()]);
+    const settings: Settings = res[0] as Settings;
+    const subscriptions: Subscriptions = res[1] as Subscriptions;
+    await listAllPlaylistItems(subscriptions, settings);
     $subscriptionsStore = subscriptions;
-    return Promise.all(subscriptions.items.map(s => SubscriptionGroup(s.title, [s])));
+    const subscriptionMap = new Map(subscriptions.items.map(s => [s.channelId, s]));
+    return Promise.all(settings.subscriptionGroups.map(s => SubscriptionGroup(s.name, s.subscriptionIds.map(id => subscriptionMap.get(id)))));
   }
 
   async function getSubscriptions(): Promise<Subscriptions> {
-    const storedSubscriptions = <Subscriptions>$subscriptionsStore;
+    const storedSubscriptions = $subscriptionsStore;
     try {
       const subscriptionsList = await listAllSubscriptions(storedSubscriptions?.etag);
       const channelMap = await listAllChannels(subscriptionsList.items);
@@ -25,6 +30,14 @@
       if (storedSubscriptions && e === NOT_MODIFIED) return storedSubscriptions;
       throw e;
     }
+  }
+
+  async function getSettings(): Promise<Settings> {
+    let settings = await readSettings();
+    if (!settings) {
+      settings = Settings();
+    }
+    return settings;
   }
 </script>
 {#await init()}
