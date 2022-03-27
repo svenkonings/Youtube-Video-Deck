@@ -1,12 +1,8 @@
 <script lang="ts">
   import {onDestroy} from "svelte";
-  import {playerStore} from "../util/stores.js";
-
-  export type PlayerInput = {
-    videoId?: string,
-    playlistId?: string,
-    customPlaylist?: string[],
-  };
+  import {playerStore} from "../util/stores";
+  import type {PlayerInput} from "../types/PlayerInput";
+  import Spinner from "./components/Spinner.svelte";
 
   enum PlayerInitState {
     UNINITIALISED,
@@ -14,7 +10,8 @@
     INITIALISED,
   }
 
-  let hidden = true;
+  let backgroundVisible = false;
+  let playerVisible = false;
   let player: YT.Player;
   let playerInitState = PlayerInitState.UNINITIALISED;
 
@@ -49,8 +46,10 @@
         events: {
           onReady: () => playerInitState = PlayerInitState.INITIALISED,
           onStateChange: state => {
-            if (hidden && (state.data === YT.PlayerState.BUFFERING || state.data === YT.PlayerState.PLAYING)) {
-              hidden = false;
+            if (state.data === YT.PlayerState.BUFFERING || state.data === YT.PlayerState.PLAYING) {
+              playerVisible = true;
+            } else if (state.data === YT.PlayerState.UNSTARTED) {
+              playerVisible = false;
             }
           },
         },
@@ -64,7 +63,6 @@
         playerArgs.playerVars.playlist = input.customPlaylist.join(',');
       }
       player = new YT.Player('player', playerArgs);
-      hidden = false;
     } else if (playerInitState === PlayerInitState.INITIALISING) {
       setTimeout(() => play(input), 100);
     } else if (playerInitState === PlayerInitState.INITIALISED) {
@@ -84,16 +82,22 @@
   onDestroy(playerStore.subscribe((input: PlayerInput) => {
     if (input) {
       playerStore.set(null);
-      play(input);
+      backgroundVisible = true;
+      if (!input.loading) {
+        play(input);
+      }
     }
   }));
 
-  $: if (playerInitState === PlayerInitState.INITIALISED && hidden) {
+  $: if (playerInitState === PlayerInitState.INITIALISED && !backgroundVisible) {
     player.stopVideo();
   }
 </script>
-<div class="fixed top-0 bottom-0 left-0 right-0 z-10" class:fadeIn={!hidden} class:fadeOut="{hidden}" style="background-color: rgba(0, 0, 0, 0.8)" on:click|self={() => hidden = true}>
-  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20" class:invisible={hidden}>
+<div class="fixed top-0 bottom-0 left-0 right-0 z-10" class:fadeIn={backgroundVisible} class:fadeOut="{!backgroundVisible}" style="background-color: rgba(0, 0, 0, 0.8)" on:click|self={() => backgroundVisible = false}>
+  <div class="w-full h-full z-20" class:invisible={!backgroundVisible || playerVisible}>
+    <Spinner/>
+  </div>
+  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30" class:invisible={!backgroundVisible || !playerVisible}>
     <div id="player"></div>
   </div>
 </div>

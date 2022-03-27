@@ -1,6 +1,6 @@
 <script lang="ts">
   import type {Video} from "../model/Video";
-  import {timeAgo} from "../util/TimeAgo.js";
+  import {timeAgo} from "../util/TimeAgo";
   import {playerStore} from "../util/stores";
 
   export let video: Video;

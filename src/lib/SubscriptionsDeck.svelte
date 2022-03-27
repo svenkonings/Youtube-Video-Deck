@@ -6,12 +6,13 @@
   import {listAllChannels, listAllPlaylistItems, listAllSubscriptions} from "../api/YouTube";
   import {subscriptionsStore} from "../util/stores";
   import {NOT_MODIFIED} from "../api/Gapi";
+  import {SubscriptionGroup} from "../model/SubscriptionGroup";
 
-  async function init(): Promise<Subscriptions> {
+  async function init(): Promise<SubscriptionGroup[]> {
     const subscriptions = await getSubscriptions();
     await listAllPlaylistItems(subscriptions);
     $subscriptionsStore = subscriptions;
-    return subscriptions;
+    return Promise.all(subscriptions.items.map(s => SubscriptionGroup(s.title, [s])));
   }
 
   async function getSubscriptions(): Promise<Subscriptions> {
@@ -28,12 +29,12 @@
 </script>
 {#await init()}
   <Spinner/>
-{:then subscriptions}
+{:then subscriptionGroups}
   <div class="w-full" style="height: calc(100% - 6px);">
     <HorizontalScroll>
       <div class="w-max h-full">
-        {#each subscriptions.items as subscription (subscription.uploadsPlaylistId)}
-          <SubscriptionOverview {subscription}/>
+        {#each subscriptionGroups as subscriptionGroup}
+          <SubscriptionOverview {subscriptionGroup}/>
         {/each}
       </div>
     </HorizontalScroll>
