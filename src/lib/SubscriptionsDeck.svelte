@@ -11,9 +11,7 @@
   import {Settings} from "../model/Settings";
 
   async function init(): Promise<SubscriptionGroup[]> {
-    const res = await Promise.all([getSettings(), getSubscriptions()]);
-    const settings: Settings = res[0] as Settings;
-    const subscriptions: Subscriptions = res[1] as Subscriptions;
+    const [settings, subscriptions] = await Promise.all([getSettings(), getSubscriptions()]) as [Settings, Subscriptions];
     await listAllPlaylistItems(subscriptions, settings);
     $subscriptionsStore = subscriptions;
     const subscriptionMap = new Map(subscriptions.items.map(s => [s.channelId, s]));
