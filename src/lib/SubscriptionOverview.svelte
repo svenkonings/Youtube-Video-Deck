@@ -67,4 +67,15 @@
     background: #FF3D00;
     border-radius: 1rem;
   }
+
+  @media (any-hover: none) {
+      .overflow-y-scroll::-webkit-scrollbar {
+          width: 5px;
+      }
+
+      .overflow-y-scroll::-webkit-scrollbar-thumb {
+          background: #FF3D00;
+          border-radius: 1rem;
+      }
+  }
 </style>
