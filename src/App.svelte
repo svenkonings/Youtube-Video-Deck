@@ -4,6 +4,7 @@
   import Header from "./lib/Header.svelte";
   import SubscriptionsDeck from "./lib/SubscriptionsDeck.svelte";
   import Player from "./lib/Player.svelte";
+  import SubscriptionsEditor from "./lib/SubscriptionsEditor.svelte";
 
   const scope = 'https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/drive.appdata';
 
@@ -31,13 +32,14 @@
 </script>
 
 <main class="w-screen h-screen bg-neutral-700 text-white">
-  <Header {isSignedIn}/>
+  <Header {isSignedIn} {isAuthorized}/>
   <section style="height: calc(100% - 3rem);">
     {#await loadGapi()}
       <Spinner/>
     {:then _}
       {#if isAuthorized}
         <Player/>
+        <SubscriptionsEditor/>
         <SubscriptionsDeck/>
       {:else}
         <LoginScreen {isSignedIn}/>

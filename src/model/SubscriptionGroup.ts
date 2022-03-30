@@ -17,12 +17,10 @@ export type GroupSubscription = {
 export async function SubscriptionGroup(name: string, subscriptions: Subscription[]): Promise<SubscriptionGroup> {
   const subscriptionGroup = {
     name: name,
-    subscriptions: subscriptions.map(subscription => {
-      return {
-        subscription: subscription,
-        uploadIndex: 0,
-      }
-    }),
+    subscriptions: subscriptions.map(subscription => ({
+      subscription: subscription,
+      uploadIndex: 0,
+    })),
     videos: [],
   }
   await loadMoreVideos(subscriptionGroup);

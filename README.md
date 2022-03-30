@@ -6,6 +6,7 @@
   - Custom list should display entries until the end of the first subscription that still has a next page
 - Store created lists per account
   - Use Google Drive AppFolder for storing and retrieving data
+- Handle unsubscripe (remove from subscripions and document group)
 - ~~Add view counter~~
   - Dropped, requires additional request for every 50 playlistitems :(
 - ~~Add watched video bar~~

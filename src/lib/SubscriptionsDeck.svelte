@@ -4,19 +4,27 @@
   import SubscriptionOverview from "./SubscriptionOverview.svelte";
   import HorizontalScroll from "./components/HorizontalScroll.svelte";
   import {listAllChannels, listAllPlaylistItems, listAllSubscriptions} from "../api/YouTube";
-  import {subscriptionsStore} from "../util/stores";
+  import {settingsStore, subscriptionsStore} from "../util/stores";
   import {NOT_MODIFIED} from "../api/Gapi";
   import {SubscriptionGroup} from "../model/SubscriptionGroup";
   import {readSettings} from "../api/Drive";
   import {Settings} from "../model/Settings";
+  import Center from "./components/Center.svelte";
+  import {onDestroy} from "svelte";
+
+  let subscriptionGroups;
 
   async function init(): Promise<SubscriptionGroup[]> {
     const [settings, subscriptions] = await Promise.all([getSettings(), getSubscriptions()]) as [Settings, Subscriptions];
-    await listAllPlaylistItems(subscriptions, settings);
-    $subscriptionsStore = subscriptions;
-    const subscriptionMap = new Map(subscriptions.items.map(s => [s.channelId, s]));
-    return Promise.all(settings.subscriptionGroups.map(s => SubscriptionGroup(s.name, s.subscriptionIds.map(id => subscriptionMap.get(id)))));
+    $settingsStore = settings;
+    await updateGroups(settings, subscriptions);
   }
+
+  onDestroy(settingsStore.subscribe(settings => {
+    if (subscriptionGroups) {
+      updateGroups(settings, $subscriptionsStore);
+    }
+  }));
 
   async function getSubscriptions(): Promise<Subscriptions> {
     const storedSubscriptions = $subscriptionsStore;
@@ -37,19 +45,34 @@
     }
     return settings;
   }
+
+  async function updateGroups(settings: Settings, subscriptions: Subscriptions) {
+    await listAllPlaylistItems(subscriptions, settings);
+    $subscriptionsStore = subscriptions;
+    const subscriptionMap = new Map(subscriptions.items.map(s => [s.channelId, s]));
+    subscriptionGroups = await Promise.all(settings.subscriptionGroups.map(s => SubscriptionGroup(s.name, s.subscriptionIds.map(id => subscriptionMap.get(id)))));
+  }
 </script>
 {#await init()}
   <Spinner/>
-{:then subscriptionGroups}
-  <div class="w-full" style="height: calc(100% - 6px);">
-    <HorizontalScroll>
-      <div class="w-max h-full">
-        {#each subscriptionGroups as subscriptionGroup}
-          <SubscriptionOverview {subscriptionGroup}/>
-        {/each}
-      </div>
-    </HorizontalScroll>
-  </div>
+{:then _}
+  {#if subscriptionGroups.length === 0}
+    <Center>
+      <p>No subscriptions to display</p>
+      <br/>
+      <p>Click the "Edit" button to add subscriptions</p>
+    </Center>
+  {:else}
+    <div class="w-full" style="height: calc(100% - 6px);">
+      <HorizontalScroll>
+        <div class="w-max h-full">
+          {#each subscriptionGroups as subscriptionGroup}
+            <SubscriptionOverview {subscriptionGroup}/>
+          {/each}
+        </div>
+      </HorizontalScroll>
+    </div>
+  {/if}
 {:catch error}
   <p class="text-center">{error}</p>
 {/await}

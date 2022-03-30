@@ -11,11 +11,9 @@ export type SubscriptionGroupSettings = {
 
 export function Settings(subscriptionGroups: SubscriptionGroup[] = []): Settings {
   return {
-    subscriptionGroups: subscriptionGroups.map(subscriptionGroup => {
-      return {
-        name: subscriptionGroup.name,
-        subscriptionIds: subscriptionGroup.subscriptions.map(s => s.subscription.channelId),
-      }
-    }),
+    subscriptionGroups: subscriptionGroups.map(subscriptionGroup => ({
+      name: subscriptionGroup.name,
+      subscriptionIds: subscriptionGroup.subscriptions.map(s => s.subscription.channelId),
+    })),
   }
 }
