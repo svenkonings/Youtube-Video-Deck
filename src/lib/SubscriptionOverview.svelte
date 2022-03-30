@@ -55,11 +55,22 @@
     padding-bottom: 1rem;
   }
 
-  .overflow-y-scroll::-webkit-scrollbar {
-    width: 0;
+  .overflow-y-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #262626 #262626;
   }
 
-  .overflow-y-scroll:hover::-webkit-scrollbar {
+  .overflow-y-scroll:hover {
+    scrollbar-color: #FF3D00 #262626;
+  }
+
+  @media (any-hover: none) {
+    .overflow-y-scroll {
+      scrollbar-color: #FF3D00 #262626;
+    }
+  }
+
+  .overflow-y-scroll::-webkit-scrollbar {
     width: 5px;
   }
 
@@ -69,13 +80,9 @@
   }
 
   @media (any-hover: none) {
-      .overflow-y-scroll::-webkit-scrollbar {
-          width: 5px;
-      }
-
-      .overflow-y-scroll::-webkit-scrollbar-thumb {
-          background: #FF3D00;
-          border-radius: 1rem;
-      }
+    .overflow-y-scroll::-webkit-scrollbar-thumb {
+      background: #FF3D00;
+      border-radius: 1rem;
+    }
   }
 </style>

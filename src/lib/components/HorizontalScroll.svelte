@@ -40,6 +40,8 @@
 <style>
   .overflow-x-scroll {
     padding-bottom: 2px;
+    scrollbar-width: thin;
+    scrollbar-color: #FF3D00 #404040
   }
 
   .overflow-x-scroll::-webkit-scrollbar {
