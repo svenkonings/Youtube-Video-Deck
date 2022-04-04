@@ -1,9 +1,8 @@
 <script lang="ts">
-  import {onDestroy} from "svelte";
   import {flip} from "svelte/animate";
   import type {DndEvent} from "svelte-dnd-action";
   import {dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME, TRIGGERS} from "svelte-dnd-action";
-  import {editorStore, settingsStore, subscriptionsStore} from "../util/stores";
+  import {editorVisible, settingsStore, subscriptionsStore} from "../util/stores";
   import type {Subscription} from "../model/Subscription";
   import PrimaryButton from "./components/PrimaryButton.svelte";
 
@@ -21,14 +20,16 @@
 
   type SettingsEntry = SubscriptionEntry | SubscriptionGroupEntry;
 
-  let editorVisible = false;
-
   let idCounter: number = 0;
   let subscriptionEntries: SubscriptionEntry[] = [];
   let settingsEntries: SettingsEntry[] = [];
 
   const flipDurationMs = 300;
   let dropFromOthersDisabled = false;
+
+  $: if ($editorVisible) {
+    load();
+  }
 
   function load(): void {
     const subscriptions = $subscriptionsStore.items;
@@ -78,7 +79,7 @@
         }
       }
     });
-    editorVisible = false;
+    $editorVisible = false;
   }
 
   function handleSubscriptionDndConsider(e: CustomEvent<DndEvent>) {
@@ -122,42 +123,44 @@
     settingsEntries = settingsEntries;
   }
 
-  onDestroy(editorStore.subscribe((input: boolean) => {
-    if (input) {
-      editorStore.set(null);
-      load();
-      editorVisible = true;
-    }
-  }))
+  function close() {
+    $editorVisible = false
+  }
 </script>
 <!--TODO: Extract to components-->
-<div class="fixed top-0 bottom-0 left-0 right-0 z-10" class:fadeIn={editorVisible} class:fadeOut="{!editorVisible}" style="background-color: rgba(0, 0, 0, 0.8)" on:click|self={() => editorVisible = false}>
-  <div class="inline-block w-1/3 h-full align-top overflow-y-auto" use:dndzone={{items: subscriptionEntries, dropFromOthersDisabled: true, flipDurationMs}} on:consider={handleSubscriptionDndConsider} on:finalize={handleSubscriptionDndFinalize}>
-    {#each subscriptionEntries as entry (entry.id)}
-      <div animate:flip={{duration:flipDurationMs}}>
-        <p>{entry.name}</p>
-      </div>
-    {/each}
-  </div>
-  <div class="inline-block w-1/3 h-full align-top overflow-y-auto" use:dndzone={{items: settingsEntries, flipDurationMs}} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
-    {#each settingsEntries as entry (entry.id)}
-      <div animate:flip={{duration:flipDurationMs}}>
-        {#if entry.subscription}
+<div class="fixed top-0 bottom-0 left-0 right-0 z-10" class:fadeIn={$editorVisible} class:fadeOut={!$editorVisible} style="background-color: rgba(0, 0, 0, 0.8)">
+  <div class="w-full h-12"></div>
+  <div class="w-full" style="height: calc(100% - 6rem)">
+    <div class="inline-block w-1/2 float-left h-full align-top overflow-y-auto" use:dndzone={{items: subscriptionEntries, dropFromOthersDisabled: true, flipDurationMs}} on:consider={handleSubscriptionDndConsider} on:finalize={handleSubscriptionDndFinalize}>
+      {#each subscriptionEntries as entry (entry.id)}
+        <div animate:flip={{duration:flipDurationMs}}>
           <p>{entry.subscription.title}</p>
-        {:else if entry.subscriptions}
-          <p>{entry.name}</p>
-          <div class="bg-neutral-500" use:dndzone={{items: entry.subscriptions, flipDurationMs, dropFromOthersDisabled}} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
-            {#each entry.subscriptions as child (child.id)}
-              <div animate:flip={{duration:flipDurationMs}}>
-                <p>{child.subscription?.title}</p>
-              </div>
-            {/each}
-          </div>
-        {/if}
-      </div>
-    {/each}
+        </div>
+      {/each}
+    </div>
+    <div class="inline-block w-1/2 float-right h-full align-top overflow-y-auto" use:dndzone={{items: settingsEntries, flipDurationMs}} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
+      {#each settingsEntries as entry (entry.id)}
+        <div animate:flip={{duration:flipDurationMs}}>
+          {#if entry.subscription}
+            <p>{entry.subscription.title}</p>
+          {:else if entry.subscriptions}
+            <p>{entry.name}</p>
+            <div class="bg-neutral-500" use:dndzone={{items: entry.subscriptions, flipDurationMs, dropFromOthersDisabled}} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
+              {#each entry.subscriptions as child (child.id)}
+                <div animate:flip={{duration:flipDurationMs}}>
+                  <p>{child.subscription?.title}</p>
+                </div>
+              {/each}
+            </div>
+          {/if}
+        </div>
+      {/each}
+    </div>
   </div>
-  <PrimaryButton class="w-20 m-1" on:click={save}>Save</PrimaryButton>
+  <div class="w-full h-12">
+    <PrimaryButton class="w-20 m-1" on:click={save}>Save</PrimaryButton>
+    <PrimaryButton class="w-20 m-1" on:click={close}>Close</PrimaryButton>
+  </div>
 </div>
 <style>
   .fadeIn {

@@ -1,10 +1,13 @@
 # Youtube Video Deck
 
 ## TODO
-- Allow creating custom lists
-  - Custom list should display entries until the end of the first subscription that still has a next page
-- Store created lists per account
-  - Use Google Drive AppFolder for storing and retrieving data
+- Add editor wrapper, make store directly affect visibility (only true-false)
+- Make editor fullscreen with close button
+- Add channel image to subscriptions (in deck and editor)
+- Limit refresh time of cached requests
+- Add video length
+- Don't hide player on error
+- Scroll per horizontal item (on small screens)
 - Expand / collapse groups
 - Handle unsubscribe (remove from subscripions and document group)
 

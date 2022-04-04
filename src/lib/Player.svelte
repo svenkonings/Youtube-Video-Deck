@@ -96,11 +96,11 @@
     player.stopVideo();
   }
 </script>
-<div class="fixed top-0 bottom-0 left-0 right-0 z-30" class:fadeIn={backgroundVisible} class:fadeOut="{!backgroundVisible}" style="background-color: rgba(0, 0, 0, 0.8)" on:click|self={() => backgroundVisible = false}>
-  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40" class:invisible={!backgroundVisible || playerVisible}>
+<div class="fixed top-0 bottom-0 left-0 right-0 z-10" class:fadeIn={backgroundVisible} class:fadeOut={!backgroundVisible} style="background-color: rgba(0, 0, 0, 0.8)" on:click|self={() => backgroundVisible = false}>
+  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20" class:invisible={!backgroundVisible || playerVisible}>
     <Spinner/>
   </div>
-  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" class:invisible={!backgroundVisible || !playerVisible}>
+  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30" class:invisible={!backgroundVisible || !playerVisible}>
     <div id="player"></div>
   </div>
 </div>

@@ -1,13 +1,13 @@
 <script lang="ts">
   import PrimaryButton from "./components/PrimaryButton.svelte";
   import Center from "./components/Center.svelte";
-  import {editorStore} from "../util/stores";
+  import {editorVisible} from "../util/stores";
 
   export let isSignedIn: boolean;
   export let isAuthorized: boolean;
 
   function showEditor() {
-    $editorStore = true;
+    $editorVisible = true;
   }
 
   function signOut(): void {
@@ -17,7 +17,7 @@
 
 <header class="h-12">
   <Center>
-    <a class="font-extrabold" href="{'#'}">Youtube Video Deck</a>
+    <a class="font-extrabold" href={'#'}>Youtube Video Deck</a>
     <div slot="before" class="float-left p-1">
       {#if isAuthorized}
         <PrimaryButton class="w-20 m-1" on:click={showEditor}>Edit</PrimaryButton>
