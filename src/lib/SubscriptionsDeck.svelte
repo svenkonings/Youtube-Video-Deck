@@ -12,16 +12,18 @@
   import Center from "./components/Center.svelte";
   import {onDestroy} from "svelte";
 
-  let subscriptionGroups;
+  let initialised = false;
+  let subscriptionGroups: SubscriptionGroup[];
 
   async function init(): Promise<SubscriptionGroup[]> {
     const [settings, subscriptions] = await Promise.all([getSettings(), getSubscriptions()]) as [Settings, Subscriptions];
     $settingsStore = settings;
     await updateGroups(settings, subscriptions);
+    initialised = true;
   }
 
   onDestroy(settingsStore.subscribe(settings => {
-    if (subscriptionGroups) {
+    if (initialised) {
       updateGroups(settings, $subscriptionsStore);
     }
   }));

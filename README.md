@@ -5,11 +5,10 @@
 - Add channel image to subscriptions (in deck and editor)
 - Limit refresh time of cached requests
 - Add video length
-- Don't hide player on error
 - Scroll per horizontal item (on small screens)
 - Expand / collapse groups (both in deck and editor)
 - Handle unsubscribe (remove from subscripions and document group)
-- Handle group with single subscription
+- Handle groups withouth or with single subscription
 
 ## On hold due to API quotas
 - Add view counter

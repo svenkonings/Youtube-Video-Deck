@@ -12,6 +12,7 @@
 
   let backgroundVisible = false;
   let playerVisible = false;
+  let playerError = false
   let player: YT.Player;
   let playerInitState = PlayerInitState.UNINITIALISED;
 
@@ -52,9 +53,20 @@
             if (state.data === YT.PlayerState.BUFFERING || state.data === YT.PlayerState.PLAYING) {
               playerVisible = true;
             } else if (state.data === YT.PlayerState.UNSTARTED) {
-              playerVisible = false;
+              if (playerError) {
+                playerError = false;
+              } else {
+                playerVisible = false;
+              }
             }
           },
+          onError: () => {
+            if (player.getPlaylist() != null) {
+              player.nextVideo();
+            } else {
+              playerError = true;
+            }
+          }
         },
       }
       if (input.videoId) {
