@@ -27,7 +27,7 @@ function listSubscriptionsRequest(args: { pageToken?: string, etag?: string } = 
     method: 'GET',
     query: {
       part: 'snippet',
-      fields: 'etag,items(snippet(title,resourceId/channelId)),nextPageToken',
+      fields: 'etag,items(snippet(title,resourceId/channelId,thumbnails/default/url)),nextPageToken',
       mine: 'true',
       order: 'alphabetical',
       maxResults: '50',

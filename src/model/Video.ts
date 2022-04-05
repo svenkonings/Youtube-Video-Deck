@@ -4,6 +4,7 @@ export type Video = {
   readonly publishedAt: string;
   readonly thumbnailUrl: string;
   readonly videoId: string;
+  channelTitle?: string;
 };
 
 export function Video(playlistItem: gapi.client.youtube.PlaylistItem): Video {

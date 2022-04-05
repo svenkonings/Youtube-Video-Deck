@@ -3,6 +3,7 @@ import {Video} from "./Video";
 export type Subscription = {
   readonly channelId: string;
   readonly title: string;
+  readonly thumbnail: string;
   readonly uploadsPlaylistId: string;
   uploadsEtag?: string;
   nextUploadPageToken?: string;
@@ -13,6 +14,7 @@ export function Subscription(subscription: gapi.client.youtube.Subscription, cha
   return {
     channelId: subscription.snippet.resourceId.channelId,
     title: subscription.snippet.title,
+    thumbnail: subscription.snippet.thumbnails.default.url,
     uploadsPlaylistId: channel.contentDetails.relatedPlaylists.uploads,
     uploads: [],
   };

@@ -1,7 +1,7 @@
 <script lang="ts">
   import {flip} from "svelte/animate";
   import type {DndEvent} from "svelte-dnd-action";
-  import {dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME, TRIGGERS} from "svelte-dnd-action";
+  import {dndzone, TRIGGERS} from "svelte-dnd-action";
   import {editorVisible, settingsStore, subscriptionsStore} from "../util/stores";
   import type {Subscription} from "../model/Subscription";
   import PrimaryButton from "./components/PrimaryButton.svelte";

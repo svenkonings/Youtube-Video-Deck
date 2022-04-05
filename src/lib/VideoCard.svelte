@@ -14,8 +14,8 @@
     <img src={video.thumbnailUrl} alt="" loading="lazy" width="320" height="180"/>
   </div>
   <div class="inline-block w-text align-top text-sm">
-    <p class="font-bold w-text truncate-line" title={video.title}>{video.title}</p>
-    <p class="text-neutral-400">{timeAgo.format(new Date(video.publishedAt))}</p>
+    <p class="font-bold truncate-line" title={video.title}>{video.title}</p>
+    <p class="text-neutral-400 truncate-line">{timeAgo.format(new Date(video.publishedAt))} - {video.channelTitle}</p>
     <p class="text-ellipsis truncate-lines">{video.description}</p>
   </div>
 </a>
