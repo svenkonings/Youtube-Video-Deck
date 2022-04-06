@@ -22,11 +22,7 @@
     initialised = true;
   }
 
-  onDestroy(settingsStore.subscribe(settings => {
-    if (initialised) {
-      updateGroups(settings, $subscriptionsStore);
-    }
-  }));
+  onDestroy(settingsStore.subscribe(settings => initialised && updateGroups(settings, $subscriptionsStore)));
 
   async function getSubscriptions(): Promise<Subscriptions> {
     const storedSubscriptions = $subscriptionsStore;

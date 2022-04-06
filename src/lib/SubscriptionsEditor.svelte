@@ -3,38 +3,16 @@
   import type {DndEvent} from "svelte-dnd-action";
   import {dndzone, TRIGGERS} from "svelte-dnd-action";
   import {editorVisible, settingsStore, subscriptionsStore} from "../util/stores";
-  import type {Subscription} from "../model/Subscription";
   import PrimaryButton from "./components/PrimaryButton.svelte";
   import {writeSettings} from "../api/Drive";
-
-  type SubscriptionEntry = {
-    id: number;
-    name: string;
-    subscription: Subscription;
-  }
-
-  type SubscriptionGroupEntry = {
-    id: number;
-    name: string;
-    subscriptions: SubscriptionEntry[];
-  }
-
-  type SettingsEntry = SubscriptionEntry | SubscriptionGroupEntry;
-
-  function isSubscription(entry: SettingsEntry): entry is SubscriptionEntry {
-    return 'subscription' in entry;
-  }
-
-  function isGroup(entry: SettingsEntry): entry is SubscriptionGroupEntry {
-    return 'subscriptions' in entry;
-  }
+  import type {SettingsEntry, SubscriptionEntry, SubscriptionGroupEntry} from "../types/SettingsEntry";
+  import {isGroup, isSubscription} from "../types/SettingsEntry";
 
   let idCounter: number = 0;
   let subscriptionEntries: SubscriptionEntry[] = [];
-  let settingsEntries: SettingsEntry[] = [];
-
   let filterEnabled = false;
   let filteredEntries = [];
+  let settingsEntries: SettingsEntry[] = [];
 
   function toggleFilter(): void {
     filterEnabled = !filterEnabled;
@@ -51,7 +29,7 @@
   }
 
   const flipDurationMs = 300;
-  let dropFromOthersDisabled = false;
+  let draggedEntry: SettingsEntry;
 
   $: if ($editorVisible) {
     load();
@@ -102,10 +80,10 @@
 
   function handleSubscriptionDndConsider(e: CustomEvent<DndEvent>): void {
     if (e.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
-      dropFromOthersDisabled = false;
-      // Create a copy with a different id
       const index = subscriptionEntries.findIndex(s => s.id == e.detail.info.id);
-      subscriptionEntries[index] = {...subscriptionEntries[index], id: idCounter++};
+      draggedEntry = subscriptionEntries[index];
+      // Create a copy with a different id
+      subscriptionEntries[index] = {...draggedEntry, id: idCounter++};
       updateFilter();
     } else {
       filteredEntries = filteredEntries;
@@ -118,7 +96,7 @@
 
   function handleSettingsDndConsider(e: CustomEvent<DndEvent>): void {
     if (e.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
-      dropFromOthersDisabled = !settingsEntries.find(s => s.id == e.detail.info.id)['subscription'];
+      draggedEntry = settingsEntries.find(s => s.id == e.detail.info.id);
     }
     settingsEntries = e.detail.items as SettingsEntry[];
   }
@@ -128,9 +106,23 @@
     updateFilter();
   }
 
+  function settingsDropDisabled(): boolean {
+    if (isSubscription(draggedEntry)) {
+      const channelId = draggedEntry.subscription.channelId;
+      return settingsEntries.some(e => isSubscription(e) && e.subscription.channelId === channelId);
+    } else {
+      return false;
+    }
+  }
+
+  function removeSettingsEntry(entry: SettingsEntry): void {
+    settingsEntries = settingsEntries.filter(s => s.id !== entry.id);
+    updateFilter();
+  }
+
   function handleGroupDndConsider(group: SubscriptionGroupEntry, e: CustomEvent<DndEvent>): void {
     if (e.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
-      dropFromOthersDisabled = false;
+      draggedEntry = group.subscriptions.find(s => s.id == e.detail.info.id);
     }
     group.subscriptions = e.detail.items as SubscriptionEntry[];
     settingsEntries = settingsEntries;
@@ -138,6 +130,21 @@
 
   function handleGroupDndFinalize(group: SubscriptionGroupEntry, e: CustomEvent<DndEvent>): void {
     group.subscriptions = e.detail.items as SubscriptionEntry[];
+    settingsEntries = settingsEntries;
+    updateFilter();
+  }
+
+  function groupDropDisabled(entry: SubscriptionGroupEntry): boolean {
+    if (isSubscription(draggedEntry)) {
+      const channelId = draggedEntry.subscription.channelId;
+      return entry.subscriptions.some(s => s.subscription.channelId === channelId);
+    } else {
+      return true;
+    }
+  }
+
+  function removeGroupEntry(entry: SubscriptionGroupEntry, child: SubscriptionEntry): void {
+    entry.subscriptions = entry.subscriptions.filter(s => s.id !== child.id);
     settingsEntries = settingsEntries;
     updateFilter();
   }
@@ -151,25 +158,37 @@
     <PrimaryButton class="w-28 m-1" on:click={toggleFilter}>{filterEnabled ? 'Disable' : 'Enable'} filter</PrimaryButton>
   </div>
   <div class="w-full" style="height: calc(100% - 6rem)">
-    <div class="inline-block w-1/2 float-left h-full align-top overflow-y-auto" use:dndzone={{items: filteredEntries, dropFromOthersDisabled: true, flipDurationMs}} on:consider={handleSubscriptionDndConsider} on:finalize={handleSubscriptionDndFinalize}>
+    <div class="inline-block w-1/2 float-left h-full align-top overflow-y-auto" use:dndzone={{
+      items: filteredEntries,
+      dropFromOthersDisabled: true,
+      flipDurationMs
+    }} on:consider={handleSubscriptionDndConsider} on:finalize={handleSubscriptionDndFinalize}>
       {#each filteredEntries as entry (entry.id)}
         <div animate:flip={{duration:flipDurationMs}}>
           <p>{entry.subscription.title}</p>
         </div>
       {/each}
     </div>
-    <div class="inline-block w-1/2 float-right h-full align-top overflow-y-auto" use:dndzone={{items: settingsEntries, flipDurationMs}} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
+    <div class="inline-block w-1/2 float-right h-full align-top overflow-y-auto" use:dndzone={{
+      items: settingsEntries,
+      flipDurationMs,
+      dropFromOthersDisabled: draggedEntry && settingsDropDisabled()
+    }} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
       {#each settingsEntries as entry (entry.id)}
         <div animate:flip={{duration:flipDurationMs}}>
-          <span class="float-right" on:click={() => {settingsEntries = settingsEntries.filter(s => s.id !== entry.id); updateFilter();}}>X</span>
+          <span class="float-right" on:click={() => removeSettingsEntry(entry)}>X</span>
           {#if entry.subscription}
             <p>{entry.subscription.title}</p>
           {:else if entry.subscriptions}
             <p>{entry.name}</p>
-            <div class="bg-neutral-500" use:dndzone={{items: entry.subscriptions, flipDurationMs, dropFromOthersDisabled}} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
+            <div class="bg-neutral-500" style="min-height: 1rem;" use:dndzone={{
+              items: entry.subscriptions,
+              flipDurationMs,
+              dropFromOthersDisabled: draggedEntry && groupDropDisabled(entry)
+            }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
               {#each entry.subscriptions as child (child.id)}
                 <div animate:flip={{duration:flipDurationMs}}>
-                  <span class="float-right" on:click={() => {entry.subscriptions = entry.subscriptions.filter(s => s.id !== child.id); settingsEntries = settingsEntries; updateFilter();}}>X</span>
+                  <span class="float-right" on:click={() => removeGroupEntry(entry, child)}>X</span>
                   <p>{child.subscription?.title}</p>
                 </div>
               {/each}

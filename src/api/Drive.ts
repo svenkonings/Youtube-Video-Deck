@@ -15,11 +15,7 @@ async function getSettingsFileId(): Promise<void> {
     },
   });
   const result: gapi.client.drive.FileList = await response.json()
-  if (result.files.length > 0) {
-    settingsFileId = result.files[0].id;
-  } else {
-    settingsFileId = null;
-  }
+  settingsFileId = result.files.length > 0 ? result.files[0].id : null;
 }
 
 export async function readSettings(): Promise<Settings> {

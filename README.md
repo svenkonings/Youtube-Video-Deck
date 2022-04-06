@@ -2,6 +2,8 @@
 
 ## TODO
 - Make editor fullscreen with close button
+- Add editor drag handle
+- Fix scroll up when dragging subscription
 - Handle groups withouth or with single subscription
 - Handle unsubscribe (remove from subscripions and document group)
 - Add channel image to subscriptions (in deck and editor)
