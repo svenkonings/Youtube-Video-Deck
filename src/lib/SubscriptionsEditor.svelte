@@ -158,36 +158,36 @@
     <PrimaryButton class="w-28 m-1" on:click={toggleFilter}>{filterEnabled ? 'Disable' : 'Enable'} filter</PrimaryButton>
   </div>
   <div class="w-full" style="height: calc(100% - 6rem)">
-    <div class="inline-block w-1/2 float-left h-full align-top overflow-y-auto" use:dndzone={{
+    <div class="inline-block w-1/2 float-left h-full align-top overflow-y-auto p-2" use:dndzone={{
       items: filteredEntries,
       dropFromOthersDisabled: true,
       flipDurationMs
     }} on:consider={handleSubscriptionDndConsider} on:finalize={handleSubscriptionDndFinalize}>
       {#each filteredEntries as entry (entry.id)}
-        <div animate:flip={{duration:flipDurationMs}}>
+        <div class="bg-neutral-700 m-2 p-2 rounded-2xl" animate:flip={{duration:flipDurationMs}}>
           <p>{entry.subscription.title}</p>
         </div>
       {/each}
     </div>
-    <div class="inline-block w-1/2 float-right h-full align-top overflow-y-auto" use:dndzone={{
+    <div class="inline-block w-1/2 float-right h-full align-top overflow-y-auto p-2" use:dndzone={{
       items: settingsEntries,
       flipDurationMs,
       dropFromOthersDisabled: draggedEntry && settingsDropDisabled()
     }} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
       {#each settingsEntries as entry (entry.id)}
-        <div animate:flip={{duration:flipDurationMs}}>
+        <div class="bg-neutral-700 m-2 p-2 rounded-2xl" animate:flip={{duration:flipDurationMs}}>
           <span class="float-right" on:click={() => removeSettingsEntry(entry)}>X</span>
           {#if entry.subscription}
             <p>{entry.subscription.title}</p>
           {:else if entry.subscriptions}
             <p>{entry.name}</p>
-            <div class="bg-neutral-500" style="min-height: 1rem;" use:dndzone={{
+            <div class="bg-neutral-500 p-3 rounded-2xl" use:dndzone={{
               items: entry.subscriptions,
               flipDurationMs,
               dropFromOthersDisabled: draggedEntry && groupDropDisabled(entry)
             }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
               {#each entry.subscriptions as child (child.id)}
-                <div animate:flip={{duration:flipDurationMs}}>
+                <div class="bg-neutral-700 m-2 p-2 rounded-2xl" animate:flip={{duration:flipDurationMs}}>
                   <span class="float-right" on:click={() => removeGroupEntry(entry, child)}>X</span>
                   <p>{child.subscription?.title}</p>
                 </div>
@@ -201,6 +201,7 @@
   <div class="w-full h-12">
     <PrimaryButton class="w-20 m-1" on:click={save}>Save</PrimaryButton>
     <PrimaryButton class="w-20 m-1" on:click={close}>Close</PrimaryButton>
+    <input type="search" class="bg-neutral-700 p-2 rounded-2xl" on:search={e => {settingsEntries.push({id: idCounter++, name: e.target.value, subscriptions: []}); settingsEntries=settingsEntries}}>
   </div>
 </div>
 <style>
