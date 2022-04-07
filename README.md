@@ -7,7 +7,6 @@
   - Make editor fullscreen with close button
   - Add drag handle
   - Fix scroll up when dragging subscription
-  - Handle groups without or with single subscription
   - Allow selecting element in right-side of editor
   - Add plus button to left-side of editor that adds the subscriptions to or below the selected element
   - Create add all buttons that adds all filtered subscriptions
@@ -21,6 +20,7 @@
   - https://css-tricks.com/how-to-recreate-the-ripple-effect-of-material-design-buttons/
 - Limit refresh time of cached requests
 - Scroll per horizontal item (on small screens)
+- Show add all button on empty subscriptions screen
 
 ## On hold due to API quotas
 - Requires additional request for every 50 playlistitems

@@ -48,7 +48,7 @@
     const subscriptionMap = new Map(subscriptions.map(s => [s.channelId, s]));
     settingsEntries = subscriptionGroups.map(s => {
       const groupSubscriptions = s.subscriptionIds.map(id => subscriptionMap.get(id));
-      if (groupSubscriptions.length === 1) {
+      if (groupSubscriptions.length === 1 && s.name === groupSubscriptions[0].title) {
         return {
           id: idCounter++,
           name: s.name,
