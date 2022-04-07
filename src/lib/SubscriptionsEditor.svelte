@@ -73,7 +73,6 @@
       name: entry.name,
       subscriptionIds: isGroup(entry) ? entry.subscriptions.map(s => s.subscription.channelId) : [entry.subscription.channelId],
     }));
-    // TODO: Display loading
     await writeSettings($settingsStore);
     $editorVisible = false;
   }
