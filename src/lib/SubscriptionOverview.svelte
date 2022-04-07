@@ -26,9 +26,12 @@
 
 </script>
 <div class="inline-block h-full w-[32rem] bg-neutral-800 p-1 pb-4 ml-1 mr-1 rounded-2xl">
-  <p class="text-center font-bold h-8">
+  <p class="text-center font-bold h-9">
     {#if subscriptionGroup.subscriptions.length === 1}
-      <a href="https://www.youtube.com/channel/{subscriptionGroup.subscriptions[0].subscription.channelId}">{subscriptionGroup.name}</a>
+      <a href="https://www.youtube.com/channel/{subscriptionGroup.subscriptions[0].subscription.channelId}">
+        <img class="inline-block h-8 w-8" src={subscriptionGroup.subscriptions[0].subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
+        {subscriptionGroup.name}
+      </a>
       {#if subscriptionGroup.videos.length > 0}
         <a class="float-right pl-2 pr-2 -ml-8 text-[2rem] leading-[0.75]" href="https://www.youtube.com/watch?v={subscriptionGroup.videos[0].videoId}&list={subscriptionGroup.subscriptions[0].subscription.uploadsPlaylistId}" on:click|preventDefault={play}>▸</a>
       {/if}

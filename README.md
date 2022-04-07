@@ -14,6 +14,7 @@
 - Handle unsubscribe (remove from subscriptions and group)
 - Add channel image to subscriptions (in deck and editor)
 - Expand / collapse groups (both in deck and editor)
+- Truncate subscription overview title
 
 ## Other tasks
 - Add ripple effect to buttons
