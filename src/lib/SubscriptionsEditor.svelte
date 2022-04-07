@@ -1,7 +1,7 @@
 <script lang="ts">
   import {flip} from "svelte/animate";
   import type {DndEvent} from "svelte-dnd-action";
-  import {dndzone, TRIGGERS} from "svelte-dnd-action";
+  import {dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME, TRIGGERS} from "svelte-dnd-action";
   import {editorVisible, settingsStore, subscriptionsStore} from "../util/stores";
   import PrimaryButton from "./components/PrimaryButton.svelte";
   import {writeSettings} from "../api/Drive";
@@ -108,7 +108,7 @@
   function settingsDropDisabled(): boolean {
     if (isSubscription(draggedEntry)) {
       const channelId = draggedEntry.subscription.channelId;
-      return settingsEntries.some(e => isSubscription(e) && e.subscription.channelId === channelId);
+      return settingsEntries.some(e => !e[SHADOW_ITEM_MARKER_PROPERTY_NAME] && isSubscription(e) && e.subscription.channelId === channelId);
     } else {
       return false;
     }
@@ -136,7 +136,7 @@
   function groupDropDisabled(entry: SubscriptionGroupEntry): boolean {
     if (isSubscription(draggedEntry)) {
       const channelId = draggedEntry.subscription.channelId;
-      return entry.subscriptions.some(s => s.subscription.channelId === channelId);
+      return entry.subscriptions.some(s => !s[SHADOW_ITEM_MARKER_PROPERTY_NAME] && s.subscription.channelId === channelId);
     } else {
       return true;
     }
