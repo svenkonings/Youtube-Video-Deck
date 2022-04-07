@@ -12,7 +12,6 @@
 
   let backgroundVisible = false;
   let playerVisible = false;
-  let playerError = false
   let player: YT.Player;
   let playerInitState = PlayerInitState.UNINITIALISED;
 
@@ -40,25 +39,20 @@
         },
         events: {
           onReady: () => {
+            console.log('playerReady');
             playerInitState = PlayerInitState.INITIALISED;
             playerVisible = true;
           },
           onStateChange: state => {
+            console.log('playerState', state);
             if (state.data === YT.PlayerState.BUFFERING || state.data === YT.PlayerState.PLAYING) {
               playerVisible = true;
-            } else if (state.data === YT.PlayerState.UNSTARTED) {
-              if (playerError) {
-                playerError = false;
-              } else {
-                playerVisible = false;
-              }
             }
           },
-          onError: () => {
+          onError: e => {
+            console.error('playerError', e);
             if (player.getPlaylist() != null) {
               player.nextVideo();
-            } else {
-              playerError = true;
             }
           }
         },
@@ -97,6 +91,10 @@
       }
     }
   }));
+
+  $: if (!backgroundVisible) {
+    playerVisible = false;
+  }
 
   $: if (playerInitState === PlayerInitState.INITIALISED && !backgroundVisible) {
     player.stopVideo();

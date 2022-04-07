@@ -25,17 +25,17 @@
   }
 
 </script>
-<div class="inline-block h-full bg-neutral-800 p-1 ml-1 mr-1 rounded-2xl">
+<div class="inline-block h-full w-[32rem] bg-neutral-800 p-1 pb-4 ml-1 mr-1 rounded-2xl">
   <p class="text-center font-bold h-8">
     {#if subscriptionGroup.subscriptions.length === 1}
       <a href="https://www.youtube.com/channel/{subscriptionGroup.subscriptions[0].subscription.channelId}">{subscriptionGroup.name}</a>
       {#if subscriptionGroup.videos.length > 0}
-        <a class="float-right pl-2 pr-2 -ml-8 play-button" href="https://www.youtube.com/watch?v={subscriptionGroup.videos[0].videoId}&list={subscriptionGroup.subscriptions[0].subscription.uploadsPlaylistId}" on:click|preventDefault={play}>▸</a>
+        <a class="float-right pl-2 pr-2 -ml-8 text-[2rem] leading-[0.75]" href="https://www.youtube.com/watch?v={subscriptionGroup.videos[0].videoId}&list={subscriptionGroup.subscriptions[0].subscription.uploadsPlaylistId}" on:click|preventDefault={play}>▸</a>
       {/if}
     {:else}
       <span class="cursor-default">{subscriptionGroup.name}</span>
       {#if subscriptionGroup.videos.length > 0}
-        <span class="float-right pl-2 pr-2 -ml-8 play-button cursor-pointer" on:click={play}>▸</span>
+        <span class="float-right pl-2 pr-2 -ml-8 text-[2rem] leading-[0.75] cursor-pointer" on:click={play}>▸</span>
       {/if}
     {/if}
   </p>
@@ -46,15 +46,7 @@
   </div>
 </div>
 <style>
-  .play-button {
-    font-size: 2rem;
-    line-height: 0.75;
-  }
-
-  .p-1 {
-    padding-bottom: 1rem;
-  }
-
+  /* Firefox scrollbar styles */
   .overflow-y-scroll {
     scrollbar-width: thin;
     scrollbar-color: #262626 #262626;
@@ -70,6 +62,7 @@
     }
   }
 
+  /* Webkit scrollbar styles */
   .overflow-y-scroll::-webkit-scrollbar {
     width: 5px;
   }

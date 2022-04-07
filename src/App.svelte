@@ -45,7 +45,7 @@
         <LoginScreen {isSignedIn}/>
       {/if}
     {:catch error}
-      <p class="text-center">{error}</p>
+      <p class="text-center">{JSON.stringify(error)}</p>
     {/await}
   </section>
 </main>

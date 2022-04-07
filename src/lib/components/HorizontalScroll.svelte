@@ -40,10 +40,12 @@
 <style>
   .overflow-x-scroll {
     padding-bottom: 2px;
+    /* Firefox scrollbar styles */
     scrollbar-width: thin;
     scrollbar-color: #FF3D00 #404040
   }
 
+  /* Webkit scrollbar styles */
   .overflow-x-scroll::-webkit-scrollbar {
     height: 5px;
   }
