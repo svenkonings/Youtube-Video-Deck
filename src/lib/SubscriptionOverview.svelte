@@ -29,7 +29,7 @@
   <p class="text-center font-bold h-9">
     {#if subscriptionGroup.subscriptions.length === 1}
       <a href="https://www.youtube.com/channel/{subscriptionGroup.subscriptions[0].subscription.channelId}">
-        <img class="inline-block h-8 w-8" src={subscriptionGroup.subscriptions[0].subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
+        <img class="inline-block h-8 w-8 rounded-2xl" src={subscriptionGroup.subscriptions[0].subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
         {subscriptionGroup.name}
       </a>
       {#if subscriptionGroup.videos.length > 0}

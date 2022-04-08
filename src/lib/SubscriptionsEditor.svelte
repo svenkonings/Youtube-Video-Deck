@@ -164,7 +164,7 @@
     }} on:consider={handleSubscriptionDndConsider} on:finalize={handleSubscriptionDndFinalize}>
       {#each filteredEntries as entry (entry.id)}
         <div class="w-[15rem] bg-neutral-700 m-2 p-2 rounded-2xl truncate" animate:flip={{duration:flipDurationMs}}>
-          <img class="inline-block h-8 w-8" src={entry.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
+          <img class="inline-block h-8 w-8 rounded-2xl" src={entry.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
           <span title={entry.subscription.title}>{entry.subscription.title}</span>
         </div>
       {/each}
@@ -178,7 +178,7 @@
         <div class="w-[18rem] bg-neutral-700 m-2 p-2 rounded-2xl truncate" animate:flip={{duration:flipDurationMs}}>
           <span class="float-right" on:click={() => removeSettingsEntry(entry)}>X</span>
           {#if entry.subscription}
-            <img class="inline-block h-8 w-8" src={entry.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
+            <img class="inline-block h-8 w-8 rounded-2xl" src={entry.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
             <span title={entry.subscription.title}>{entry.subscription.title}</span>
           {:else if entry.subscriptions}
             <span title={entry.name}>{entry.name}</span>
@@ -190,7 +190,7 @@
               {#each entry.subscriptions as child (child.id)}
                 <div class="w-[15rem] bg-neutral-700 m-2 p-2 rounded-2xl truncate" animate:flip={{duration:flipDurationMs}}>
                   <span class="float-right" on:click={() => removeGroupEntry(entry, child)}>X</span>
-                  <img class="inline-block h-8 w-8" src={child.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
+                  <img class="inline-block h-8 w-8 rounded-2xl" src={child.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
                   <span title={child.subscription.title}>{child.subscription.title}</span>
                 </div>
               {/each}

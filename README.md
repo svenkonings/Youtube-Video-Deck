@@ -29,4 +29,16 @@
   - Add video length
   - Fix upload date for livestreams
 - Requires loading entire watched videos playlist
-  - Mark watched videos
+  - Mark (previously) watched videos
+
+## Future feature ideas
+- Small player + manage queue
+- Add playlists to deck
+- Manage watched videos
+- Hide/skip watched videos
+- Change video sorting
+- Show description/comments
+- Like/dislike/comment on videos
+- Manage subscriptions
+- Manage playlists
+- Manage watch later
