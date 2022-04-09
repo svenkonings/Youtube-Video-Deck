@@ -15,7 +15,7 @@
   }
 </script>
 
-<header class="h-12">
+<header class="w-full h-12">
   <Center>
     <a class="font-extrabold" href={'#'}>Youtube Video Deck</a>
     <div slot="before" class="float-left p-1">

@@ -15,7 +15,7 @@
   let initialised = false;
   let subscriptionGroups: SubscriptionGroup[];
 
-  async function init(): Promise<SubscriptionGroup[]> {
+  async function init(): Promise<void> {
     const [settings, subscriptions] = await Promise.all([getSettings(), getSubscriptions()]) as [Settings, Subscriptions];
     $settingsStore = settings;
     await updateGroups(settings, subscriptions);
@@ -44,7 +44,7 @@
     return settings;
   }
 
-  async function updateGroups(settings: Settings, subscriptions: Subscriptions) {
+  async function updateGroups(settings: Settings, subscriptions: Subscriptions): Promise<void> {
     await listAllPlaylistItems(subscriptions, settings);
     $subscriptionsStore = subscriptions;
     const subscriptionMap = new Map(subscriptions.items.map(s => [s.channelId, s]));

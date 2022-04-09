@@ -31,9 +31,9 @@
   }
 </script>
 
-<main class="w-screen h-screen bg-neutral-700 text-white">
+<main class="w-full h-full bg-neutral-700 text-white">
   <Header {isSignedIn} {isAuthorized}/>
-  <section style="height: calc(100% - 3rem);">
+  <section class="w-full" style="height: calc(100% - 3rem);">
     {#await loadGapi()}
       <Spinner/>
     {:then _}

@@ -152,7 +152,7 @@
     $editorVisible = false
   }
 </script>
-<div class="fixed top-0 bottom-0 left-0 right-0 z-10" class:fadeIn={$editorVisible} class:fadeOut={!$editorVisible} style="background-color: rgba(0, 0, 0, 0.8)">
+<div class="fixed inset-0 z-10" class:fadeIn={$editorVisible} class:fadeOut={!$editorVisible} style="background-color: rgba(0, 0, 0, 0.8)">
   <div class="w-full h-12">
     <PrimaryButton class="w-28 m-1" on:click={toggleFilter}>{filterEnabled ? 'Disable' : 'Enable'} filter</PrimaryButton>
   </div>
@@ -177,10 +177,10 @@
       {#each settingsEntries as entry (entry.id)}
         <div class="w-[18rem] bg-neutral-700 m-2 p-2 rounded-2xl truncate" animate:flip={{duration:flipDurationMs}}>
           <span class="float-right" on:click={() => removeSettingsEntry(entry)}>X</span>
-          {#if entry.subscription}
+          {#if isSubscription(entry)}
             <img class="inline-block h-8 w-8 rounded-2xl" src={entry.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
             <span title={entry.subscription.title}>{entry.subscription.title}</span>
-          {:else if entry.subscriptions}
+          {:else if isGroup(entry)}
             <span title={entry.name}>{entry.name}</span>
             <div class="bg-neutral-500 mt-2 p-2 rounded-2xl" use:dndzone={{
               items: entry.subscriptions,

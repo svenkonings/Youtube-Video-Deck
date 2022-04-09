@@ -42,7 +42,7 @@
       {/if}
     {/if}
   </p>
-  <div class="overflow-y-scroll overflow-x-hidden" style="height: calc(100% - 1.5rem);" on:wheel|stopPropagation|passive on:scroll={loadMoreOnBottom}>
+  <div class="overflow-y-scroll overflow-x-hidden" style="height: calc(100% - 2.25rem);" on:wheel|stopPropagation|passive on:scroll={loadMoreOnBottom}>
     {#each subscriptionGroup.videos as video}
       <VideoCard {video}/>
     {/each}

@@ -15,7 +15,7 @@
   let player: YT.Player;
   let playerInitState = PlayerInitState.UNINITIALISED;
 
-  function calcPlayerSize(): number[] {
+  function calcPlayerSize(): [number, number] {
     let width = Math.min(document.body.clientWidth, 16 * document.body.clientHeight / 9);
     let height = Math.min(document.body.clientHeight, 9 * document.body.clientWidth / 16);
     if (width > 0.9 * document.body.clientWidth && height > 0.9 * document.body.clientHeight) {
@@ -101,7 +101,7 @@
   }
 </script>
 <svelte:window on:resize={() => player && player.setSize(...calcPlayerSize())}/>
-<div class="fixed top-0 bottom-0 left-0 right-0 z-10" class:fadeIn={backgroundVisible} class:fadeOut={!backgroundVisible} style="background-color: rgba(0, 0, 0, 0.8)" on:click|self={() => backgroundVisible = false}>
+<div class="fixed inset-0 z-10" class:fadeIn={backgroundVisible} class:fadeOut={!backgroundVisible} style="background-color: rgba(0, 0, 0, 0.8)" on:click|self={() => backgroundVisible = false}>
   <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20" class:invisible={!backgroundVisible || playerVisible}>
     <Spinner/>
   </div>
