@@ -34,24 +34,6 @@
     }, duration);
   }
 </script>
-<div bind:this={container} class="w-full h-full overflow-x-scroll" on:wheel|passive={updateScroll} on:scroll={scrollSync}>
+<div bind:this={container} class="w-full h-full pb-[2px] overflow-x-scroll x-scroll" on:wheel|passive={updateScroll} on:scroll={scrollSync}>
   <slot/>
 </div>
-<style>
-  .overflow-x-scroll {
-    padding-bottom: 2px;
-    /* Firefox scrollbar styles */
-    scrollbar-width: thin;
-    scrollbar-color: #FF3D00 #404040
-  }
-
-  /* Webkit scrollbar styles */
-  .overflow-x-scroll::-webkit-scrollbar {
-    height: 5px;
-  }
-
-  .overflow-x-scroll::-webkit-scrollbar-thumb {
-    background: #FF3D00;
-    border-radius: 1rem;
-  }
-</style>

@@ -3,8 +3,8 @@
 
 ## Tasks for MVP
 - Editor
-  - Editor layout changes
-  - Make editor fullscreen with close button
+  - Style group/sub delete button
+  - Make editor smaller for mobile
   - Add drag handle
   - Fix scroll up when dragging subscription
   - Allow selecting element in right-side of editor

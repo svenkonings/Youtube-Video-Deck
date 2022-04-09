@@ -42,43 +42,9 @@
       {/if}
     {/if}
   </p>
-  <div class="overflow-y-scroll overflow-x-hidden" style="height: calc(100% - 2.25rem);" on:wheel|stopPropagation|passive on:scroll={loadMoreOnBottom}>
+  <div class="overflow-y-scroll y-scroll-hover overflow-x-hidden" style="height: calc(100% - 2.25rem);" on:wheel|stopPropagation|passive on:scroll={loadMoreOnBottom}>
     {#each subscriptionGroup.videos as video}
       <VideoCard {video}/>
     {/each}
   </div>
 </div>
-<style>
-  /* Firefox scrollbar styles */
-  .overflow-y-scroll {
-    scrollbar-width: thin;
-    scrollbar-color: #262626 #262626;
-  }
-
-  .overflow-y-scroll:hover {
-    scrollbar-color: #FF3D00 #262626;
-  }
-
-  @media (any-hover: none) {
-    .overflow-y-scroll {
-      scrollbar-color: #FF3D00 #262626;
-    }
-  }
-
-  /* Webkit scrollbar styles */
-  .overflow-y-scroll::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  .overflow-y-scroll:hover::-webkit-scrollbar-thumb {
-    background: #FF3D00;
-    border-radius: 1rem;
-  }
-
-  @media (any-hover: none) {
-    .overflow-y-scroll::-webkit-scrollbar-thumb {
-      background: #FF3D00;
-      border-radius: 1rem;
-    }
-  }
-</style>
