@@ -7,13 +7,16 @@
   - Make editor smaller for mobile
   - Add drag handle
   - Fix scroll up when dragging subscription
+  - Fix scroll when moving groups up/down
   - Allow selecting element in right-side of editor
   - Add plus button to left-side of editor that adds the subscriptions to or below the selected element
+  - Add upp/down buttons to groups
   - Create add all buttons that adds all filtered subscriptions
   - Add loading animation on save (Also load added subscriptions?)
 - Handle unsubscribe (remove from subscriptions and group)
 - Add channel image to subscriptions (in deck and editor)
 - Expand / collapse groups (both in deck and editor)
+  - Collapse group when dragging
 - Truncate subscription overview title
 
 ## Other tasks
