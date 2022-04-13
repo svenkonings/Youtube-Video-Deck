@@ -8,6 +8,8 @@
   import type {SettingsEntry, SubscriptionEntry, SubscriptionGroupEntry} from "../types/SettingsEntry";
   import {isGroup, isSubscription} from "../types/SettingsEntry";
   import Center from "./components/Center.svelte";
+  import {tweened} from "svelte/motion";
+  import {onDestroy} from "svelte";
 
   let idCounter: number = 0;
   let subscriptionEntries: SubscriptionEntry[] = [];
@@ -15,8 +17,6 @@
   let filteredEntries = [];
   let settingsEntries: SettingsEntry[] = [];
 
-  let deckElement: HTMLDivElement;
-  $: deckBounds = deckElement?.getBoundingClientRect();
   let groupNameInput: string = '';
 
   function toggleFilter(): void {
@@ -168,27 +168,46 @@
     $editorVisible = false
   }
 
-  let autoScrollInterval;
+  let deckElement: HTMLDivElement;
+  $: deckBounds = deckElement?.getBoundingClientRect();
+  const scrollOffset = 32;
+  const duration = 100;
+  const autoScroll = tweened(0, {duration: 2 * duration});
+  let autoScrollInterval: any;
+  let autoScrollSyncTimeout: any;
+
+  onDestroy(autoScroll.subscribe(value => deckElement && (deckElement.scrollTop = value)));
 
   function startAutoScroll() {
     if (!autoScrollInterval) {
-      autoScrollInterval = setInterval(autoScroll, 100);
+      autoScrollInterval = setInterval(updateAutoScroll, duration);
     }
   }
 
-  function autoScroll(): void {
+  function updateAutoScroll(): void {
     const draggedElement = document.getElementById('dnd-action-dragged-el');
     if (draggedElement) {
       const draggedBounds = draggedElement.getBoundingClientRect();
-      if (draggedBounds.bottom + 32 >= deckBounds.bottom) {
-        deckElement.scrollBy({top: 64, behavior: 'smooth'});
-      } else if (draggedBounds.top - 32 <= deckBounds.top) {
-        deckElement.scrollBy({top: -64, behavior: 'smooth'});
+      if (draggedBounds.bottom + scrollOffset >= deckBounds.bottom) {
+        autoScroll.update(value => clampToContainer(value + draggedBounds.bottom + scrollOffset - deckBounds.bottom));
+      } else if (draggedBounds.top - scrollOffset <= deckBounds.top) {
+        autoScroll.update(value => clampToContainer(value + draggedBounds.top - scrollOffset - deckBounds.top));
       }
     } else {
       clearInterval(autoScrollInterval);
       autoScrollInterval = null;
     }
+  }
+
+  function clampToContainer(value: number): number {
+    return Math.max(0, Math.min(value, deckElement.scrollHeight - deckElement.clientHeight));
+  }
+
+  function autoScrollSync(): void {
+    clearTimeout(autoScrollSyncTimeout);
+    autoScrollSyncTimeout = setTimeout(() => {
+      autoScroll.set(deckElement.scrollTop, {duration: 0})
+    }, duration);
   }
 </script>
 <div class="fixed inset-0 z-10" class:fadeIn={$editorVisible} class:fadeOut={!$editorVisible} style="background-color: rgba(0, 0, 0, 0.8)">
@@ -228,37 +247,39 @@
           <div class="w-full h-6">
             <Center>Deck</Center>
           </div>
-          <div class="w-full overflow-y-auto y-scroll mb-2" style="height: calc(100% - 2rem);" bind:this={deckElement} use:dndzone={{
-            items: settingsEntries,
-            flipDurationMs,
-            dropFromOthersDisabled: draggedEntry && settingsDropDisabled(),
-            centreDraggedOnCursor: true,
-          }} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
-            {#each settingsEntries as entry (entry.id)}
-              <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                <span class="float-right" on:click={() => removeSettingsEntry(entry)}>x</span>
-                {#if isSubscription(entry)}
-                  <img class="inline-block h-8 w-8 rounded-2xl" src={entry.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
-                  <span title={entry.subscription.title}>{entry.subscription.title}</span>
-                {:else if isGroup(entry)}
-                  <span class="pl-2" title={entry.name}>{entry.name}</span>
-                  <div class="w-full bg-neutral-500 mt-1 py-0.5 rounded-2xl" use:dndzone={{
-                    items: entry.subscriptions,
-                    flipDurationMs,
-                    dropFromOthersDisabled: draggedEntry && groupDropDisabled(entry),
-                    centreDraggedOnCursor: true,
-                  }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
-                    {#each entry.subscriptions as child (child.id)}
-                      <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                        <span class="float-right" on:click={() => removeGroupEntry(entry, child)}>x</span>
-                        <img class="inline-block h-8 w-8 rounded-2xl" src={child.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
-                        <span title={child.subscription.title}>{child.subscription.title}</span>
-                      </div>
-                    {/each}
-                  </div>
-                {/if}
-              </div>
-            {/each}
+          <div class="w-full overflow-y-auto y-scroll mb-2" style="height: calc(100% - 2rem);" bind:this={deckElement} on:scroll={autoScrollSync}>
+            <div class="w-full h-max" use:dndzone={{
+              items: settingsEntries,
+              flipDurationMs,
+              dropFromOthersDisabled: draggedEntry && settingsDropDisabled(),
+              centreDraggedOnCursor: true,
+            }} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
+              {#each settingsEntries as entry (entry.id)}
+                <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
+                  <span class="float-right" on:click={() => removeSettingsEntry(entry)}>x</span>
+                  {#if isSubscription(entry)}
+                    <img class="inline-block h-8 w-8 rounded-2xl" src={entry.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
+                    <span title={entry.subscription.title}>{entry.subscription.title}</span>
+                  {:else if isGroup(entry)}
+                    <span class="pl-2" title={entry.name}>{entry.name}</span>
+                    <div class="w-full bg-neutral-500 mt-1 py-0.5 rounded-2xl" use:dndzone={{
+                      items: entry.subscriptions,
+                      flipDurationMs,
+                      dropFromOthersDisabled: draggedEntry && groupDropDisabled(entry),
+                      centreDraggedOnCursor: true,
+                    }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
+                      {#each entry.subscriptions as child (child.id)}
+                        <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
+                          <span class="float-right" on:click={() => removeGroupEntry(entry, child)}>x</span>
+                          <img class="inline-block h-8 w-8 rounded-2xl" src={child.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
+                          <span title={child.subscription.title}>{child.subscription.title}</span>
+                        </div>
+                      {/each}
+                    </div>
+                  {/if}
+                </div>
+              {/each}
+            </div>
           </div>
         </div>
       </div>
