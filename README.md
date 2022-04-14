@@ -3,17 +3,18 @@
 
 ## Tasks for MVP
 - Editor
-  - Style group/sub delete button
-  - Add drag handle
   - Fix scroll up when dragging subscription and filter is turned on
   - Add loading animation on save (Also load added subscriptions?)
-  - Allow seaching subscriptions
+  - Allow searching subscriptions
+  - Use observer API for autoscroll (https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
 - Handle unsubscribe (remove from subscriptions and group)
-- Add channel image to subscriptions (in deck and editor)
+- Performance optimization with https://github.com/Skayo/svelte-tiny-virtual-list
 - Expand / collapse groups (both in deck and editor)
   - Collapse group when dragging
 - Truncate subscription overview title
 - Fix subscription load on scroll on large screens / when zooming out
+  - Show loading circle on scroll when there is a next page
+  - https://github.com/Skayo/svelte-infinite-loading or https://github.com/maciekgrzybek/svelte-inview
 
 ## Other tasks
 - Add ripple effect to buttons

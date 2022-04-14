@@ -1,7 +1,7 @@
 <script lang="ts">
   import {flip} from "svelte/animate";
   import type {DndEvent} from "svelte-dnd-action";
-  import {dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME, TRIGGERS} from "svelte-dnd-action";
+  import {dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME, SOURCES, TRIGGERS} from "svelte-dnd-action";
   import {editorVisible, settingsStore, subscriptionsStore} from "../util/stores";
   import PrimaryButton from "./components/PrimaryButton.svelte";
   import {writeSettings} from "../api/Drive";
@@ -12,6 +12,7 @@
   import {onDestroy} from "svelte";
 
   let idCounter: number = 0;
+  let dragDisabled = true;
   let subscriptionEntries: SubscriptionEntry[] = [];
   let filterEnabled = false;
   let filteredEntries = [];
@@ -99,11 +100,17 @@
       updateFilter();
       startAutoScroll();
     } else {
+      if (e.detail.info.source === SOURCES.KEYBOARD && e.detail.info.trigger === TRIGGERS.DRAG_STOPPED) {
+        dragDisabled = true;
+      }
       filteredEntries = filteredEntries;
     }
   }
 
   function handleSubscriptionDndFinalize(e: CustomEvent<DndEvent>): void {
+    if (e.detail.info.source === SOURCES.POINTER) {
+      dragDisabled = true;
+    }
     filteredEntries = filteredEntries;
   }
 
@@ -111,11 +118,16 @@
     if (e.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
       draggedEntry = settingsEntries.find(s => s.id == e.detail.info.id);
       startAutoScroll();
+    } else if (e.detail.info.source === SOURCES.KEYBOARD && e.detail.info.trigger === TRIGGERS.DRAG_STOPPED) {
+      dragDisabled = true;
     }
     settingsEntries = e.detail.items as SettingsEntry[];
   }
 
   function handleSettingsDndFinalize(e: CustomEvent<DndEvent>): void {
+    if (e.detail.info.source === SOURCES.POINTER) {
+      dragDisabled = true;
+    }
     settingsEntries = e.detail.items as SettingsEntry[];
     updateFilter();
   }
@@ -138,12 +150,17 @@
     if (e.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
       draggedEntry = group.subscriptions.find(s => s.id == e.detail.info.id);
       startAutoScroll();
+    } else if (e.detail.info.source === SOURCES.KEYBOARD && e.detail.info.trigger === TRIGGERS.DRAG_STOPPED) {
+      dragDisabled = true;
     }
     group.subscriptions = e.detail.items as SubscriptionEntry[];
     settingsEntries = settingsEntries;
   }
 
   function handleGroupDndFinalize(group: SubscriptionGroupEntry, e: CustomEvent<DndEvent>): void {
+    if (e.detail.info.source === SOURCES.POINTER) {
+      dragDisabled = true;
+    }
     group.subscriptions = e.detail.items as SubscriptionEntry[];
     settingsEntries = settingsEntries;
     updateFilter();
@@ -162,6 +179,14 @@
     entry.subscriptions = entry.subscriptions.filter(s => s.id !== child.id);
     settingsEntries = settingsEntries;
     updateFilter();
+  }
+
+  function startDrag(e: UIEvent) {
+    e.preventDefault();
+    dragDisabled = false;
+  }
+  function handleKeyDown(e: KeyboardEvent) {
+    if ((e.key === "Enter" || e.key === " ") && dragDisabled) dragDisabled = false;
   }
 
   function close(): void {
@@ -232,12 +257,23 @@
           <div class="w-full overflow-y-auto y-scroll mb-2" style="height: calc(100% - 2rem);" use:dndzone={{
             items: filteredEntries,
             dropFromOthersDisabled: true,
-            centreDraggedOnCursor: true,
+            dragDisabled,
             flipDurationMs
           }} on:consider={handleSubscriptionDndConsider} on:finalize={handleSubscriptionDndFinalize}>
             {#each filteredEntries as entry (entry.id)}
               <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                <img class="inline-block h-8 w-8 rounded-2xl" src={entry.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
+                <img class="inline-block h-8 w-8 rounded-2xl"
+                     src={entry.subscription.thumbnailUrl}
+                     alt=""
+                     loading="lazy"
+                     width="88"
+                     height="88"
+                     tabindex={dragDisabled? 0 : -1}
+                     aria-label="drag-handle"
+                     style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
+                     on:mousedown={startDrag}
+                     on:touchstart={startDrag}
+                     on:keydown={handleKeyDown}/>
                 <span title={entry.subscription.title}>{entry.subscription.title}</span>
               </div>
             {/each}
@@ -250,28 +286,57 @@
           <div class="w-full overflow-y-auto y-scroll mb-2" style="height: calc(100% - 2rem);" bind:this={deckElement} on:scroll={autoScrollSync}>
             <div class="w-full h-max" use:dndzone={{
               items: settingsEntries,
-              flipDurationMs,
               dropFromOthersDisabled: draggedEntry && settingsDropDisabled(),
-              centreDraggedOnCursor: true,
+              dragDisabled,
+              flipDurationMs,
             }} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
               {#each settingsEntries as entry (entry.id)}
                 <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                  <span class="float-right" on:click={() => removeSettingsEntry(entry)}>x</span>
+                  <span class="float-right p-0.5" on:click={() => removeSettingsEntry(entry)}>×</span>
                   {#if isSubscription(entry)}
-                    <img class="inline-block h-8 w-8 rounded-2xl" src={entry.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
+                    <img class="inline-block h-8 w-8 rounded-2xl"
+                         src={entry.subscription.thumbnailUrl}
+                         alt=""
+                         loading="lazy"
+                         width="88"
+                         height="88"
+                         tabindex={dragDisabled? 0 : -1}
+                         aria-label="drag-handle"
+                         style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
+                         on:mousedown={startDrag}
+                         on:touchstart={startDrag}
+                         on:keydown={handleKeyDown}/>
                     <span title={entry.subscription.title}>{entry.subscription.title}</span>
                   {:else if isGroup(entry)}
-                    <span class="pl-2" title={entry.name}>{entry.name}</span>
-                    <div class="w-full bg-neutral-500 mt-1 py-0.5 rounded-2xl" use:dndzone={{
+                    <span class="inline-block h-8 w-8 rounded-2xl bg-neutral-600"
+                         tabindex={dragDisabled? 0 : -1}
+                         aria-label="drag-handle"
+                         style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
+                         on:mousedown={startDrag}
+                         on:touchstart={startDrag}
+                          on:keydown={handleKeyDown}><Center>☰</Center></span>
+                    <span class="inline-block h-8 align-text-bottom" title={entry.name}>{entry.name}</span>
+                    <div class="w-full bg-neutral-500 py-0.5 rounded-2xl" use:dndzone={{
                       items: entry.subscriptions,
-                      flipDurationMs,
                       dropFromOthersDisabled: draggedEntry && groupDropDisabled(entry),
-                      centreDraggedOnCursor: true,
+                      dragDisabled,
+                      flipDurationMs,
                     }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
                       {#each entry.subscriptions as child (child.id)}
                         <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                          <span class="float-right" on:click={() => removeGroupEntry(entry, child)}>x</span>
-                          <img class="inline-block h-8 w-8 rounded-2xl" src={child.subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
+                          <span class="float-right p-0.5" on:click={() => removeGroupEntry(entry, child)}>×</span>
+                          <img class="inline-block h-8 w-8 rounded-2xl"
+                               src={child.subscription.thumbnailUrl}
+                               alt=""
+                               loading="lazy"
+                               width="88"
+                               height="88"
+                               tabindex={dragDisabled? 0 : -1}
+                               aria-label="drag-handle"
+                               style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
+                               on:mousedown={startDrag}
+                               on:touchstart={startDrag}
+                               on:keydown={handleKeyDown}/>
                           <span title={child.subscription.title}>{child.subscription.title}</span>
                         </div>
                       {/each}
