@@ -65,7 +65,6 @@
       name: s.title,
       subscription: s,
     }));
-    updateFilter();
     const subscriptionMap = new Map(subscriptions.map(s => [s.channelId, s]));
     settingsEntries = subscriptionGroups.map(s => {
       const groupSubscriptions = s.subscriptionIds.map(id => subscriptionMap.get(id));
@@ -87,6 +86,7 @@
         }
       }
     });
+    updateFilter();
   }
 
   async function save(): Promise<void> {
@@ -308,7 +308,7 @@
             }} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
               {#each settingsEntries as entry (entry.id)}
                 <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                  <span class="relative z-20 float-right p-0.5" on:click={() => removeSettingsEntry(entry)}>×</span>
+                  <span class="relative z-20 float-right p-0.5 cursor-pointer" on:click={() => removeSettingsEntry(entry)}>×</span>
                   {#if isSubscription(entry)}
                     <img class="inline-block h-8 w-8 rounded-2xl"
                          src={entry.subscription.thumbnailUrl}
@@ -342,7 +342,7 @@
                     }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
                       {#each entry.subscriptions as child (child.id)}
                         <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                          <span class="relative z-20 float-right p-0.5" on:click={() => removeGroupEntry(entry, child)}>×</span>
+                          <span class="relative z-20 float-right p-0.5 cursor-pointer" on:click={() => removeGroupEntry(entry, child)}>×</span>
                           <img class="inline-block h-8 w-8 rounded-2xl"
                                src={child.subscription.thumbnailUrl}
                                alt=""

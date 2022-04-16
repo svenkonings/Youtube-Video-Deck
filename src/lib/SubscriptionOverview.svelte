@@ -3,6 +3,7 @@
   import {playerStore} from "../util/stores";
   import type {SubscriptionGroup} from "../model/SubscriptionGroup";
   import {getPlaylist, loadMoreVideos} from "../model/SubscriptionGroup";
+  import Center from "./components/Center.svelte";
 
   export let subscriptionGroup: SubscriptionGroup;
   let isLoading = false;
@@ -30,13 +31,16 @@
     {#if subscriptionGroup.subscriptions.length === 1}
       <a href="https://www.youtube.com/channel/{subscriptionGroup.subscriptions[0].subscription.channelId}">
         <img class="inline-block h-8 w-8 rounded-2xl" src={subscriptionGroup.subscriptions[0].subscription.thumbnailUrl} alt="" loading="lazy" width="88" height="88"/>
-        {subscriptionGroup.name}
+        <span class="inline-block h-8 max-w-[26rem] align-text-top truncate" title={subscriptionGroup.name}>{subscriptionGroup.name}</span>
       </a>
       {#if subscriptionGroup.videos.length > 0}
         <a class="float-right pl-2 pr-2 -ml-8 text-[2rem] leading-[0.75]" href="https://www.youtube.com/watch?v={subscriptionGroup.videos[0].videoId}&list={subscriptionGroup.subscriptions[0].subscription.uploadsPlaylistId}" on:click|preventDefault={play}>▸</a>
       {/if}
     {:else}
-      <span class="cursor-default">{subscriptionGroup.name}</span>
+      <span class="inline-block h-8 w-8 rounded-2xl bg-neutral-600 cursor-default">
+        <Center>☰</Center>
+      </span>
+      <span class="inline-block h-8 max-w-[26rem] align-text-bottom truncate cursor-default" title={subscriptionGroup.name}>{subscriptionGroup.name}</span>
       {#if subscriptionGroup.videos.length > 0}
         <span class="float-right pl-2 pr-2 -ml-8 text-[2rem] leading-[0.75] cursor-pointer" on:click={play}>▸</span>
       {/if}

@@ -2,18 +2,16 @@
 [svenkonings.github.io/Youtube-Video-Deck](https://svenkonings.github.io/Youtube-Video-Deck/)
 
 ## Tasks for MVP
+- Expand / collapse groups (both in deck and editor)
+  - Collapse group when dragging
 - Editor
-  - Fix scroll up when dragging subscription after scrolling to bottom of list
   - Make style slightly more touch-friendly
   - Add tutorial for dragging subscriptions
   - Add loading animation on save (Also load added subscriptions?)
   - Allow searching subscriptions
-  - Use observer API for autoscroll (https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
+  - Fix scroll up when dragging subscription after scrolling to bottom of list (dnd library bug?)
 - Handle unsubscribe (remove from subscriptions and group)
 - Performance optimization with https://github.com/Skayo/svelte-tiny-virtual-list
-- Expand / collapse groups (both in deck and editor)
-  - Collapse group when dragging
-- Truncate subscription overview title
 - Fix subscription load on scroll on large screens / when zooming out
   - Show loading circle on scroll when there is a next page
   - https://github.com/Skayo/svelte-infinite-loading or https://github.com/maciekgrzybek/svelte-inview
