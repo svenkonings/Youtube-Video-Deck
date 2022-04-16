@@ -11,13 +11,27 @@
   import {tweened} from "svelte/motion";
   import {onDestroy} from "svelte";
 
+  /*
+   * General code
+   */
+
+  $: if ($editorVisible) {
+    load();
+  }
+
+  function close(): void {
+    $editorVisible = false
+  }
+
+  /*
+   * Subscriptions and settings management
+   */
+
   let idCounter: number = 0;
-  let dragDisabled = true;
   let subscriptionEntries: SubscriptionEntry[] = [];
   let filterEnabled = false;
   let filteredEntries = [];
   let settingsEntries: SettingsEntry[] = [];
-
   let groupNameInput: string = '';
 
   function toggleFilter(): void {
@@ -40,13 +54,6 @@
       groupNameInput = '';
       settingsEntries = settingsEntries;
     }
-  }
-
-  const flipDurationMs = 300;
-  let draggedEntry: SettingsEntry;
-
-  $: if ($editorVisible) {
-    load();
   }
 
   function load(): void {
@@ -90,6 +97,14 @@
     await writeSettings($settingsStore);
     $editorVisible = false;
   }
+
+  /*
+   * Drag and drop code
+   */
+
+  const flipDurationMs = 300;
+  let draggedEntry: SettingsEntry
+  let dragDisabled = true;
 
   function handleSubscriptionDndConsider(e: CustomEvent<DndEvent>): void {
     if (e.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
@@ -185,13 +200,14 @@
     e.preventDefault();
     dragDisabled = false;
   }
+
   function handleKeyDown(e: KeyboardEvent) {
     if ((e.key === "Enter" || e.key === " ") && dragDisabled) dragDisabled = false;
   }
 
-  function close(): void {
-    $editorVisible = false
-  }
+  /*
+   * Auto-scroll code
+   */
 
   let deckElement: HTMLDivElement;
   $: deckBounds = deckElement?.getBoundingClientRect();
@@ -235,7 +251,7 @@
     }, duration);
   }
 </script>
-<div class="fixed inset-0 z-10" class:fadeIn={$editorVisible} class:fadeOut={!$editorVisible} style="background-color: rgba(0, 0, 0, 0.8)">
+<div class="fixed inset-0 z-10 bg-black/80" class:fadeIn={$editorVisible} class:fadeOut={!$editorVisible}>
   <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[40rem] bg-neutral-700 rounded-2xl overflow-x-auto x-scroll">
     <div class="min-w-[20.5rem] w-full h-full">
       <div class="w-full h-16">
@@ -292,7 +308,7 @@
             }} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
               {#each settingsEntries as entry (entry.id)}
                 <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                  <span class="float-right p-0.5" on:click={() => removeSettingsEntry(entry)}>×</span>
+                  <span class="relative z-20 float-right p-0.5" on:click={() => removeSettingsEntry(entry)}>×</span>
                   {#if isSubscription(entry)}
                     <img class="inline-block h-8 w-8 rounded-2xl"
                          src={entry.subscription.thumbnailUrl}
@@ -309,12 +325,14 @@
                     <span title={entry.subscription.title}>{entry.subscription.title}</span>
                   {:else if isGroup(entry)}
                     <span class="inline-block h-8 w-8 rounded-2xl bg-neutral-600"
-                         tabindex={dragDisabled? 0 : -1}
-                         aria-label="drag-handle"
-                         style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
-                         on:mousedown={startDrag}
-                         on:touchstart={startDrag}
-                          on:keydown={handleKeyDown}><Center>☰</Center></span>
+                          tabindex={dragDisabled? 0 : -1}
+                          aria-label="drag-handle"
+                          style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
+                          on:mousedown={startDrag}
+                          on:touchstart={startDrag}
+                          on:keydown={handleKeyDown}>
+                      <Center>☰</Center>
+                    </span>
                     <span class="inline-block h-8 align-text-bottom" title={entry.name}>{entry.name}</span>
                     <div class="w-full bg-neutral-500 py-0.5 rounded-2xl" use:dndzone={{
                       items: entry.subscriptions,
@@ -324,7 +342,7 @@
                     }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
                       {#each entry.subscriptions as child (child.id)}
                         <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                          <span class="float-right p-0.5" on:click={() => removeGroupEntry(entry, child)}>×</span>
+                          <span class="relative z-20 float-right p-0.5" on:click={() => removeGroupEntry(entry, child)}>×</span>
                           <img class="inline-block h-8 w-8 rounded-2xl"
                                src={child.subscription.thumbnailUrl}
                                alt=""

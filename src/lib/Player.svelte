@@ -101,7 +101,7 @@
   }
 </script>
 <svelte:window on:resize={() => player && player.setSize(...calcPlayerSize())}/>
-<div class="fixed inset-0 z-10" class:fadeIn={backgroundVisible} class:fadeOut={!backgroundVisible} style="background-color: rgba(0, 0, 0, 0.8)" on:click|self={() => backgroundVisible = false}>
+<div class="fixed inset-0 z-10 bg-black/80" class:fadeIn={backgroundVisible} class:fadeOut={!backgroundVisible} on:click|self={() => backgroundVisible = false}>
   <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20" class:invisible={!backgroundVisible || playerVisible}>
     <Spinner/>
   </div>

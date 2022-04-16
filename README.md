@@ -3,7 +3,9 @@
 
 ## Tasks for MVP
 - Editor
-  - Fix scroll up when dragging subscription and filter is turned on
+  - Fix scroll up when dragging subscription after scrolling to bottom of list
+  - Make style slightly more touch-friendly
+  - Add tutorial for dragging subscriptions
   - Add loading animation on save (Also load added subscriptions?)
   - Allow searching subscriptions
   - Use observer API for autoscroll (https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
@@ -16,7 +18,7 @@
   - Show loading circle on scroll when there is a next page
   - https://github.com/Skayo/svelte-infinite-loading or https://github.com/maciekgrzybek/svelte-inview
 
-## Other tasks
+## Other task ideas
 - Add ripple effect to buttons
   - https://css-tricks.com/how-to-recreate-the-ripple-effect-of-material-design-buttons/
 - Limit refresh time of cached requests
