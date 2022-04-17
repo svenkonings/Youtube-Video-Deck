@@ -10,6 +10,9 @@
   import Center from "./components/Center.svelte";
   import {tweened} from "svelte/motion";
   import {onDestroy} from "svelte";
+  import Fa from "svelte-fa/src/fa.svelte"
+  import FaLayers from "svelte-fa/src/fa-layers.svelte"
+  import {faCircle, faTimesCircle, faUsers} from "@fortawesome/free-solid-svg-icons";
 
   /*
    * General code
@@ -277,8 +280,8 @@
             flipDurationMs
           }} on:consider={handleSubscriptionDndConsider} on:finalize={handleSubscriptionDndFinalize}>
             {#each filteredEntries as entry (entry.id)}
-              <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                <img class="inline-block h-8 w-8 rounded-2xl"
+              <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
+                <img class="inline-block h-8 w-8 rounded-2xl align-middle"
                      src={entry.subscription.thumbnailUrl}
                      alt=""
                      loading="lazy"
@@ -290,7 +293,7 @@
                      on:mousedown={startDrag}
                      on:touchstart={startDrag}
                      on:keydown={handleKeyDown}/>
-                <span title={entry.subscription.title}>{entry.subscription.title}</span>
+                <span class="inline-block h-8 align-text-top truncate" style="max-width: calc(100% - 2.5rem);" title={entry.subscription.title}>{entry.subscription.title}</span>
               </div>
             {/each}
           </div>
@@ -308,9 +311,11 @@
             }} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
               {#each settingsEntries as entry (entry.id)}
                 <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                  <span class="relative z-20 float-right p-0.5 cursor-pointer" on:click={() => removeSettingsEntry(entry)}>×</span>
+                  <span class="relative z-20 inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeSettingsEntry(entry)}>
+                    <Fa icon={faTimesCircle} translateY={0.5}/>
+                  </span>
                   {#if isSubscription(entry)}
-                    <img class="inline-block h-8 w-8 rounded-2xl"
+                    <img class="inline-block h-8 w-8 rounded-2xl align-middle"
                          src={entry.subscription.thumbnailUrl}
                          alt=""
                          loading="lazy"
@@ -322,18 +327,21 @@
                          on:mousedown={startDrag}
                          on:touchstart={startDrag}
                          on:keydown={handleKeyDown}/>
-                    <span title={entry.subscription.title}>{entry.subscription.title}</span>
+                    <span class="inline-block h-8 align-text-top truncate" style="max-width: calc(100% - 4rem);" title={entry.subscription.title}>{entry.subscription.title}</span>
                   {:else if isGroup(entry)}
-                    <span class="inline-block h-8 w-8 rounded-2xl bg-neutral-600"
+                    <span class="inline-block h-8 w-8 rounded-2xl bg-neutral-600 align-middle"
                           tabindex={dragDisabled? 0 : -1}
                           aria-label="drag-handle"
                           style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
                           on:mousedown={startDrag}
                           on:touchstart={startDrag}
                           on:keydown={handleKeyDown}>
-                      <Center>☰</Center>
+                      <FaLayers size="2x" class="-mx-1">
+                        <Fa icon={faCircle} color="rgb(82 82 82)"/>
+                        <Fa icon={faUsers} scale={0.5}/>
+                      </FaLayers>
                     </span>
-                    <span class="inline-block h-8 align-text-bottom" title={entry.name}>{entry.name}</span>
+                    <span class="inline-block h-8 align-text-top truncate" style="max-width: calc(100% - 4rem);" title={entry.name}>{entry.name}</span>
                     <div class="w-full bg-neutral-500 py-0.5 rounded-2xl" use:dndzone={{
                       items: entry.subscriptions,
                       dropFromOthersDisabled: draggedEntry && groupDropDisabled(entry),
@@ -342,8 +350,10 @@
                     }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
                       {#each entry.subscriptions as child (child.id)}
                         <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                          <span class="relative z-20 float-right p-0.5 cursor-pointer" on:click={() => removeGroupEntry(entry, child)}>×</span>
-                          <img class="inline-block h-8 w-8 rounded-2xl"
+                          <span class="relative z-20 inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeGroupEntry(entry, child)}>
+                            <Fa icon={faTimesCircle} translateY={0.5}/>
+                          </span>
+                          <img class="inline-block h-8 w-8 rounded-2xl align-middle"
                                src={child.subscription.thumbnailUrl}
                                alt=""
                                loading="lazy"
@@ -355,7 +365,7 @@
                                on:mousedown={startDrag}
                                on:touchstart={startDrag}
                                on:keydown={handleKeyDown}/>
-                          <span title={child.subscription.title}>{child.subscription.title}</span>
+                          <span class="inline-block h-8 align-text-top truncate" style="max-width: calc(100% - 4rem);" title={child.subscription.title}>{child.subscription.title}</span>
                         </div>
                       {/each}
                     </div>

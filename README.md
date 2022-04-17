@@ -13,8 +13,8 @@
 - Handle unsubscribe (remove from subscriptions and group)
 - Performance optimization with https://github.com/Skayo/svelte-tiny-virtual-list
 - Fix subscription load on scroll on large screens / when zooming out
-  - Show loading circle on scroll when there is a next page
-  - https://github.com/Skayo/svelte-infinite-loading or https://github.com/maciekgrzybek/svelte-inview
+  - Show loading circle on scroll when there is a next page with https://github.com/maciekgrzybek/svelte-inview
+- Use fa icons with https://github.com/Cweili/svelte-fa
 
 ## Other task ideas
 - Add ripple effect to buttons
