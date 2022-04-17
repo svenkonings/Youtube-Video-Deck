@@ -311,7 +311,7 @@
             }} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
               {#each settingsEntries as entry (entry.id)}
                 <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                  <span class="relative z-20 inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeSettingsEntry(entry)}>
+                  <span class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeSettingsEntry(entry)}>
                     <Fa icon={faTimesCircle} translateY={0.5}/>
                   </span>
                   {#if isSubscription(entry)}
@@ -350,7 +350,7 @@
                     }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
                       {#each entry.subscriptions as child (child.id)}
                         <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                          <span class="relative z-20 inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeGroupEntry(entry, child)}>
+                          <span class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeGroupEntry(entry, child)}>
                             <Fa icon={faTimesCircle} translateY={0.5}/>
                           </span>
                           <img class="inline-block h-8 w-8 rounded-2xl align-middle"
