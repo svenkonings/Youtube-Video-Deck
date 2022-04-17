@@ -52,7 +52,7 @@
   }
 </script>
 {#await init()}
-  <Spinner/>
+  <Center><Spinner/></Center>
 {:then _}
   {#if subscriptionGroups.length === 0}
     <Center>

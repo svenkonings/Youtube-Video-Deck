@@ -6,9 +6,13 @@
   import Fa from "svelte-fa/src/fa.svelte"
   import FaLayers from "svelte-fa/src/fa-layers.svelte"
   import {faCircle, faPlay, faUsers} from "@fortawesome/free-solid-svg-icons";
+  import Spinner from "./components/Spinner.svelte";
+  import {inview} from "svelte-inview";
 
   export let subscriptionGroup: SubscriptionGroup;
+  let inView = false;
   let isLoading = false;
+  let errorCount = 0;
 
   async function play(): Promise<void> {
     $playerStore = {loading: true};
@@ -17,12 +21,28 @@
     $playerStore = playerInput;
   }
 
-  async function loadMoreOnBottom(event: Event): Promise<void> {
-    const element = event.target as HTMLDivElement;
-    if (!isLoading && element.scrollHeight - element.scrollTop - 122 <= element.clientHeight) {
+  $: if (inView) {
+    loadWhileInView();
+  }
+
+  async function loadWhileInView() {
+    if (inView && errorCount < 3) {
+      await loadMore();
+      setTimeout(loadWhileInView, 100);
+    }
+  }
+
+  async function loadMore(): Promise<void> {
+    if (!isLoading) {
       isLoading = true;
-      await loadMoreVideos(subscriptionGroup);
-      subscriptionGroup.videos = subscriptionGroup.videos; // Refresh videos
+      try {
+        await loadMoreVideos(subscriptionGroup);
+        subscriptionGroup.videos = subscriptionGroup.videos; // Refresh videos
+        errorCount = 0;
+      } catch (e) {
+        console.error(e);
+        errorCount++;
+      }
       isLoading = false;
     }
   }
@@ -55,9 +75,12 @@
       {/if}
     {/if}
   </p>
-  <div class="overflow-y-scroll y-scroll-hover overflow-x-hidden" style="height: calc(100% - 2.25rem);" on:wheel|stopPropagation|passive on:scroll={loadMoreOnBottom}>
+  <div class="overflow-y-scroll y-scroll-hover overflow-x-hidden" style="height: calc(100% - 2.25rem);" on:wheel|stopPropagation|passive>
     {#each subscriptionGroup.videos as video}
       <VideoCard {video}/>
     {/each}
+    <div use:inview on:change={e => inView = e.detail.inView}>
+      <Spinner/>
+    </div>
   </div>
 </div>

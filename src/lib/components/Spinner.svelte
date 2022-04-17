@@ -60,8 +60,8 @@
   }
 
 </style>
-<Center>
+<div class="text-center">
   <span class="loader"></span>
   <br>
   <span class="font-extrabold">Loading…</span>
-</Center>
+</div>

@@ -5,6 +5,7 @@
   import SubscriptionsDeck from "./lib/SubscriptionsDeck.svelte";
   import Player from "./lib/Player.svelte";
   import SubscriptionsEditor from "./lib/SubscriptionsEditor.svelte";
+  import Center from "./lib/components/Center.svelte";
 
   const scope = 'https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/drive.appdata';
 
@@ -35,7 +36,7 @@
   <Header {isSignedIn} {isAuthorized}/>
   <section class="w-full" style="height: calc(100% - 3rem);">
     {#await loadGapi()}
-      <Spinner/>
+      <Center><Spinner/></Center>
     {:then _}
       {#if isAuthorized}
         <Player/>
