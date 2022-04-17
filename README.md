@@ -2,8 +2,6 @@
 [svenkonings.github.io/Youtube-Video-Deck](https://svenkonings.github.io/Youtube-Video-Deck/)
 
 ## Tasks for MVP
-- Expand / collapse groups (both in deck and editor)
-  - Collapse group when dragging
 - Editor
   - Make style slightly more touch-friendly
   - Add tutorial for dragging subscriptions

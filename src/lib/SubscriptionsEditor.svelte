@@ -12,7 +12,7 @@
   import {onDestroy} from "svelte";
   import Fa from "svelte-fa/src/fa.svelte"
   import FaLayers from "svelte-fa/src/fa-layers.svelte"
-  import {faCircle, faTimesCircle, faUsers} from "@fortawesome/free-solid-svg-icons";
+  import {faCircle, faCompressAlt, faExpandAlt, faTimesCircle, faUsers} from "@fortawesome/free-solid-svg-icons";
 
   /*
    * General code
@@ -285,7 +285,7 @@
           }} on:consider={handleSubscriptionDndConsider} on:finalize={handleSubscriptionDndFinalize}>
             {#each filteredEntries as entry (entry.id)}
               <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                <img class="inline-block h-8 w-8 rounded-2xl align-middle"
+                <img class="inline-block h-8 w-8 rounded-2xl align-top"
                      src={entry.subscription.thumbnailUrl}
                      alt=""
                      loading="lazy"
@@ -297,7 +297,7 @@
                      on:mousedown={startDrag}
                      on:touchstart={startDrag}
                      on:keydown={handleKeyDown}/>
-                <span class="inline-block h-8 align-text-top truncate" style="max-width: calc(100% - 2.5rem);" title={entry.subscription.title}>{entry.subscription.title}</span>
+                <span class="inline-block h-8 pt-1 align-top truncate" style="max-width: calc(100% - 2.5rem);" title={entry.subscription.title}>{entry.subscription.title}</span>
               </div>
             {/each}
           </div>
@@ -319,7 +319,7 @@
                     <Fa icon={faTimesCircle} translateY={0.5}/>
                   </span>
                   {#if isSubscription(entry)}
-                    <img class="inline-block h-8 w-8 rounded-2xl align-middle"
+                    <img class="inline-block h-8 w-8 rounded-2xl align-top"
                          src={entry.subscription.thumbnailUrl}
                          alt=""
                          loading="lazy"
@@ -331,9 +331,12 @@
                          on:mousedown={startDrag}
                          on:touchstart={startDrag}
                          on:keydown={handleKeyDown}/>
-                    <span class="inline-block h-8 align-text-top truncate" style="max-width: calc(100% - 4rem);" title={entry.subscription.title}>{entry.subscription.title}</span>
+                    <span class="inline-block h-8 pt-1 align-top truncate" style="max-width: calc(100% - 4rem);" title={entry.subscription.title}>{entry.subscription.title}</span>
                   {:else if isGroup(entry)}
-                    <span class="inline-block h-8 w-8 rounded-2xl bg-neutral-600 align-middle"
+                    <span class="inline-block float-right h-8 w-16 pl-2 pr-10 -ml-16 cursor-pointer" on:click={() => entry.expanded = !entry.expanded}>
+                      <Fa icon={entry.expanded ? faCompressAlt : faExpandAlt} translateY={0.5}/>
+                    </span>
+                    <span class="inline-block h-8 w-8 rounded-2xl bg-neutral-600 align-top"
                           tabindex={dragDisabled? 0 : -1}
                           aria-label="drag-handle"
                           style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
@@ -345,34 +348,36 @@
                         <Fa icon={faUsers} scale={0.5}/>
                       </FaLayers>
                     </span>
-                    <span class="inline-block h-8 align-text-top truncate" style="max-width: calc(100% - 4rem);" title={entry.name}>{entry.name}</span>
-                    <div class="w-full bg-neutral-500 py-0.5 rounded-2xl" use:dndzone={{
-                      items: entry.subscriptions,
-                      dropFromOthersDisabled: draggedEntry && groupDropDisabled(entry),
-                      dragDisabled,
-                      flipDurationMs,
-                    }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
-                      {#each entry.subscriptions as child (child.id)}
-                        <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                          <span class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeGroupEntry(entry, child)}>
-                            <Fa icon={faTimesCircle} translateY={0.5}/>
-                          </span>
-                          <img class="inline-block h-8 w-8 rounded-2xl align-middle"
-                               src={child.subscription.thumbnailUrl}
-                               alt=""
-                               loading="lazy"
-                               width="88"
-                               height="88"
-                               tabindex={dragDisabled? 0 : -1}
-                               aria-label="drag-handle"
-                               style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
-                               on:mousedown={startDrag}
-                               on:touchstart={startDrag}
-                               on:keydown={handleKeyDown}/>
-                          <span class="inline-block h-8 align-text-top truncate" style="max-width: calc(100% - 4rem);" title={child.subscription.title}>{child.subscription.title}</span>
-                        </div>
-                      {/each}
-                    </div>
+                    <span class="inline-block h-8 pt-1 align-top truncate" style="max-width: calc(100% - 6rem);" title={entry.name}>{entry.name}</span>
+                    {#if entry.expanded}
+                      <div class="w-full bg-neutral-500 py-0.5 rounded-2xl" use:dndzone={{
+                        items: entry.subscriptions,
+                        dropFromOthersDisabled: draggedEntry && groupDropDisabled(entry),
+                        dragDisabled,
+                        flipDurationMs,
+                      }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
+                        {#each entry.subscriptions as child (child.id)}
+                          <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
+                            <span class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeGroupEntry(entry, child)}>
+                              <Fa icon={faTimesCircle} translateY={0.5}/>
+                            </span>
+                            <img class="inline-block h-8 w-8 rounded-2xl align-top"
+                                 src={child.subscription.thumbnailUrl}
+                                 alt=""
+                                 loading="lazy"
+                                 width="88"
+                                 height="88"
+                                 tabindex={dragDisabled? 0 : -1}
+                                 aria-label="drag-handle"
+                                 style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
+                                 on:mousedown={startDrag}
+                                 on:touchstart={startDrag}
+                                 on:keydown={handleKeyDown}/>
+                            <span class="inline-block h-8 pt-1 align-top truncate" style="max-width: calc(100% - 4rem);" title={child.subscription.title}>{child.subscription.title}</span>
+                          </div>
+                        {/each}
+                      </div>
+                    {/if}
                   {/if}
                 </div>
               {/each}

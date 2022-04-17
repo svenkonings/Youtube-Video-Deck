@@ -78,8 +78,7 @@
     </p>
     <div style="height: calc(100% - 2.25rem);">
       {#each subscriptionGroup.subscriptions as groupSubscription}
-        {#await SubscriptionGroup(groupSubscription.subscription.title, false, [groupSubscription.subscription])}
-        {:then subscriptionGroup}
+        {#await SubscriptionGroup(groupSubscription.subscription.title, false, [groupSubscription.subscription]) then subscriptionGroup}
           <svelte:self {subscriptionGroup} {index}/>
         {/await}
       {/each}
