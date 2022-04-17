@@ -56,7 +56,7 @@
         <span class="inline-block h-8 max-w-[26rem] align-text-top truncate" title={subscriptionGroup.name}>{subscriptionGroup.name}</span>
       </a>
       {#if subscriptionGroup.videos.length > 0}
-        <a class="float-right h-8 w-8 pl-2 pr-2 -ml-8" href="https://www.youtube.com/watch?v={subscriptionGroup.videos[0].videoId}&list={subscriptionGroup.subscriptions[0].subscription.uploadsPlaylistId}" on:click|preventDefault={play}>
+        <a class="float-right h-8 w-8 pl-2 pr-2 -ml-8" title="Play all" href="https://www.youtube.com/watch?v={subscriptionGroup.videos[0].videoId}&list={subscriptionGroup.subscriptions[0].subscription.uploadsPlaylistId}" on:click|preventDefault={play}>
           <Fa icon={faPlay} translateY={0.5}/>
         </a>
       {/if}
@@ -69,7 +69,7 @@
       </span>
       <span class="inline-block h-8 max-w-[26rem] align-text-top truncate cursor-default" title={subscriptionGroup.name}>{subscriptionGroup.name}</span>
       {#if subscriptionGroup.videos.length > 0}
-        <span class="float-right inline-block h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={play}>
+        <span class="float-right inline-block h-8 w-8 px-2 -ml-8 cursor-pointer" title="Play all" on:click={play}>
           <Fa icon={faPlay} translateY={0.5}/>
         </span>
       {/if}

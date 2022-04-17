@@ -1,4 +1,4 @@
-# Youtube Video Deck
+# YouTube Video Deck
 [svenkonings.github.io/Youtube-Video-Deck](https://svenkonings.github.io/Youtube-Video-Deck/)
 
 ## Tasks for MVP

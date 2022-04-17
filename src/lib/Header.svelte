@@ -17,7 +17,7 @@
 
 <header class="w-full h-12">
   <Center>
-    <a class="font-extrabold" href={'#'}>Youtube Video Deck</a>
+    <a class="font-extrabold" href={'#'}>YouTube Video Deck</a>
     <div slot="before" class="float-left p-1">
       {#if isAuthorized}
         <PrimaryButton class="w-20 m-1" on:click={showEditor}>Edit</PrimaryButton>
