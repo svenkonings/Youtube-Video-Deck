@@ -86,7 +86,7 @@
     </div>
   </div>
 {:else}
-  <div class="inline-block h-full w-[32rem] bg-neutral-800 p-1 pb-4 ml-1 mr-1 rounded-2xl align-top">
+  <div class="inline-block h-full w-screen max-w-[32rem] min-w-[22rem] bg-neutral-800 p-1 pb-4 ml-1 mr-1 rounded-2xl align-top">
     <p class="text-center font-bold h-8 mb-1">
       {#if subscriptionGroup.subscriptions.length === 1}
         <a href="https://www.youtube.com/channel/{subscriptionGroup.subscriptions[0].subscription.channelId}">

@@ -9,11 +9,11 @@
     playerStore.set({videoId: video.videoId});
   }
 </script>
-<a class="block w-[30rem] bg-neutral-600 p-2 m-2 first:mt-0 last:mb-0 rounded-2xl" href="https://www.youtube.com/watch?v={video.videoId}" on:click|preventDefault={play}>
+<a class="block bg-neutral-600 p-2 m-2 first:mt-0 last:mb-0 rounded-2xl" style="width: calc(100% - 1rem);" href="https://www.youtube.com/watch?v={video.videoId}" on:click|preventDefault={play}>
   <div class="inline-block w-[11rem] align-text-bottom p-1">
     <img src={video.thumbnailUrl} alt="" loading="lazy" width="320" height="180"/>
   </div>
-  <div class="inline-block w-[17rem] align-top text-sm">
+  <div class="inline-block align-top text-sm" style="width: calc(100% - 11.5rem);">
     <p class="font-bold truncate" title={video.title}>{video.title}</p>
     <p class="text-neutral-400 truncate">{timeAgo.format(new Date(video.publishedAt))} - {video.channelTitle}</p>
     <p class="text-ellipsis line-clamp-3">{video.description}</p>
