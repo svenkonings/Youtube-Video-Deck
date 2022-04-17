@@ -1,6 +1,6 @@
 <script lang="ts">
   import VideoCard from "./VideoCard.svelte";
-  import {playerStore} from "../util/stores";
+  import {playerStore, settingsStore} from "../util/stores";
   import {SubscriptionGroup} from "../model/SubscriptionGroup";
   import {getPlaylist, loadMoreVideos} from "../model/SubscriptionGroup";
   import Fa from "svelte-fa/src/fa.svelte"
@@ -8,10 +8,10 @@
   import {faCircle, faCompressAlt, faExpandAlt, faPlay, faUsers} from "@fortawesome/free-solid-svg-icons";
   import Spinner from "./components/Spinner.svelte";
   import {inview} from "svelte-inview";
-  import Center from "./components/Center.svelte";
+  import {writeSettings} from "../api/Drive";
 
   export let subscriptionGroup: SubscriptionGroup;
-  let expanded = false;
+  export let index: number;
   let inView = false;
   let isLoading = false;
   let errorCount = 0;
@@ -49,8 +49,15 @@
     }
   }
 
+  function toggleExpanded() {
+    subscriptionGroup.expanded = !subscriptionGroup.expanded;
+    const settings = $settingsStore;
+    settings.subscriptionGroups[index].expanded = subscriptionGroup.expanded;
+    $settingsStore = settings;
+    writeSettings(settings).then();
+  }
 </script>
-{#if expanded && subscriptionGroup.subscriptions.length > 1}
+{#if subscriptionGroup.expanded && subscriptionGroup.subscriptions.length > 1}
   <div class="inline-block h-full w-max bg-neutral-900 p-1 pb-4 ml-1 mr-1 rounded-2xl align-top">
     <p class="font-bold h-8 mb-1">
       <span class="inline-block h-8 align-middle">
@@ -60,7 +67,7 @@
         </FaLayers>
       </span>
       <span class="inline-block h-8 max-w-[26rem] align-text-top truncate cursor-default" title={subscriptionGroup.name}>{subscriptionGroup.name}</span>
-      <span class="float-left inline-block h-8 w-8 px-2 cursor-pointer" title="Collapse" on:click={() => expanded = false}>
+      <span class="float-left inline-block h-8 w-8 px-2 cursor-pointer" title="Collapse" on:click={toggleExpanded}>
           <Fa icon={faCompressAlt} translateY={0.5}/>
         </span>
       {#if subscriptionGroup.videos.length > 0}
@@ -71,9 +78,9 @@
     </p>
     <div style="height: calc(100% - 2.25rem);">
       {#each subscriptionGroup.subscriptions as groupSubscription}
-        {#await SubscriptionGroup(groupSubscription.subscription.title, [groupSubscription.subscription])}
+        {#await SubscriptionGroup(groupSubscription.subscription.title, false, [groupSubscription.subscription])}
         {:then subscriptionGroup}
-          <svelte:self {subscriptionGroup}/>
+          <svelte:self {subscriptionGroup} {index}/>
         {/await}
       {/each}
     </div>
@@ -99,7 +106,7 @@
           </FaLayers>
         </span>
         <span class="inline-block h-8 max-w-[26rem] align-text-top truncate cursor-default" title={subscriptionGroup.name}>{subscriptionGroup.name}</span>
-        <span class="float-left inline-block h-8 w-8 px-2 -mr-8 cursor-pointer" title="Expand" on:click={() => expanded = true}>
+        <span class="float-left inline-block h-8 w-8 px-2 -mr-8 cursor-pointer" title="Expand" on:click={toggleExpanded}>
           <Fa icon={faExpandAlt} translateY={0.5}/>
         </span>
         {#if subscriptionGroup.videos.length > 0}

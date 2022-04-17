@@ -53,7 +53,7 @@
 
   function addGroup() {
     if (groupNameInput !== '') {
-      settingsEntries.push({id: idCounter++, name: groupNameInput, subscriptions: []});
+      settingsEntries.push({id: idCounter++, name: groupNameInput, expanded: false, subscriptions: []});
       groupNameInput = '';
       settingsEntries = settingsEntries;
     }
@@ -81,6 +81,7 @@
         return {
           id: idCounter++,
           name: s.name,
+          expanded: s.expanded,
           subscriptions: groupSubscriptions.map(subscription => ({
             id: idCounter++,
             name: subscription.title,
@@ -93,11 +94,14 @@
   }
 
   async function save(): Promise<void> {
-    $settingsStore.subscriptionGroups = settingsEntries.map(entry => ({
+    const settings = $settingsStore;
+    settings.subscriptionGroups = settingsEntries.map(entry => ({
       name: entry.name,
+      expanded: isGroup(entry) && entry.expanded,
       subscriptionIds: isGroup(entry) ? entry.subscriptions.map(s => s.subscription.channelId) : [entry.subscription.channelId],
     }));
-    await writeSettings($settingsStore);
+    $settingsStore = settings;
+    await writeSettings(settings);
     $editorVisible = false;
   }
 

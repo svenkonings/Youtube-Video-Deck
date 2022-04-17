@@ -9,6 +9,7 @@ export type SubscriptionEntry = {
 export type SubscriptionGroupEntry = {
   id: number;
   name: string;
+  expanded: boolean;
   subscriptions: SubscriptionEntry[];
 }
 

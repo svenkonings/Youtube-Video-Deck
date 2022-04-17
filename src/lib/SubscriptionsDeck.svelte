@@ -13,42 +13,54 @@
   import {onDestroy} from "svelte";
 
   let initialised = false;
+  let settings: Settings;
+  let subscriptions: Subscriptions;
   let subscriptionGroups: SubscriptionGroup[];
 
   async function init(): Promise<void> {
-    const [settings, subscriptions] = await Promise.all([getSettings(), getSubscriptions()]) as [Settings, Subscriptions];
+    await Promise.all([getSettings(), getSubscriptions()]) as [Settings, Subscriptions];
     $settingsStore = settings;
-    await updateGroups(settings, subscriptions);
+    await updateGroups(settings, subscriptions, true);
     initialised = true;
   }
 
-  onDestroy(settingsStore.subscribe(settings => initialised && updateGroups(settings, $subscriptionsStore)));
+  onDestroy(settingsStore.subscribe(newSettings => initialised && updateGroups(newSettings, $subscriptionsStore)));
 
   async function getSubscriptions(): Promise<Subscriptions> {
-    const storedSubscriptions = $subscriptionsStore;
+    subscriptions = $subscriptionsStore;
     try {
-      const subscriptionsList = await listAllSubscriptions(storedSubscriptions?.etag);
+      const subscriptionsList = await listAllSubscriptions(subscriptions?.etag);
       const channelMap = await listAllChannels(subscriptionsList.items);
-      return Subscriptions(subscriptionsList, channelMap);
+      subscriptions = Subscriptions(subscriptionsList, channelMap);
     } catch (e) {
-      if (storedSubscriptions && e === NOT_MODIFIED) return storedSubscriptions;
+      if (subscriptions != null && e === NOT_MODIFIED) return;
       throw e;
     }
   }
 
   async function getSettings(): Promise<Settings> {
-    let settings = await readSettings();
-    if (!settings) {
+    settings = await readSettings();
+    if (settings == null) {
       settings = Settings();
     }
-    return settings;
   }
 
-  async function updateGroups(settings: Settings, subscriptions: Subscriptions): Promise<void> {
-    await listAllPlaylistItems(subscriptions, settings);
-    $subscriptionsStore = subscriptions;
+  function subscriptionsChanged(newSettings: Settings): boolean {
+    const subscriptionIds = new Set(settings.subscriptionGroups.flatMap(s => s.subscriptionIds));
+    const newSubscriptionIds = new Set(newSettings.subscriptionGroups.flatMap(s => s.subscriptionIds));
+    if (subscriptionIds.size !== newSubscriptionIds.size) return true;
+    for (const id of subscriptionIds) if (!newSubscriptionIds.has(id)) return true;
+    return false;
+  }
+
+  async function updateGroups(newSettings: Settings, subscriptions: Subscriptions, init: boolean = false): Promise<void> {
+    if (init || subscriptionsChanged(newSettings)) {
+      await listAllPlaylistItems(subscriptions, settings);
+      $subscriptionsStore = subscriptions;
+    }
+    settings = newSettings;
     const subscriptionMap = new Map(subscriptions.items.map(s => [s.channelId, s]));
-    subscriptionGroups = await Promise.all(settings.subscriptionGroups.map(s => SubscriptionGroup(s.name, s.subscriptionIds.map(id => subscriptionMap.get(id)))));
+    subscriptionGroups = await Promise.all(settings.subscriptionGroups.map(s => SubscriptionGroup(s.name, s.expanded, s.subscriptionIds.map(id => subscriptionMap.get(id)))));
   }
 </script>
 {#await init()}
@@ -64,8 +76,8 @@
     <div class="w-full" style="height: calc(100% - 6px);">
       <HorizontalScroll>
         <div class="w-max h-full">
-          {#each subscriptionGroups as subscriptionGroup}
-            <SubscriptionOverview {subscriptionGroup}/>
+          {#each subscriptionGroups as subscriptionGroup, index}
+            <SubscriptionOverview {subscriptionGroup} {index}/>
           {/each}
         </div>
       </HorizontalScroll>

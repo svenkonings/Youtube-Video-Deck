@@ -6,6 +6,7 @@ export type Settings = {
 
 export type SubscriptionGroupSettings = {
   name: string,
+  expanded: boolean;
   subscriptionIds: string[]
 }
 
@@ -13,6 +14,7 @@ export function Settings(subscriptionGroups: SubscriptionGroup[] = []): Settings
   return {
     subscriptionGroups: subscriptionGroups.map(subscriptionGroup => ({
       name: subscriptionGroup.name,
+      expanded: subscriptionGroup.expanded,
       subscriptionIds: subscriptionGroup.subscriptions.map(s => s.subscription.channelId),
     })),
   }

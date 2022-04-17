@@ -5,6 +5,7 @@ import type {PlayerInput} from "../types/PlayerInput";
 
 export type SubscriptionGroup = {
   name: string;
+  expanded: boolean;
   subscriptions: GroupSubscription[];
   videos: Video[]
 }
@@ -14,9 +15,10 @@ export type GroupSubscription = {
   uploadIndex: number;
 }
 
-export async function SubscriptionGroup(name: string, subscriptions: Subscription[]): Promise<SubscriptionGroup> {
+export async function SubscriptionGroup(name: string, expanded: boolean, subscriptions: Subscription[]): Promise<SubscriptionGroup> {
   const subscriptionGroup = {
     name: name,
+    expanded: expanded,
     subscriptions: subscriptions.map(subscription => ({
       subscription: subscription,
       uploadIndex: 0,
