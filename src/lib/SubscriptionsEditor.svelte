@@ -276,7 +276,7 @@
             <Center>Subscriptions</Center>
           </div>
           <div class="w-full overflow-y-auto y-scroll mb-2" style="height: calc(100% - 2rem);">
-            <div class="w-full h-max" use:dndzone={{
+            <div class="h-max mx-[2px] rounded-xl" style="width: calc(100% - 4px);" use:dndzone={{
               items: filteredEntries,
               dropFromOthersDisabled: true,
               dragDisabled,
@@ -307,7 +307,7 @@
             <Center>Deck</Center>
           </div>
           <div class="w-full overflow-y-auto y-scroll mb-2" style="height: calc(100% - 2rem);" bind:this={deckElement} on:scroll={autoScrollSync}>
-            <div class="w-full h-max" use:dndzone={{
+            <div class="h-max mx-[2px] rounded-xl" style="width: calc(100% - 4px);" use:dndzone={{
               items: settingsEntries,
               dropFromOthersDisabled: draggedEntry && settingsDropDisabled(),
               dragDisabled,
@@ -353,7 +353,7 @@
                     </span>
                     <span class="inline-block h-8 pt-1 align-top truncate" style="max-width: calc(100% - 6rem);" title={entry.name}>{entry.name}</span>
                     {#if entry.expanded}
-                      <div class="w-full bg-neutral-500 py-0.5 rounded-2xl" use:dndzone={{
+                      <div class="w-full bg-neutral-500 mt-1 py-0.5 rounded-2xl" use:dndzone={{
                         items: entry.subscriptions,
                         dropFromOthersDisabled: draggedEntry && groupDropDisabled(entry),
                         dragDisabled,
