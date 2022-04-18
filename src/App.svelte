@@ -32,23 +32,25 @@
   }
 </script>
 
-<main class="w-full h-full bg-neutral-700 text-white">
-  <Header {isSignedIn} {isAuthorized}/>
-  <section class="w-full" style="height: calc(100% - 3rem);">
-    {#await loadGapi()}
-      <Center>
-        <Spinner/>
-      </Center>
-    {:then _}
-      {#if isAuthorized}
-        <SubscriptionsDeck/>
-        <Player/>
-        <SubscriptionsEditor/>
-      {:else}
-        <LoginScreen {isSignedIn}/>
-      {/if}
-    {:catch error}
-      <p class="text-center">{JSON.stringify(error)}</p>
-    {/await}
-  </section>
+<main class="w-full h-full overflow-x-auto x-scroll bg-neutral-700 text-white">
+  <div class="w-full h-full min-w-[22rem]">
+    <Header {isSignedIn} {isAuthorized}/>
+    <section class="w-full" style="height: calc(100% - 3rem);">
+      {#await loadGapi()}
+        <Center>
+          <Spinner/>
+        </Center>
+      {:then _}
+        {#if isAuthorized}
+          <SubscriptionsDeck/>
+          <Player/>
+          <SubscriptionsEditor/>
+        {:else}
+          <LoginScreen {isSignedIn}/>
+        {/if}
+      {:catch error}
+        <p class="text-center">{JSON.stringify(error)}</p>
+      {/await}
+    </section>
+  </div>
 </main>

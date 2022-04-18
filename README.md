@@ -10,6 +10,7 @@
   - Fix expand/collapse buttons
   - Improve dnd styles
   - Make filter initially enabled
+  - Fix scroll on first drag
   - Fix scroll up when dragging subscription after scrolling to bottom of list (dnd library bug?)
 - Handle unsubscribe (remove from subscriptions and group)
 - Performance optimization with https://github.com/Skayo/svelte-tiny-virtual-list
