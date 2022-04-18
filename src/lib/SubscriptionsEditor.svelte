@@ -218,7 +218,7 @@
    */
 
   let deckElement: HTMLDivElement;
-  $: deckBounds = deckElement?.getBoundingClientRect();
+  let deckBounds: DOMRect;
   const scrollOffset = 32;
   const duration = 100;
   const autoScroll = tweened(0, {duration: 2 * duration});
@@ -229,6 +229,7 @@
 
   function startAutoScroll() {
     if (!autoScrollInterval) {
+      deckBounds = deckElement.getBoundingClientRect();
       autoScrollInterval = setInterval(updateAutoScroll, duration);
     }
   }
@@ -236,11 +237,12 @@
   function updateAutoScroll(): void {
     const draggedElement = document.getElementById('dnd-action-dragged-el');
     if (draggedElement) {
-      const draggedBounds = draggedElement.getBoundingClientRect();
-      if (draggedBounds.bottom + scrollOffset >= deckBounds.bottom) {
-        autoScroll.update(value => clampToContainer(value + draggedBounds.bottom + scrollOffset - deckBounds.bottom));
-      } else if (draggedBounds.top - scrollOffset <= deckBounds.top) {
-        autoScroll.update(value => clampToContainer(value + draggedBounds.top - scrollOffset - deckBounds.top));
+      const top = parseFloat(draggedElement.style.top.slice(0, -2)) + parseFloat(draggedElement.style.transform.split(', ')[1].slice(0, -2));
+      const bottom = top + parseFloat(draggedElement.style.height.slice(0, -2));
+      if (bottom + scrollOffset >= deckBounds.bottom) {
+        autoScroll.update(value => clampToContainer(value + bottom + scrollOffset - deckBounds.bottom));
+      } else if (top - scrollOffset <= deckBounds.top) {
+        autoScroll.update(value => clampToContainer(value + top - scrollOffset - deckBounds.top));
       }
     } else {
       clearInterval(autoScrollInterval);
@@ -318,10 +320,10 @@
             }} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
               {#each settingsEntries as entry (entry.id)}
                 <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                  <span class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeSettingsEntry(entry)}>
-                    <Fa icon={faTimesCircle} translateY={0.5}/>
-                  </span>
                   {#if isSubscription(entry)}
+                    <span class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeSettingsEntry(entry)}>
+                      <Fa icon={faTimesCircle} translateY={0.5}/>
+                    </span>
                     <img class="inline-block h-8 w-8 rounded-2xl align-top"
                          src={entry.subscription.thumbnailUrl}
                          alt=""
@@ -336,7 +338,10 @@
                          on:keydown={handleKeyDown}/>
                     <span class="inline-block h-8 pt-1 align-top truncate" style="max-width: calc(100% - 4rem);" title={entry.subscription.title}>{entry.subscription.title}</span>
                   {:else if isGroup(entry)}
-                    <span class="inline-block float-right h-8 w-16 pl-2 pr-10 -ml-16 cursor-pointer" on:click={() => entry.expanded = !entry.expanded}>
+                    <span class="inline-block float-right h-8 w-8 px-2 cursor-pointer" on:click={() => removeSettingsEntry(entry)}>
+                      <Fa icon={faTimesCircle} translateY={0.5}/>
+                    </span>
+                    <span class="inline-block float-right h-8 w-8 px-2 -ml-16 cursor-pointer" on:click={() => entry.expanded = !entry.expanded}>
                       <Fa icon={entry.expanded ? faCompressAlt : faExpandAlt} translateY={0.5}/>
                     </span>
                     <span class="inline-block h-8 w-8 rounded-2xl bg-neutral-600 align-top"
