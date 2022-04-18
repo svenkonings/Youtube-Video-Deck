@@ -21,7 +21,7 @@ export function Subscription(subscription: gapi.client.youtube.Subscription, cha
 }
 
 export function addUploads(subscription: Subscription, uploads: gapi.client.youtube.PlaylistItemListResponse): void {
-  if (subscription.uploadsEtag == null) {
+  if (!subscription.uploadsEtag) {
     subscription.uploadsEtag = uploads.etag;
   }
   subscription.nextUploadPageToken = uploads.nextPageToken;

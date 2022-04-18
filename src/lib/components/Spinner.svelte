@@ -1,7 +1,3 @@
-<script lang="ts">
-  import Center from "./Center.svelte";
-</script>
-
 <style>
   .loader {
     width: 48px;

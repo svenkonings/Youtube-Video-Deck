@@ -10,9 +10,10 @@
   import Center from "./components/Center.svelte";
   import {tweened} from "svelte/motion";
   import {onDestroy} from "svelte";
-  import Fa from "svelte-fa/src/fa.svelte"
-  import FaLayers from "svelte-fa/src/fa-layers.svelte"
+  import Fa from "svelte-fa/src/fa.svelte";
+  import FaLayers from "svelte-fa/src/fa-layers.svelte";
   import {faCircle, faCompressAlt, faExpandAlt, faTimesCircle, faUsers} from "@fortawesome/free-solid-svg-icons";
+  import {fade} from "../util/fade";
 
   /*
    * General code
@@ -258,7 +259,7 @@
     }, duration);
   }
 </script>
-<div class="fixed inset-0 z-10 bg-black/80" class:fadeIn={$editorVisible} class:fadeOut={!$editorVisible}>
+<div class="fixed inset-0 z-10 bg-black/80" use:fade={{visible: $editorVisible, initial: false}}>
   <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[40rem] bg-neutral-700 rounded-2xl overflow-x-auto x-scroll">
     <div class="min-w-[20.5rem] w-full h-full">
       <div class="w-full h-16">
@@ -277,29 +278,31 @@
           <div class="w-full h-6">
             <Center>Subscriptions</Center>
           </div>
-          <div class="w-full overflow-y-auto y-scroll mb-2" style="height: calc(100% - 2rem);" use:dndzone={{
-            items: filteredEntries,
-            dropFromOthersDisabled: true,
-            dragDisabled,
-            flipDurationMs
-          }} on:consider={handleSubscriptionDndConsider} on:finalize={handleSubscriptionDndFinalize}>
-            {#each filteredEntries as entry (entry.id)}
-              <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
-                <img class="inline-block h-8 w-8 rounded-2xl align-top"
-                     src={entry.subscription.thumbnailUrl}
-                     alt=""
-                     loading="lazy"
-                     width="88"
-                     height="88"
-                     tabindex={dragDisabled? 0 : -1}
-                     aria-label="drag-handle"
-                     style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
-                     on:mousedown={startDrag}
-                     on:touchstart={startDrag}
-                     on:keydown={handleKeyDown}/>
-                <span class="inline-block h-8 pt-1 align-top truncate" style="max-width: calc(100% - 2.5rem);" title={entry.subscription.title}>{entry.subscription.title}</span>
-              </div>
-            {/each}
+          <div class="w-full overflow-y-auto y-scroll mb-2" style="height: calc(100% - 2rem);">
+            <div class="w-full h-max" use:dndzone={{
+              items: filteredEntries,
+              dropFromOthersDisabled: true,
+              dragDisabled,
+              flipDurationMs
+            }} on:consider={handleSubscriptionDndConsider} on:finalize={handleSubscriptionDndFinalize}>
+              {#each filteredEntries as entry (entry.id)}
+                <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
+                  <img class="inline-block h-8 w-8 rounded-2xl align-top"
+                       src={entry.subscription.thumbnailUrl}
+                       alt=""
+                       loading="lazy"
+                       width="88"
+                       height="88"
+                       tabindex={dragDisabled? 0 : -1}
+                       aria-label="drag-handle"
+                       style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
+                       on:mousedown={startDrag}
+                       on:touchstart={startDrag}
+                       on:keydown={handleKeyDown}/>
+                  <span class="inline-block h-8 pt-1 align-top truncate" style="max-width: calc(100% - 2.5rem);" title={entry.subscription.title}>{entry.subscription.title}</span>
+                </div>
+              {/each}
+            </div>
           </div>
         </div>
         <div class="inline-block min-w-[9.5rem] m-1 bg-neutral-800 rounded-xl" style="width: calc(50% - 0.65rem); height: calc(100% - 0.5rem);">
@@ -396,16 +399,3 @@
     </div>
   </div>
 </div>
-<style>
-  .fadeIn {
-    visibility: visible;
-    opacity: 1;
-    transition: visibility 0s linear 0s, opacity 300ms;
-  }
-
-  .fadeOut {
-    visibility: hidden;
-    opacity: 0;
-    transition: visibility 0s linear 300ms, opacity 300ms;
-  }
-</style>

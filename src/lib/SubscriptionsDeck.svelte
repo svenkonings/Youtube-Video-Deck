@@ -4,13 +4,14 @@
   import SubscriptionOverview from "./SubscriptionOverview.svelte";
   import HorizontalScroll from "./components/HorizontalScroll.svelte";
   import {listAllChannels, listAllPlaylistItems, listAllSubscriptions} from "../api/YouTube";
-  import {settingsStore, subscriptionsStore} from "../util/stores";
+  import {editorVisible, settingsStore, subscriptionsStore} from "../util/stores";
   import {NOT_MODIFIED} from "../api/Gapi";
   import {SubscriptionGroup} from "../model/SubscriptionGroup";
   import {readSettings} from "../api/Drive";
   import {Settings} from "../model/Settings";
   import Center from "./components/Center.svelte";
   import {onDestroy} from "svelte";
+  import {fade} from "../util/fade";
 
   let initialised = false;
   let settings: Settings;
@@ -33,14 +34,14 @@
       const channelMap = await listAllChannels(subscriptionsList.items);
       subscriptions = Subscriptions(subscriptionsList, channelMap);
     } catch (e) {
-      if (subscriptions != null && e === NOT_MODIFIED) return;
+      if (subscriptions && e === NOT_MODIFIED) return;
       throw e;
     }
   }
 
   async function getSettings(): Promise<Settings> {
     settings = await readSettings();
-    if (settings == null) {
+    if (!settings) {
       settings = Settings();
     }
   }
@@ -64,7 +65,9 @@
   }
 </script>
 {#await init()}
-  <Center><Spinner/></Center>
+  <Center>
+    <Spinner/>
+  </Center>
 {:then _}
   {#if subscriptionGroups.length === 0}
     <Center>
@@ -73,7 +76,7 @@
       <p>Click the "Edit" button to add subscriptions</p>
     </Center>
   {:else}
-    <div class="w-full" style="height: calc(100% - 6px);">
+    <div class="w-full" style="height: calc(100% - 6px);" use:fade={{visible: !$editorVisible, initial: true}}>
       <HorizontalScroll>
         <div class="w-max h-full">
           {#each subscriptionGroups as subscriptionGroup, index}

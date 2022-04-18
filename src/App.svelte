@@ -36,12 +36,14 @@
   <Header {isSignedIn} {isAuthorized}/>
   <section class="w-full" style="height: calc(100% - 3rem);">
     {#await loadGapi()}
-      <Center><Spinner/></Center>
+      <Center>
+        <Spinner/>
+      </Center>
     {:then _}
       {#if isAuthorized}
+        <SubscriptionsDeck/>
         <Player/>
         <SubscriptionsEditor/>
-        <SubscriptionsDeck/>
       {:else}
         <LoginScreen {isSignedIn}/>
       {/if}

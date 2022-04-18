@@ -1,8 +1,9 @@
 <script lang="ts">
   import {onDestroy} from "svelte";
-  import {playerStore} from "../util/stores";
+  import {editorVisible, playerStore} from "../util/stores";
   import type {PlayerInput} from "../types/PlayerInput";
   import Spinner from "./components/Spinner.svelte";
+  import {fade} from "../util/fade";
 
   enum PlayerInitState {
     UNINITIALISED,
@@ -51,7 +52,7 @@
           },
           onError: e => {
             console.error('playerError', e);
-            if (player.getPlaylist() != null) {
+            if (player.getPlaylist()) {
               player.nextVideo();
             }
           }
@@ -101,7 +102,7 @@
   }
 </script>
 <svelte:window on:resize={() => player && player.setSize(...calcPlayerSize())}/>
-<div class="fixed inset-0 z-10 bg-black/80" class:fadeIn={backgroundVisible} class:fadeOut={!backgroundVisible} on:click|self={() => backgroundVisible = false}>
+<div class="fixed inset-0 z-10 bg-black/80" use:fade={{visible: backgroundVisible && !$editorVisible, initial: false}} on:click|self={() => backgroundVisible = false}>
   <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20" class:invisible={!backgroundVisible || playerVisible}>
     <Spinner/>
   </div>
@@ -109,16 +110,3 @@
     <div id="player"></div>
   </div>
 </div>
-<style>
-  .fadeIn {
-    visibility: visible;
-    opacity: 1;
-    transition: visibility 0s linear 0s, opacity 300ms;
-  }
-
-  .fadeOut {
-    visibility: hidden;
-    opacity: 0;
-    transition: visibility 0s linear 300ms, opacity 300ms;
-  }
-</style>

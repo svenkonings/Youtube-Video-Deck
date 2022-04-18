@@ -1,8 +1,7 @@
 <script lang="ts">
   import VideoCard from "./VideoCard.svelte";
   import {playerStore, settingsStore} from "../util/stores";
-  import {SubscriptionGroup} from "../model/SubscriptionGroup";
-  import {getPlaylist, loadMoreVideos} from "../model/SubscriptionGroup";
+  import {getPlaylist, loadMoreVideos, SubscriptionGroup} from "../model/SubscriptionGroup";
   import Fa from "svelte-fa/src/fa.svelte"
   import FaLayers from "svelte-fa/src/fa-layers.svelte"
   import {faCircle, faCompressAlt, faExpandAlt, faPlay, faUsers} from "@fortawesome/free-solid-svg-icons";

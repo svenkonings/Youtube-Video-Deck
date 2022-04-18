@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+.fadeIn {
+  opacity: 1;
+  transition: opacity 300ms;
+}
+
+.fadeOut {
+  opacity: 0;
+  transition: opacity 300ms;
+}
+
 /* Firefox scrollbar styles */
 .y-scroll {
   scrollbar-width: thin;

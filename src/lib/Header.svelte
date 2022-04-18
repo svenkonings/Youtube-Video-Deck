@@ -1,7 +1,7 @@
 <script lang="ts">
   import PrimaryButton from "./components/PrimaryButton.svelte";
   import Center from "./components/Center.svelte";
-  import {editorVisible} from "../util/stores";
+  import {editorVisible, settingsStore, subscriptionsStore} from "../util/stores";
 
   export let isSignedIn: boolean;
   export let isAuthorized: boolean;
@@ -19,7 +19,7 @@
   <Center>
     <a class="font-extrabold" href={'#'}>YouTube Video Deck</a>
     <div slot="before" class="float-left p-1">
-      {#if isAuthorized}
+      {#if isAuthorized && $settingsStore && $subscriptionsStore}
         <PrimaryButton class="w-20 m-1" on:click={showEditor}>Edit</PrimaryButton>
       {/if}
     </div>
