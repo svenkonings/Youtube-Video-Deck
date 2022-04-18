@@ -3,21 +3,21 @@
 
 ## Tasks for MVP
 - Editor
-  - Make style slightly more touch-friendly
   - Add tutorial for dragging subscriptions
   - Add loading animation on save (Also load added subscriptions?)
   - Allow searching subscriptions
   - Improve dnd styles
-  - Make filter initially enabled
+  - Improve keyboard controls
 - Handle unsubscribe (remove from subscriptions and group)
-- Performance optimization with https://github.com/Skayo/svelte-tiny-virtual-list
 
 ## Other task ideas
 - Add ripple effect to buttons
   - https://css-tricks.com/how-to-recreate-the-ripple-effect-of-material-design-buttons/
 - Limit refresh time of cached requests
+- Use new google sign-in library
+  - Find a way to preserve auth states through reloads
+- Performance optimization with https://github.com/Skayo/svelte-tiny-virtual-list
 - Scroll per horizontal item (on small screens)
-- Use view width as max deck column width
 - Editor button controls
   - Allow selecting element in right-side of editor
   - Add plus button to left-side of editor that adds the subscriptions to or below the selected element

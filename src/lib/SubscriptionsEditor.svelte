@@ -33,15 +33,10 @@
 
   let idCounter: number = 0;
   let subscriptionEntries: SubscriptionEntry[] = [];
-  let filterEnabled = false;
+  let filterEnabled = true;
   let filteredEntries = [];
   let settingsEntries: SettingsEntry[] = [];
   let groupNameInput: string = '';
-
-  function toggleFilter(): void {
-    filterEnabled = !filterEnabled;
-    updateFilter();
-  }
 
   function updateFilter() {
     if (filterEnabled) {
@@ -269,7 +264,7 @@
           <div class="min-w-[14rem]">
             <p class="font-extrabold">Deck Editor</p>
             <label>
-              <input type="checkbox" value={filterEnabled} on:change={toggleFilter}/>
+              <input type="checkbox" bind:checked={filterEnabled} on:change={updateFilter}/>
               Hide added subscriptions
             </label>
           </div>
