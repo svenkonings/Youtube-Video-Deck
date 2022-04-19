@@ -75,7 +75,7 @@
         </span>
       {/if}
     </p>
-    <div style="height: calc(100% - 2.25rem);">
+    <div class="h-[calc(100%-2.25rem)]">
       {#each subscriptionGroup.subscriptions as groupSubscription}
         {#await SubscriptionGroup(groupSubscription.subscription.title, false, [groupSubscription.subscription]) then subscriptionGroup}
           <svelte:self {subscriptionGroup} {index}/>
@@ -114,7 +114,7 @@
         {/if}
       {/if}
     </p>
-    <div class="overflow-y-scroll y-scroll-hover overflow-x-hidden" style="height: calc(100% - 2.25rem);" on:wheel|stopPropagation|passive>
+    <div class="h-[calc(100%-2.25rem)] overflow-y-scroll y-scroll-hover overflow-x-hidden" on:wheel|stopPropagation|passive>
       {#each subscriptionGroup.videos as video}
         <VideoCard {video}/>
       {/each}

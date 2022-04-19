@@ -49,7 +49,7 @@
 
   function addGroup() {
     if (groupNameInput !== '') {
-      settingsEntries.push({id: idCounter++, name: groupNameInput, expanded: false, subscriptions: []});
+      settingsEntries.push({id: idCounter++, name: groupNameInput, expanded: true, subscriptions: []});
       groupNameInput = '';
       settingsEntries = settingsEntries;
     }
@@ -270,20 +270,20 @@
           </div>
         </Center>
       </div>
-      <div class="w-full" style="height: calc(100% - 7rem)">
-        <div class="inline-block min-w-[9.5rem] m-1 bg-neutral-800 rounded-xl" style="width: calc(50% - 0.65rem); height: calc(100% - 0.5rem);">
+      <div class="w-full h-[calc(100%-7rem)]">
+        <div class="inline-block w-[calc(50%-0.65rem)] min-w-[9.5rem] h-[calc(100%-0.5rem)] m-1 bg-neutral-800 rounded-xl">
           <div class="w-full h-6">
             <Center>Subscriptions</Center>
           </div>
-          <div class="w-full overflow-y-auto y-scroll mb-2" style="height: calc(100% - 2rem);">
-            <div class="h-max mx-[2px] rounded-xl" style="width: calc(100% - 4px);" use:dndzone={{
+          <div class="w-full h-[calc(100%-2rem)] overflow-y-auto y-scroll mb-2">
+            <div class="w-[calc(100%-4px)] h-max mx-[2px] rounded-xl" use:dndzone={{
               items: filteredEntries,
               dropFromOthersDisabled: true,
               dragDisabled,
               flipDurationMs
             }} on:consider={handleSubscriptionDndConsider} on:finalize={handleSubscriptionDndFinalize}>
               {#each filteredEntries as entry (entry.id)}
-                <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
+                <div class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl" animate:flip={{duration:flipDurationMs}}>
                   <img class="inline-block h-8 w-8 rounded-2xl align-top"
                        src={entry.subscription.thumbnailUrl}
                        alt=""
@@ -296,25 +296,25 @@
                        on:mousedown={startDrag}
                        on:touchstart={startDrag}
                        on:keydown={handleKeyDown}/>
-                  <span class="inline-block h-8 pt-1 align-top truncate" style="max-width: calc(100% - 2.5rem);" title={entry.subscription.title}>{entry.subscription.title}</span>
+                  <span class="inline-block max-w-[calc(100%-2.5rem)] h-8 pt-1 align-top truncate" title={entry.subscription.title}>{entry.subscription.title}</span>
                 </div>
               {/each}
             </div>
           </div>
         </div>
-        <div class="inline-block min-w-[9.5rem] m-1 bg-neutral-800 rounded-xl" style="width: calc(50% - 0.65rem); height: calc(100% - 0.5rem);">
+        <div class="inline-block w-[calc(50%-0.65rem)] min-w-[9.5rem] h-[calc(100%-0.5rem)] m-1 bg-neutral-800 rounded-xl">
           <div class="w-full h-6">
             <Center>Deck</Center>
           </div>
-          <div class="w-full overflow-y-auto y-scroll mb-2" style="height: calc(100% - 2rem);" bind:this={deckElement} on:scroll={autoScrollSync}>
-            <div class="h-max mx-[2px] rounded-xl" style="width: calc(100% - 4px);" use:dndzone={{
+          <div class="w-full h-[calc(100%-2rem)] overflow-y-auto y-scroll mb-2" bind:this={deckElement} on:scroll={autoScrollSync}>
+            <div class="w-[calc(100%-4px)] h-max mx-[2px] rounded-xl" use:dndzone={{
               items: settingsEntries,
               dropFromOthersDisabled: draggedEntry && settingsDropDisabled(),
               dragDisabled,
               flipDurationMs,
             }} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
               {#each settingsEntries as entry (entry.id)}
-                <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
+                <div class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" animate:flip={{duration:flipDurationMs}}>
                   {#if isSubscription(entry)}
                     <span class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeSettingsEntry(entry)}>
                       <Fa icon={faTimesCircle} translateY={0.5}/>
@@ -331,7 +331,7 @@
                          on:mousedown={startDrag}
                          on:touchstart={startDrag}
                          on:keydown={handleKeyDown}/>
-                    <span class="inline-block h-8 pt-1 align-top truncate" style="max-width: calc(100% - 4rem);" title={entry.subscription.title}>{entry.subscription.title}</span>
+                    <span class="inline-block max-w-[calc(100%-4rem)] h-8 pt-1 align-top truncate" title={entry.subscription.title}>{entry.subscription.title}</span>
                   {:else if isGroup(entry)}
                     <span class="inline-block float-right h-8 w-8 px-2 cursor-pointer" on:click={() => removeSettingsEntry(entry)}>
                       <Fa icon={faTimesCircle} translateY={0.5}/>
@@ -351,7 +351,7 @@
                         <Fa icon={faUsers} scale={0.5}/>
                       </FaLayers>
                     </span>
-                    <span class="inline-block h-8 pt-1 align-top truncate" style="max-width: calc(100% - 6rem);" title={entry.name}>{entry.name}</span>
+                    <span class="inline-block max-w-[calc(100%-6rem)] h-8 pt-1 align-top truncate" title={entry.name}>{entry.name}</span>
                     {#if entry.expanded}
                       <div class="w-full bg-neutral-500 mt-1 py-0.5 rounded-2xl" use:dndzone={{
                         items: entry.subscriptions,
@@ -360,7 +360,7 @@
                         flipDurationMs,
                       }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
                         {#each entry.subscriptions as child (child.id)}
-                          <div class="bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" style="width: calc(100% - 0.5rem);" animate:flip={{duration:flipDurationMs}}>
+                          <div class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" animate:flip={{duration:flipDurationMs}}>
                             <span class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeGroupEntry(entry, child)}>
                               <Fa icon={faTimesCircle} translateY={0.5}/>
                             </span>
@@ -376,7 +376,11 @@
                                  on:mousedown={startDrag}
                                  on:touchstart={startDrag}
                                  on:keydown={handleKeyDown}/>
-                            <span class="inline-block h-8 pt-1 align-top truncate" style="max-width: calc(100% - 4rem);" title={child.subscription.title}>{child.subscription.title}</span>
+                            <span class="inline-block max-w-[calc(100%-4rem)] h-8 pt-1 align-top truncate" title={child.subscription.title}>{child.subscription.title}</span>
+                          </div>
+                        {:else}
+                          <div class="w-[calc(100%-0.5rem)] h-8 m-1.5">
+                            <p class="w-full pt-1 text-center text-neutral-300">Drop subscriptions to add</p>
                           </div>
                         {/each}
                       </div>
@@ -390,8 +394,8 @@
       </div>
       <div class="w-full h-12">
         <PrimaryButton class="w-20 m-1 float-left" on:click={close}>Close</PrimaryButton>
-        <div class="inline-block m-1" style="width: calc(100% - 11.5rem);">
-          <input type="text" class="bg-neutral-800 p-1.5 rounded-l-2xl" style="width: calc(100% - 6rem);" bind:value={groupNameInput}/><!--
+        <div class="inline-block w-[calc(100%-11.5rem)] m-1">
+          <input type="text" class="w-[calc(100%-6rem)] bg-neutral-800 p-1.5 rounded-l-2xl" bind:value={groupNameInput}/><!--
        --><PrimaryButton class="w-24 rounded-l-none" on:click={addGroup}>Add group</PrimaryButton>
         </div>
         <PrimaryButton class="w-20 m-1 float-right" on:click={save}>Save</PrimaryButton>

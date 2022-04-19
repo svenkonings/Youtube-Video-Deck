@@ -76,7 +76,7 @@
       <p>Click the "Edit" button to add subscriptions</p>
     </Center>
   {:else}
-    <div class="w-full" style="height: calc(100% - 6px);" use:fade={{visible: !$editorVisible, initial: true}}>
+    <div class="w-full h-[calc(100%-6px)]" use:fade={{visible: !$editorVisible, initial: true}}>
       <HorizontalScroll>
         <div class="w-max h-full">
           {#each subscriptionGroups as subscriptionGroup, index}
