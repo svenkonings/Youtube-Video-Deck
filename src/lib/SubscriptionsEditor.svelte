@@ -1,3 +1,4 @@
+<svelte:options immutable/>
 <script lang="ts">
   import {flip} from "svelte/animate";
   import type {DndEvent} from "svelte-dnd-action";
@@ -49,9 +50,8 @@
 
   function addGroup() {
     if (groupNameInput !== '') {
-      settingsEntries.push({id: idCounter++, name: groupNameInput, expanded: true, subscriptions: []});
+      settingsEntries = [...settingsEntries, {id: idCounter++, name: groupNameInput, expanded: true, subscriptions: []}];
       groupNameInput = '';
-      settingsEntries = settingsEntries;
     }
   }
 

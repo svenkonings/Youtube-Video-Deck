@@ -1,3 +1,4 @@
+<svelte:options immutable/>
 <script lang="ts">
   import Spinner from "./lib/components/Spinner.svelte";
   import LoginScreen from "./lib/LoginScreen.svelte";

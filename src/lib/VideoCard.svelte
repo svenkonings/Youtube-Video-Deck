@@ -1,3 +1,4 @@
+<svelte:options immutable/>
 <script lang="ts">
   import type {Video} from "../model/Video";
   import {timeAgo} from "../util/TimeAgo";

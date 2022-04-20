@@ -1,3 +1,4 @@
+<svelte:options immutable/>
 <style>
   .loader {
     width: 48px;

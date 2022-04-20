@@ -1,3 +1,4 @@
+<svelte:options immutable/>
 <script lang="ts">
   import {Subscriptions} from "../model/Subscriptions";
   import Spinner from "./components/Spinner.svelte";
