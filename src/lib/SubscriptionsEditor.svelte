@@ -15,6 +15,7 @@
   import FaLayers from "svelte-fa/src/fa-layers.svelte";
   import {faCircle, faCompressAlt, faExpandAlt, faTimesCircle, faUsers} from "@fortawesome/free-solid-svg-icons";
   import {fade} from "../util/fade";
+  import {trapFocus} from "../util/trapFocus";
 
   /*
    * General code
@@ -256,7 +257,7 @@
     }, duration);
   }
 </script>
-<div class="fixed inset-0 z-10 bg-black/80" use:fade={{visible: $editorVisible, initial: false}}>
+<div class="fixed inset-0 z-10 bg-black/80" use:fade={{visible: $editorVisible, initial: false}} use:trapFocus={$editorVisible}>
   <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[40rem] bg-neutral-700 rounded-2xl overflow-x-auto x-scroll">
     <div class="min-w-[20.5rem] w-full h-full">
       <div class="w-full h-16">

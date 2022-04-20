@@ -5,6 +5,7 @@
   import type {PlayerInput} from "../types/PlayerInput";
   import Spinner from "./components/Spinner.svelte";
   import {fade} from "../util/fade";
+  import {trapFocus} from "../util/trapFocus";
 
   enum PlayerInitState {
     UNINITIALISED,
@@ -107,7 +108,8 @@
   <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20" class:invisible={!backgroundVisible || playerVisible}>
     <Spinner/>
   </div>
-  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30" class:invisible={!backgroundVisible || !playerVisible}>
-    <div id="player"></div>
+  <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30" class:invisible={!backgroundVisible || !playerVisible} use:trapFocus={backgroundVisible && playerVisible}>
+    <!-- TODO: Add external close button so player can be closed using keyboard controls -->
+    <div id="player" tabindex="0"></div>
   </div>
 </div>
