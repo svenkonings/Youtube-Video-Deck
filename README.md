@@ -8,7 +8,6 @@
   - Allow searching subscriptions
   - Improve keyboard controls
 - Handle unsubscribe (remove from subscriptions and group)
-- Display loading error when new videos fail to load (include retry button)
 
 ## Other task ideas
 - Add ripple effect to buttons

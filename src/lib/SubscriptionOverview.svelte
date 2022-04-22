@@ -10,12 +10,14 @@
   import {writeSettings} from "../api/Drive";
   import {fly} from "svelte/transition"
   import {backOut} from "svelte/easing";
+  import PrimaryButton from "./components/PrimaryButton.svelte";
 
   export let subscriptionGroup: SubscriptionGroup;
   export let index: number;
   let inView = false;
   let isLoading = false;
   let errorCount = 0;
+  let lastError;
 
   async function play(): Promise<void> {
     $playerStore = {loading: true};
@@ -24,7 +26,7 @@
     $playerStore = playerInput;
   }
 
-  $: if (inView) {
+  $: if (inView && errorCount < 3) {
     loadWhileInView();
   }
 
@@ -45,6 +47,7 @@
       } catch (e) {
         console.error(e);
         errorCount++;
+        lastError = e;
       }
       isLoading = false;
     }
@@ -121,9 +124,17 @@
         <VideoCard {video}/>
       {/each}
       {#if subscriptionGroup.subscriptions.some(s => s.subscription.nextUploadPageToken != null)}
-        <div use:inview on:change={e => inView = e.detail.inView}>
-          <Spinner/>
-        </div>
+        {#if errorCount < 3}
+          <div use:inview on:change={e => inView = e.detail.inView}>
+            <Spinner/>
+          </div>
+        {:else}
+          <div class="w-full text-center">
+            <p>Error loading subscriptions:</p>
+            <p>{lastError}</p>
+            <PrimaryButton class="w-20 m-1" on:click={() => errorCount = 0}>Retry</PrimaryButton>
+          </div>
+        {/if}
       {/if}
     </div>
   </div>
