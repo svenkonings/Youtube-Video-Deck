@@ -3,13 +3,11 @@
 
 ## Tasks for MVP
 - Editor
-  - Edit group names
   - Add tutorial for dragging subscriptions
   - Add loading animation on save (Also load added subscriptions?)
   - Allow searching subscriptions
   - Improve keyboard controls
 - Handle unsubscribe (remove from subscriptions and group)
-- Replace mutable elements with immutable ones where applicable
 - Display loading error when new videos fail to load (include retry button)
 
 ## Other task ideas

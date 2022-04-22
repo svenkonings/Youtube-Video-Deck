@@ -1,4 +1,3 @@
-<svelte:options immutable/>
 <script lang="ts">
   import {flip} from "svelte/animate";
   import type {DndEvent} from "svelte-dnd-action";
@@ -51,8 +50,9 @@
 
   function addGroup() {
     if (groupNameInput !== '') {
-      settingsEntries = [...settingsEntries, {id: idCounter++, name: groupNameInput, expanded: true, subscriptions: []}];
+      settingsEntries.push({id: idCounter++, name: groupNameInput, expanded: true, subscriptions: []});
       groupNameInput = '';
+      settingsEntries = settingsEntries;
     }
   }
 
@@ -297,7 +297,7 @@
                        on:mousedown={startDrag}
                        on:touchstart={startDrag}
                        on:keydown={handleKeyDown}/>
-                  <span class="inline-block max-w-[calc(100%-2.5rem)] h-8 pt-1 align-top truncate" title={entry.subscription.title}>{entry.subscription.title}</span>
+                  <span class="inline-block w-[calc(100%-2.5rem)] h-8 pt-1 align-top truncate" title={entry.subscription.title}>{entry.subscription.title}</span>
                 </div>
               {/each}
             </div>
@@ -332,7 +332,7 @@
                          on:mousedown={startDrag}
                          on:touchstart={startDrag}
                          on:keydown={handleKeyDown}/>
-                    <span class="inline-block max-w-[calc(100%-4rem)] h-8 pt-1 align-top truncate" title={entry.subscription.title}>{entry.subscription.title}</span>
+                    <span class="inline-block w-[calc(100%-4rem)] h-8 pt-1 align-top truncate" title={entry.subscription.title}>{entry.subscription.title}</span>
                   {:else if isGroup(entry)}
                     <span class="inline-block float-right h-8 w-8 px-2 cursor-pointer" on:click={() => removeSettingsEntry(entry)}>
                       <Fa icon={faTimesCircle} translateY={0.5}/>
@@ -352,7 +352,7 @@
                         <Fa icon={faUsers} scale={0.5}/>
                       </FaLayers>
                     </span>
-                    <span class="inline-block max-w-[calc(100%-6rem)] h-8 pt-1 align-top truncate" title={entry.name}>{entry.name}</span>
+                    <input bind:value={entry.name} class="w-[calc(100%-6rem)] h-8 px-2 pb-0.5 bg-neutral-600 align-top rounded-2xl"/>
                     {#if entry.expanded}
                       <div class="w-full bg-neutral-500 mt-1 py-0.5 rounded-2xl" use:dndzone={{
                         items: entry.subscriptions,
@@ -377,7 +377,7 @@
                                  on:mousedown={startDrag}
                                  on:touchstart={startDrag}
                                  on:keydown={handleKeyDown}/>
-                            <span class="inline-block max-w-[calc(100%-4rem)] h-8 pt-1 align-top truncate" title={child.subscription.title}>{child.subscription.title}</span>
+                            <span class="inline-block w-[calc(100%-4rem)] h-8 pt-1 align-top truncate" title={child.subscription.title}>{child.subscription.title}</span>
                           </div>
                         {:else}
                           <div class="w-[calc(100%-0.5rem)] h-8 m-1.5">
