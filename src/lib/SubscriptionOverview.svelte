@@ -8,6 +8,8 @@
   import Spinner from "./components/Spinner.svelte";
   import {inview} from "svelte-inview";
   import {writeSettings} from "../api/Drive";
+  import {fly} from "svelte/transition"
+  import {backOut} from "svelte/easing";
 
   export let subscriptionGroup: SubscriptionGroup;
   export let index: number;
@@ -57,7 +59,7 @@
   }
 </script>
 {#if subscriptionGroup.expanded && subscriptionGroup.subscriptions.length > 1}
-  <div class="inline-block h-full w-max bg-neutral-900 p-1 pb-4 ml-1 mr-1 rounded-2xl align-top">
+  <div in:fly={{x: 100, easing: backOut}} class="inline-block h-full w-max bg-neutral-900 p-1 pb-4 ml-1 mr-1 rounded-2xl align-top">
     <p class="font-bold h-8 mb-1">
       <span class="inline-block h-8 align-middle">
         <FaLayers size="2x" class="-mx-1">
@@ -84,7 +86,7 @@
     </div>
   </div>
 {:else}
-  <div class="inline-block h-full w-screen max-w-[32rem] min-w-[22rem] bg-neutral-800 p-1 pb-4 ml-1 mr-1 rounded-2xl align-top">
+  <div in:fly={{x: 100, easing: backOut}} class="inline-block h-full w-screen max-w-[32rem] min-w-[22rem] bg-neutral-800 p-1 pb-4 ml-1 mr-1 rounded-2xl align-top">
     <p class="text-center font-bold h-8 mb-1">
       {#if subscriptionGroup.subscriptions.length === 1}
         <a href="https://www.youtube.com/channel/{subscriptionGroup.subscriptions[0].subscription.channelId}">

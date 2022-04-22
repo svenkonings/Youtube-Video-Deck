@@ -47,7 +47,21 @@
     }
   }
 
-  function subscriptionsChanged(newSettings: Settings): boolean {
+  function settingsChanged(newSettings: Settings): boolean {
+    if (settings.subscriptionGroups.length !== newSettings.subscriptionGroups.length) return true;
+    for (let i = 0; i < settings.subscriptionGroups.length; i++) {
+      const subscriptionGroup = settings.subscriptionGroups[i];
+      const newSubscriptionGroup = newSettings.subscriptionGroups[i];
+      if (subscriptionGroup.name !== newSubscriptionGroup.name) return true;
+      if (subscriptionGroup.subscriptionIds.length !== newSubscriptionGroup.subscriptionIds.length) return true;
+      for (let j = 0; j < subscriptionGroup.subscriptionIds.length; j++) {
+        if (subscriptionGroup.subscriptionIds[j] !== newSubscriptionGroup.subscriptionIds[j]) return true;
+      }
+    }
+    return false;
+  }
+
+  function activeSubscriptionsChanged(newSettings: Settings): boolean {
     const subscriptionIds = new Set(settings.subscriptionGroups.flatMap(s => s.subscriptionIds));
     const newSubscriptionIds = new Set(newSettings.subscriptionGroups.flatMap(s => s.subscriptionIds));
     if (subscriptionIds.size !== newSubscriptionIds.size) return true;
@@ -56,7 +70,8 @@
   }
 
   async function updateGroups(newSettings: Settings, subscriptions: Subscriptions, init: boolean = false): Promise<void> {
-    if (init || subscriptionsChanged(newSettings)) {
+    if (!init && !settingsChanged(newSettings)) return;
+    if (init || activeSubscriptionsChanged(newSettings)) {
       await listAllPlaylistItems(subscriptions, settings);
       $subscriptionsStore = subscriptions;
     }
