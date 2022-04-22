@@ -8,6 +8,7 @@ export function trapFocus(node: HTMLElement, enabled: boolean): {
   const trap = focusTrap.createFocusTrap(node, {
     checkCanFocusTrap: tick,
     checkCanReturnFocus: tick,
+    initialFocus: false,
     allowOutsideClick: true,
     escapeDeactivates: false,
   });

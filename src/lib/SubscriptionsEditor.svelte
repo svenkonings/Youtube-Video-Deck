@@ -35,8 +35,9 @@
   let idCounter: number = 0;
   let subscriptionEntries: SubscriptionEntry[] = [];
   let filterEnabled = true;
-  let filteredEntries = [];
+  let filteredEntries: SubscriptionEntry[] = [];
   let settingsEntries: SettingsEntry[] = [];
+  let searchInput: string = '';
   let groupNameInput: string = '';
 
   function updateFilter() {
@@ -45,6 +46,10 @@
       filteredEntries = subscriptionEntries.filter(e => !enabledChannels.has(e.subscription.channelId));
     } else {
       filteredEntries = subscriptionEntries;
+    }
+    searchInput = searchInput.trim();
+    if (searchInput.length > 0) {
+      filteredEntries = filteredEntries.filter(e => e.name.toLowerCase().includes(searchInput.toLowerCase()));
     }
   }
 
@@ -260,18 +265,24 @@
 <div class="fixed inset-0 z-10 bg-black/80" use:fade={{visible: $editorVisible, initial: false}} use:trapFocus={$editorVisible}>
   <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[40rem] bg-neutral-700 rounded-2xl overflow-x-auto x-scroll">
     <div class="min-w-[20.5rem] w-full h-full">
-      <div class="w-full h-16">
+      <div class="w-full h-24">
         <Center>
           <div class="min-w-[14rem]">
             <p class="font-extrabold">Deck Editor</p>
-            <label>
+            <div class="relative w-full h-8 m-1">
+              <input class="w-full h-8 pl-2 pr-7 pb-0.5 bg-neutral-600 rounded-2xl" type="text" bind:value={searchInput} on:input={updateFilter} placeholder="Search subscriptions..." aria-label="Search subscriptions"/>
+              <span class="absolute right-2 h-8 cursor-pointer" on:click={() => searchInput = ''}>
+                <Fa icon={faTimesCircle} translateY={0.5}/>
+              </span>
+            </div>
+            <label class="block">
               <input type="checkbox" bind:checked={filterEnabled} on:change={updateFilter}/>
               Hide added subscriptions
             </label>
           </div>
         </Center>
       </div>
-      <div class="w-full h-[calc(100%-7rem)]">
+      <div class="w-full h-[calc(100%-9rem)]">
         <div class="inline-block w-[calc(50%-0.65rem)] min-w-[9.5rem] h-[calc(100%-0.5rem)] m-1 bg-neutral-800 rounded-xl">
           <div class="w-full h-6">
             <Center>Subscriptions</Center>

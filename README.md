@@ -5,7 +5,6 @@
 - Editor
   - Add tutorial for dragging subscriptions
   - Add loading animation on save (Also load added subscriptions?)
-  - Allow searching subscriptions
   - Improve keyboard controls
 - Handle unsubscribe (remove from subscriptions and group)
 
