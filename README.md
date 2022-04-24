@@ -4,11 +4,13 @@
 ## Tasks for MVP
 - Editor
   - Add tutorial for dragging subscriptions
-  - Add loading animation on save (Also load added subscriptions?)
   - Improve keyboard controls
 - Handle unsubscribe (remove from subscriptions and group)
 
 ## Other task ideas
+- Apply transitions where applicable
+- Improve editor loading animation on save
+  - Also include loading new subscription groups
 - Add ripple effect to buttons
   - https://css-tricks.com/how-to-recreate-the-ripple-effect-of-material-design-buttons/
 - Limit refresh time of cached requests

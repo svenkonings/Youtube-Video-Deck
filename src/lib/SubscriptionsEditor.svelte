@@ -99,7 +99,9 @@
     updateFilter();
   }
 
-  async function save(): Promise<void> {
+  async function save(e: MouseEvent): Promise<void> {
+    const button = e.target as HTMLButtonElement;
+    button.disabled = true;
     const settings = $settingsStore;
     settings.subscriptionGroups = settingsEntries.map(entry => ({
       name: entry.name,
@@ -109,6 +111,7 @@
     $settingsStore = settings;
     await writeSettings(settings);
     $editorVisible = false;
+    button.disabled = false;
   }
 
   /*
