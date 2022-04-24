@@ -1,16 +1,18 @@
 <script lang="ts">
   import VideoCard from "./VideoCard.svelte";
   import {playerStore, settingsStore} from "../util/stores";
-  import {getPlaylist, loadMoreVideos, SubscriptionGroup} from "../model/SubscriptionGroup";
+  import {allVideosLoaded, loadCustomPlaylist, loadMoreVideos, SubscriptionGroup,} from "../model/SubscriptionGroup";
   import Fa from "svelte-fa/src/fa.svelte"
   import FaLayers from "svelte-fa/src/fa-layers.svelte"
   import {faCircle, faCompressAlt, faExpandAlt, faPlay, faUsers} from "@fortawesome/free-solid-svg-icons";
   import Spinner from "./components/Spinner.svelte";
   import {inview} from "svelte-inview";
-  import {writeSettings} from "../api/Drive";
   import {fly} from "svelte/transition"
   import {backOut} from "svelte/easing";
   import PrimaryButton from "./components/PrimaryButton.svelte";
+  import {errorString} from "../util/error";
+  import {SubscriptionGroupChild} from "../model/SubscriptionGroup";
+  import {writeSettings} from "../api/Drive";
 
   export let subscriptionGroup: SubscriptionGroup;
   export let index: number;
@@ -20,10 +22,11 @@
   let lastError;
 
   async function play(): Promise<void> {
-    $playerStore = {loading: true};
-    const playerInput = await getPlaylist(subscriptionGroup);
-    subscriptionGroup.videos = subscriptionGroup.videos; // Refresh videos
-    $playerStore = playerInput;
+    if (!subscriptionGroup.playlist) {
+      $playerStore = {loading: true};
+      await loadCustomPlaylist(subscriptionGroup);
+    }
+    $playerStore = subscriptionGroup.playlist
   }
 
   $: if (inView && errorCount < 3) {
@@ -57,7 +60,6 @@
     subscriptionGroup.expanded = !subscriptionGroup.expanded;
     const settings = $settingsStore;
     settings.subscriptionGroups[index].expanded = subscriptionGroup.expanded;
-    $settingsStore = settings;
     writeSettings(settings).then();
   }
 </script>
@@ -82,9 +84,8 @@
     </p>
     <div class="h-[calc(100%-2.25rem)]">
       {#each subscriptionGroup.subscriptions as groupSubscription}
-        {#await SubscriptionGroup(groupSubscription.subscription.title, false, [groupSubscription.subscription]) then subscriptionGroup}
-          <svelte:self {subscriptionGroup} {index}/>
-        {/await}
+        <!--TODO: Cache child groups-->
+        <svelte:self subscriptionGroup={SubscriptionGroupChild(groupSubscription.subscription)} {index}/>
       {/each}
     </div>
   </div>
@@ -123,7 +124,7 @@
       {#each subscriptionGroup.videos as video}
         <VideoCard {video}/>
       {/each}
-      {#if subscriptionGroup.subscriptions.some(s => s.subscription.nextUploadPageToken != null)}
+      {#if !allVideosLoaded(subscriptionGroup)}
         {#if errorCount < 3}
           <div use:inview on:change={e => inView = e.detail.inView}>
             <Spinner/>
@@ -131,7 +132,7 @@
         {:else}
           <div class="w-full text-center">
             <p>Error loading subscriptions:</p>
-            <p>{lastError}</p>
+            <p>{errorString(lastError)}</p>
             <PrimaryButton class="w-20 m-1" on:click={() => errorCount = 0}>Retry</PrimaryButton>
           </div>
         {/if}

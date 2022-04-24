@@ -2,7 +2,7 @@ import type {Subscriptions} from "../model/Subscriptions";
 import type {SubscriptionsList} from "../types/SubscriptionsList";
 import type {ChannelMap} from "../types/ChannelMap";
 import type {Subscription} from "../model/Subscription";
-import {addUploads, clearUploads} from "../model/Subscription";
+import {addUploads, setUploads} from "../model/Subscription";
 import {batchRequest, request, toRequest} from "./Gapi";
 import type {Settings} from "../model/Settings";
 
@@ -92,10 +92,8 @@ function listPlaylistItemsRequest(subscription: Subscription, initial: boolean):
 }
 
 async function listPlaylistItemsResponse(subscription: Subscription, response: Response, initial: boolean): Promise<void> {
-  if (initial) {
-    if (subscription.uploadsEtag && response.status === 304) return; // Not Modified
-    clearUploads(subscription);
-  }
+  if (response.status === 304) return; // Not Modified
   if (!response.ok) throw response;
-  addUploads(subscription, await response.json());
+  const uploads = await response.json();
+  initial ? setUploads(subscription, uploads) : addUploads(subscription, uploads);
 }

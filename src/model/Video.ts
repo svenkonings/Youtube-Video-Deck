@@ -10,7 +10,7 @@ export type Video = {
 export function Video(playlistItem: gapi.client.youtube.PlaylistItem): Video {
   return {
     title: playlistItem.snippet.title,
-    description: playlistItem.snippet.description.substring(0, 313), // Maximum length measured by maximum number of | characters displayed
+    description: playlistItem.snippet.description.substring(0, 275), // Maximum length measured by maximum number of | characters displayed
     publishedAt: playlistItem.snippet.publishedAt,
     thumbnailUrl: playlistItem.snippet.thumbnails.medium.url,
     videoId: playlistItem.snippet.resourceId.videoId,

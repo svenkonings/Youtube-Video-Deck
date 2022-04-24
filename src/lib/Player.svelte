@@ -1,4 +1,3 @@
-<svelte:options immutable/>
 <script lang="ts">
   import {onDestroy} from "svelte";
   import {editorVisible, playerStore} from "../util/stores";

@@ -7,6 +7,7 @@
   import Player from "./lib/Player.svelte";
   import SubscriptionsEditor from "./lib/SubscriptionsEditor.svelte";
   import Center from "./lib/components/Center.svelte";
+  import {errorString} from "./util/error";
 
   const scope = 'https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/drive.appdata';
 
@@ -50,7 +51,7 @@
           <LoginScreen {isSignedIn}/>
         {/if}
       {:catch error}
-        <p class="text-center">{JSON.stringify(error)}</p>
+        <p class="text-center">{errorString(error)}</p>
       {/await}
     </section>
   </div>

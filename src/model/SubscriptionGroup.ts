@@ -3,11 +3,14 @@ import type {Video} from "./Video";
 import {listPlaylistItems} from "../api/YouTube";
 import type {PlayerInput} from "../types/PlayerInput";
 
+const maxPlaylistLength = 200;
+
 export type SubscriptionGroup = {
   name: string;
   expanded: boolean;
   subscriptions: GroupSubscription[];
-  videos: Video[]
+  videos: Video[];
+  playlist?: PlayerInput;
 }
 
 export type GroupSubscription = {
@@ -24,44 +27,30 @@ export async function SubscriptionGroup(name: string, expanded: boolean, subscri
       uploadIndex: 0,
     })),
     videos: [],
+    ...subscriptions.length === 1 && {playlistId: subscriptions[0].uploadsPlaylistId}
   }
   await loadMoreVideos(subscriptionGroup);
   return subscriptionGroup;
 }
 
-export function addSubscription(subscriptionGroup: SubscriptionGroup, subscription: Subscription): void {
-  subscriptionGroup.subscriptions.push({
-    subscription: subscription,
-    uploadIndex: 0,
-  });
-}
-
-export function removeSubscription(subscriptionGroup: SubscriptionGroup, subscription: Subscription): void {
-  const index = subscriptionGroup.subscriptions.findIndex(g => g.subscription.channelId === subscription.channelId);
-  if (index >= 0) {
-    removeSubscriptionByIndex(subscriptionGroup, index);
+export function SubscriptionGroupChild(subscription: Subscription): SubscriptionGroup {
+  return {
+    name: subscription.title,
+    expanded: false,
+    subscriptions: [{
+      subscription: subscription,
+      uploadIndex: 0
+    }],
+    videos: subscription.uploads.slice(0, 10),
+    playlist: {playlistId: subscription.uploadsPlaylistId},
   }
 }
 
-export function removeSubscriptionByIndex(subscriptionGroup: SubscriptionGroup, index: number): void {
-  subscriptionGroup.subscriptions.splice(index, 1);
-}
-
-export async function reloadVideos(subscriptionGroup: SubscriptionGroup): Promise<void> {
-  subscriptionGroup.subscriptions.forEach(s => s.uploadIndex = 0);
-  subscriptionGroup.videos = [];
-  await loadMoreVideos(subscriptionGroup);
-}
-
-export async function getPlaylist(subscriptionGroup: SubscriptionGroup): Promise<PlayerInput> {
-  if (subscriptionGroup.subscriptions.length === 1) {
-    return {playlistId: subscriptionGroup.subscriptions[0].subscription.uploadsPlaylistId};
-  } else {
-    if (subscriptionGroup.videos.length < 200) {
-      await loadMoreVideos(subscriptionGroup, 200 - subscriptionGroup.videos.length);
-    }
-    return {customPlaylist: subscriptionGroup.videos.slice(0, 200).map(v => v.videoId)};
+export async function loadCustomPlaylist(subscriptionGroup: SubscriptionGroup): Promise<void> {
+  if (subscriptionGroup.videos.length < maxPlaylistLength) {
+    await loadMoreVideos(subscriptionGroup, maxPlaylistLength - subscriptionGroup.videos.length);
   }
+  subscriptionGroup.playlist = {customPlaylist: subscriptionGroup.videos.slice(0, maxPlaylistLength).map(v => v.videoId)};
 }
 
 export async function loadMoreVideos(subscriptionGroup: SubscriptionGroup, maxAmount = 10): Promise<void> {
@@ -84,4 +73,8 @@ export async function loadMoreVideos(subscriptionGroup: SubscriptionGroup, maxAm
     subscriptionGroup.videos.push(nextVideo);
     nextSubscription.uploadIndex++;
   }
+}
+
+export function allVideosLoaded(subscriptionGroup: SubscriptionGroup): boolean {
+  return subscriptionGroup.subscriptions.every(s => s.uploadIndex === s.subscription.uploads.length && !s.subscription.nextUploadPageToken);
 }

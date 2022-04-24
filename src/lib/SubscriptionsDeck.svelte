@@ -1,4 +1,3 @@
-<svelte:options immutable/>
 <script lang="ts">
   import {Subscriptions} from "../model/Subscriptions";
   import Spinner from "./components/Spinner.svelte";
@@ -13,69 +12,43 @@
   import Center from "./components/Center.svelte";
   import {onDestroy} from "svelte";
   import {fade} from "../util/fade";
+  import {errorString} from "../util/error";
 
   let initialised = false;
-  let settings: Settings;
-  let subscriptions: Subscriptions;
   let subscriptionGroups: SubscriptionGroup[];
 
   async function init(): Promise<void> {
-    await Promise.all([getSettings(), getSubscriptions()]) as [Settings, Subscriptions];
+    const [settings, subscriptions] = await Promise.all([getSettings(), getSubscriptions()]) as [Settings, Subscriptions];
     $settingsStore = settings;
-    await updateGroups(settings, subscriptions, true);
+    await updateGroups(settings, subscriptions);
     initialised = true;
   }
 
-  onDestroy(settingsStore.subscribe(newSettings => initialised && updateGroups(newSettings, $subscriptionsStore)));
+  onDestroy(settingsStore.subscribe(settings => initialised && updateGroups(settings, $subscriptionsStore)));
 
   async function getSubscriptions(): Promise<Subscriptions> {
-    subscriptions = $subscriptionsStore;
+    const storedSubscriptions = $subscriptionsStore;
     try {
-      const subscriptionsList = await listAllSubscriptions(subscriptions?.etag);
+      const subscriptionsList = await listAllSubscriptions(storedSubscriptions?.etag);
       const channelMap = await listAllChannels(subscriptionsList.items);
-      subscriptions = Subscriptions(subscriptionsList, channelMap);
+      return Subscriptions(subscriptionsList, channelMap);
     } catch (e) {
-      if (subscriptions && e === NOT_MODIFIED) return;
+      if (storedSubscriptions && e === NOT_MODIFIED) return storedSubscriptions;
       throw e;
     }
   }
 
   async function getSettings(): Promise<Settings> {
-    settings = await readSettings();
+    let settings = await readSettings();
     if (!settings) {
       settings = Settings();
     }
+    return settings;
   }
 
-  function settingsChanged(newSettings: Settings): boolean {
-    if (settings.subscriptionGroups.length !== newSettings.subscriptionGroups.length) return true;
-    for (let i = 0; i < settings.subscriptionGroups.length; i++) {
-      const subscriptionGroup = settings.subscriptionGroups[i];
-      const newSubscriptionGroup = newSettings.subscriptionGroups[i];
-      if (subscriptionGroup.name !== newSubscriptionGroup.name) return true;
-      if (subscriptionGroup.subscriptionIds.length !== newSubscriptionGroup.subscriptionIds.length) return true;
-      for (let j = 0; j < subscriptionGroup.subscriptionIds.length; j++) {
-        if (subscriptionGroup.subscriptionIds[j] !== newSubscriptionGroup.subscriptionIds[j]) return true;
-      }
-    }
-    return false;
-  }
-
-  function activeSubscriptionsChanged(newSettings: Settings): boolean {
-    const subscriptionIds = new Set(settings.subscriptionGroups.flatMap(s => s.subscriptionIds));
-    const newSubscriptionIds = new Set(newSettings.subscriptionGroups.flatMap(s => s.subscriptionIds));
-    if (subscriptionIds.size !== newSubscriptionIds.size) return true;
-    for (const id of subscriptionIds) if (!newSubscriptionIds.has(id)) return true;
-    return false;
-  }
-
-  async function updateGroups(newSettings: Settings, subscriptions: Subscriptions, init: boolean = false): Promise<void> {
-    if (!init && !settingsChanged(newSettings)) return;
-    if (init || activeSubscriptionsChanged(newSettings)) {
-      await listAllPlaylistItems(subscriptions, settings);
-      $subscriptionsStore = subscriptions;
-    }
-    settings = newSettings;
+  async function updateGroups(settings: Settings, subscriptions: Subscriptions): Promise<void> {
+    await listAllPlaylistItems(subscriptions, settings);
+    $subscriptionsStore = subscriptions;
     const subscriptionMap = new Map(subscriptions.items.map(s => [s.channelId, s]));
     subscriptionGroups = await Promise.all(settings.subscriptionGroups.map(s => SubscriptionGroup(s.name, s.expanded, s.subscriptionIds.map(id => subscriptionMap.get(id)))));
   }
@@ -103,5 +76,5 @@
     </div>
   {/if}
 {:catch error}
-  <p class="text-center">{JSON.stringify(error)}</p>
+  <p class="text-center">{errorString(error)}</p>
 {/await}

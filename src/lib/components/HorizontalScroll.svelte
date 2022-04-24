@@ -1,4 +1,3 @@
-<svelte:options immutable/>
 <script lang="ts">
   import {tweened} from "svelte/motion";
   import {onDestroy} from "svelte";

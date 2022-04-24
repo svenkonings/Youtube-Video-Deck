@@ -1,4 +1,3 @@
-<svelte:options immutable/>
 <script lang="ts">
   import Center from "./components/Center.svelte";
   import PrimaryButton from "./components/PrimaryButton.svelte";

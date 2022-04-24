@@ -53,6 +53,10 @@
     }
   }
 
+  $: if (searchInput) {
+    updateFilter();
+  }
+
   function addGroup() {
     if (groupNameInput !== '') {
       settingsEntries.push({id: idCounter++, name: groupNameInput, expanded: true, subscriptions: []});
@@ -270,7 +274,7 @@
           <div class="min-w-[14rem]">
             <p class="font-extrabold">Deck Editor</p>
             <div class="relative w-full h-8 m-1">
-              <input class="w-full h-8 pl-2 pr-7 pb-0.5 bg-neutral-600 rounded-2xl" type="text" bind:value={searchInput} on:input={updateFilter} placeholder="Search subscriptions..." aria-label="Search subscriptions"/>
+              <input class="w-full h-8 pl-2 pr-7 pb-0.5 bg-neutral-600 rounded-2xl" type="text" bind:value={searchInput} placeholder="Search subscriptions..." aria-label="Search subscriptions"/>
               <span class="absolute right-2 h-8 cursor-pointer" on:click={() => searchInput = ''}>
                 <Fa icon={faTimesCircle} translateY={0.5}/>
               </span>
