@@ -84,7 +84,6 @@
     </p>
     <div class="h-[calc(100%-2.25rem)]">
       {#each subscriptionGroup.subscriptions as groupSubscription}
-        <!--TODO: Cache child groups-->
         <svelte:self subscriptionGroup={SubscriptionGroupChild(groupSubscription.subscription)} {index}/>
       {/each}
     </div>
