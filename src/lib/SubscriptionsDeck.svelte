@@ -19,6 +19,7 @@
 
   async function init(): Promise<void> {
     const [settings, subscriptions] = await Promise.all([getSettings(), getSubscriptions()]) as [Settings, Subscriptions];
+    filterSettings(settings, subscriptions);
     $settingsStore = settings;
     await updateGroups(settings, subscriptions);
     initialised = true;
@@ -44,6 +45,12 @@
       settings = Settings();
     }
     return settings;
+  }
+
+  function filterSettings(settings: Settings, subscriptions: Subscriptions): void {
+    const subscriptionMap = new Map(subscriptions.items.map(s => [s.channelId, s]));
+    settings.subscriptionGroups.forEach(g => g.subscriptionIds = g.subscriptionIds.filter(id => subscriptionMap.has(id)));
+    settings.subscriptionGroups = settings.subscriptionGroups.filter(g => g.subscriptionIds.length > 0);
   }
 
   async function updateGroups(settings: Settings, subscriptions: Subscriptions): Promise<void> {

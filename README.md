@@ -5,7 +5,6 @@
 - Editor
   - Add tutorial for dragging subscriptions
   - Improve keyboard controls
-- Handle unsubscribe (remove from subscriptions and group)
 
 ## Other task ideas
 - Apply transitions where applicable
