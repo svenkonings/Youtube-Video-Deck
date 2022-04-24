@@ -3,11 +3,11 @@
 
 ## Tasks for MVP
 - Editor
-  - Add tutorial for dragging subscriptions
   - Improve keyboard controls
 
 ## Other task ideas
 - Apply transitions where applicable
+- Check screen reader support
 - Improve editor loading animation on save
   - Also include loading new subscription groups
 - Add ripple effect to buttons

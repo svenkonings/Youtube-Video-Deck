@@ -295,7 +295,7 @@
             <Center>Subscriptions</Center>
           </div>
           <div class="w-full h-[calc(100%-2rem)] overflow-y-auto y-scroll mb-2">
-            <div class="w-[calc(100%-4px)] h-max mx-[2px] rounded-xl" use:dndzone={{
+            <div class="w-[calc(100%-4px)] h-max min-h-[calc(100%-0.5rem)] mx-[2px] rounded-xl" use:dndzone={{
               items: filteredEntries,
               dropFromOthersDisabled: true,
               dragDisabled,
@@ -326,7 +326,7 @@
             <Center>Deck</Center>
           </div>
           <div class="w-full h-[calc(100%-2rem)] overflow-y-auto y-scroll mb-2" bind:this={deckElement} on:scroll={autoScrollSync}>
-            <div class="w-[calc(100%-4px)] h-max mx-[2px] rounded-xl" use:dndzone={{
+            <div class="w-[calc(100%-4px)] h-max min-h-[calc(100%-0.5rem)] mx-[2px] rounded-xl" use:dndzone={{
               items: settingsEntries,
               dropFromOthersDisabled: draggedEntry && settingsDropDisabled(),
               dragDisabled,
@@ -405,6 +405,10 @@
                       </div>
                     {/if}
                   {/if}
+                </div>
+              {:else}
+                <div class="w-[calc(100%-0.5rem)] m-1">
+                  <p class="w-full text-center text-neutral-300">Drag and drop subscriptions by dragging the channel image</p>
                 </div>
               {/each}
             </div>
