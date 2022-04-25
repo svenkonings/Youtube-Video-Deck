@@ -34,14 +34,15 @@ export async function SubscriptionGroup(name: string, expanded: boolean, subscri
 }
 
 export function SubscriptionGroupChild(subscription: Subscription): SubscriptionGroup {
+  const videos = subscription.uploads.slice(0, 10);
   return {
     name: subscription.title,
     expanded: false,
     subscriptions: [{
       subscription: subscription,
-      uploadIndex: 0
+      uploadIndex: videos.length,
     }],
-    videos: subscription.uploads.slice(0, 10),
+    videos: videos,
     playlist: {playlistId: subscription.uploadsPlaylistId},
   }
 }
