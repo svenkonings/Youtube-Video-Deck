@@ -1,11 +1,7 @@
 # YouTube Video Deck
 [svenkonings.github.io/Youtube-Video-Deck](https://svenkonings.github.io/Youtube-Video-Deck/)
 
-## Tasks for MVP
-- Editor
-  - Improve keyboard controls
-
-## Other task ideas
+## Potential improvements
 - Apply transitions where applicable
 - Check screen reader support
 - Improve editor loading animation on save

@@ -123,7 +123,7 @@
   let dragDisabled = true;
 
   function handleSubscriptionDndConsider(e: CustomEvent<DndEvent>): void {
-    if (e.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
+    if (e.detail.info.source === SOURCES.POINTER && e.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
       const index = subscriptionEntries.findIndex(s => s.id == e.detail.info.id);
       draggedEntry = subscriptionEntries[index];
       // Create a copy with a different id
@@ -212,13 +212,17 @@
     updateFilter();
   }
 
-  function startDrag(e: UIEvent) {
+  function startDrag(e: UIEvent): void {
     e.preventDefault();
     dragDisabled = false;
   }
 
-  function handleKeyDown(e: KeyboardEvent) {
-    if ((e.key === "Enter" || e.key === " ") && dragDisabled) dragDisabled = false;
+  function handleKeyDown(e: KeyboardEvent): void {
+    if (keyClick(e) && dragDisabled) dragDisabled = false;
+  }
+
+  function keyClick(e: KeyboardEvent): boolean {
+    return e.key === "Enter" || e.key === " ";
   }
 
   /*
@@ -277,13 +281,13 @@
           <div class="min-w-[14rem]">
             <p class="font-extrabold">Deck Editor</p>
             <div class="relative w-full h-8 m-1">
-              <input class="w-full h-8 pl-2 pr-7 pb-0.5 bg-neutral-600 rounded-2xl" type="text" bind:value={searchInput} placeholder="Search subscriptions..." aria-label="Search subscriptions"/>
-              <span class="absolute right-2 h-8 cursor-pointer" on:click={() => searchInput = ''}>
+              <input class="w-full h-8 pl-2 pr-7 pb-0.5 bg-neutral-600 rounded-2xl" type="text" bind:value={searchInput} placeholder="Search subscriptions..." aria-label="Search subscriptions" tabindex={dragDisabled ? 0 : -1}/>
+              <span class="absolute right-2 h-8 cursor-pointer" on:click={() => searchInput = ''} on:keydown={e => keyClick(e) && (searchInput = '')} tabindex={dragDisabled ? 0 : -1}>
                 <Fa icon={faTimesCircle} translateY={0.5}/>
               </span>
             </div>
             <label class="block">
-              <input type="checkbox" bind:checked={filterEnabled} on:change={updateFilter}/>
+              <input type="checkbox" bind:checked={filterEnabled} on:change={updateFilter} tabindex={dragDisabled ? 0 : -1}/>
               Hide added subscriptions
             </label>
           </div>
@@ -295,22 +299,22 @@
             <Center>Subscriptions</Center>
           </div>
           <div class="w-full h-[calc(100%-2rem)] overflow-y-auto y-scroll mb-2">
-            <div class="w-[calc(100%-4px)] h-max min-h-[calc(100%-0.5rem)] mx-[2px] rounded-xl" use:dndzone={{
+            <div class="w-[calc(100%-4px)] h-max min-h-[calc(100%-0.5rem)] mx-[2px] rounded-xl" aria-label="Subscriptions" use:dndzone={{
               items: filteredEntries,
               dropFromOthersDisabled: true,
               dragDisabled,
               flipDurationMs
             }} on:consider={handleSubscriptionDndConsider} on:finalize={handleSubscriptionDndFinalize}>
               {#each filteredEntries as entry (entry.id)}
-                <div class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl" animate:flip={{duration:flipDurationMs}}>
+                <div class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl" aria-label={entry.name} animate:flip={{duration:flipDurationMs}}>
                   <img class="inline-block h-8 w-8 rounded-2xl align-top"
                        src={entry.subscription.thumbnailUrl}
                        alt=""
                        loading="lazy"
                        width="88"
                        height="88"
-                       tabindex={dragDisabled? 0 : -1}
-                       aria-label="drag-handle"
+                       tabindex={dragDisabled ? 0 : -1}
+                       aria-label="Drag-handle"
                        style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
                        on:mousedown={startDrag}
                        on:touchstart={startDrag}
@@ -326,40 +330,34 @@
             <Center>Deck</Center>
           </div>
           <div class="w-full h-[calc(100%-2rem)] overflow-y-auto y-scroll mb-2" bind:this={deckElement} on:scroll={autoScrollSync}>
-            <div class="w-[calc(100%-4px)] h-max min-h-[calc(100%-0.5rem)] mx-[2px] rounded-xl" use:dndzone={{
+            <div class="w-[calc(100%-4px)] h-max min-h-[calc(100%-0.5rem)] mx-[2px] rounded-xl" aria-label="Deck" use:dndzone={{
               items: settingsEntries,
               dropFromOthersDisabled: draggedEntry && settingsDropDisabled(),
               dragDisabled,
               flipDurationMs,
             }} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
               {#each settingsEntries as entry (entry.id)}
-                <div class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" animate:flip={{duration:flipDurationMs}}>
+                <div class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" aria-label={entry.name} animate:flip={{duration:flipDurationMs}}>
                   {#if isSubscription(entry)}
-                    <span class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeSettingsEntry(entry)}>
-                      <Fa icon={faTimesCircle} translateY={0.5}/>
-                    </span>
                     <img class="inline-block h-8 w-8 rounded-2xl align-top"
                          src={entry.subscription.thumbnailUrl}
                          alt=""
                          loading="lazy"
                          width="88"
                          height="88"
-                         tabindex={dragDisabled? 0 : -1}
-                         aria-label="drag-handle"
+                         tabindex={dragDisabled ? 0 : -1}
+                         aria-label="Drag-handle"
                          style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
                          on:mousedown={startDrag}
                          on:touchstart={startDrag}
                          on:keydown={handleKeyDown}/>
                     <span class="inline-block w-[calc(100%-4rem)] h-8 pt-1 align-top truncate" title={entry.subscription.title}>{entry.subscription.title}</span>
-                  {:else if isGroup(entry)}
-                    <span class="inline-block float-right h-8 w-8 px-2 cursor-pointer" on:click={() => removeSettingsEntry(entry)}>
+                    <span class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" aria-label="Remove" on:click={() => removeSettingsEntry(entry)} on:keydown={e => keyClick(e) && removeSettingsEntry(entry)} tabindex={dragDisabled ? 0 : -1}>
                       <Fa icon={faTimesCircle} translateY={0.5}/>
                     </span>
-                    <span class="inline-block float-right h-8 w-8 px-2 -ml-16 cursor-pointer" on:click={() => entry.expanded = !entry.expanded}>
-                      <Fa icon={entry.expanded ? faCompressAlt : faExpandAlt} translateY={0.5}/>
-                    </span>
+                  {:else if isGroup(entry)}
                     <span class="inline-block h-8 w-8 rounded-2xl bg-neutral-600 align-top"
-                          tabindex={dragDisabled? 0 : -1}
+                          tabindex={dragDisabled ? 0 : -1}
                           aria-label="drag-handle"
                           style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
                           on:mousedown={startDrag}
@@ -370,32 +368,40 @@
                         <Fa icon={faUsers} scale={0.5}/>
                       </FaLayers>
                     </span>
-                    <input bind:value={entry.name} class="w-[calc(100%-6rem)] h-8 px-2 pb-0.5 bg-neutral-600 align-top rounded-2xl"/>
+                    <input bind:value={entry.name} class="w-[calc(100%-6rem)] h-8 px-2 pb-0.5 bg-neutral-600 align-top rounded-2xl" tabindex={dragDisabled ? 0 : -1}/>
+                    <div class="inline-block float-right h-8 w-16 -ml-16">
+                      <span class="inline-block h-8 w-8 px-2 cursor-pointer" aria-label={entry.expanded ? 'Collapse' : 'Expand'} on:click={() => entry.expanded = !entry.expanded} on:keydown={e => keyClick(e) && (entry.expanded = !entry.expanded)} tabindex={dragDisabled ? 0 : -1}>
+                        <Fa icon={entry.expanded ? faCompressAlt : faExpandAlt} translateY={0.5}/>
+                      </span>
+                      <span class="inline-block float-right h-8 w-8 px-2 cursor-pointer" aria-label="Remove" on:click={() => removeSettingsEntry(entry)} on:keydown={e => keyClick(e) && removeSettingsEntry(entry)} tabindex={dragDisabled ? 0 : -1}>
+                        <Fa icon={faTimesCircle} translateY={0.5}/>
+                      </span>
+                    </div>
                     {#if entry.expanded}
-                      <div class="w-full bg-neutral-500 mt-1 py-0.5 rounded-2xl" use:dndzone={{
+                      <div class="w-full bg-neutral-500 mt-1 py-0.5 rounded-2xl" aria-label={entry.name + ' subscriptions'} use:dndzone={{
                         items: entry.subscriptions,
                         dropFromOthersDisabled: draggedEntry && groupDropDisabled(entry),
                         dragDisabled,
                         flipDurationMs,
                       }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
                         {#each entry.subscriptions as child (child.id)}
-                          <div class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" animate:flip={{duration:flipDurationMs}}>
-                            <span class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" on:click={() => removeGroupEntry(entry, child)}>
-                              <Fa icon={faTimesCircle} translateY={0.5}/>
-                            </span>
+                          <div class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" aria-label={child.name} animate:flip={{duration:flipDurationMs}}>
                             <img class="inline-block h-8 w-8 rounded-2xl align-top"
                                  src={child.subscription.thumbnailUrl}
                                  alt=""
                                  loading="lazy"
                                  width="88"
                                  height="88"
-                                 tabindex={dragDisabled? 0 : -1}
+                                 tabindex={dragDisabled ? 0 : -1}
                                  aria-label="drag-handle"
                                  style={dragDisabled ? 'cursor: grab' : 'cursor: grabbing'}
                                  on:mousedown={startDrag}
                                  on:touchstart={startDrag}
                                  on:keydown={handleKeyDown}/>
                             <span class="inline-block w-[calc(100%-4rem)] h-8 pt-1 align-top truncate" title={child.subscription.title}>{child.subscription.title}</span>
+                            <span class="inline-block h-8 w-8 px-2 cursor-pointer" aria-label="Remove" on:click={() => removeGroupEntry(entry, child)} on:keydown={e => keyClick(e) && removeGroupEntry(entry, child)} tabindex={dragDisabled ? 0 : -1}>
+                              <Fa icon={faTimesCircle} translateY={0.5}/>
+                            </span>
                           </div>
                         {:else}
                           <div class="w-[calc(100%-0.5rem)] h-8 m-1.5">
@@ -416,12 +422,12 @@
         </div>
       </div>
       <div class="w-full h-12">
-        <PrimaryButton class="w-20 m-1 float-left" on:click={close}>Close</PrimaryButton>
+        <PrimaryButton class="w-20 m-1 float-left" on:click={close} tabindex={dragDisabled ? 0 : -1}>Close</PrimaryButton>
         <div class="inline-block w-[calc(100%-11.5rem)] m-1">
-          <input type="text" class="w-[calc(100%-6rem)] bg-neutral-800 p-1.5 rounded-l-2xl" bind:value={groupNameInput}/><!--
-       --><PrimaryButton class="w-24 rounded-l-none" on:click={addGroup}>Add group</PrimaryButton>
+          <input type="text" class="w-[calc(100%-6rem)] bg-neutral-800 p-1.5 rounded-l-2xl" bind:value={groupNameInput} tabindex={dragDisabled ? 0 : -1}/><!--
+       --><PrimaryButton class="w-24 rounded-l-none" on:click={addGroup} tabindex={dragDisabled ? 0 : -1}>Add group</PrimaryButton>
         </div>
-        <PrimaryButton class="w-20 m-1 float-right" on:click={save}>Save</PrimaryButton>
+        <PrimaryButton class="w-20 m-1 float-right" on:click={save} tabindex={dragDisabled ? 0 : -1}>Save</PrimaryButton>
       </div>
     </div>
   </div>
