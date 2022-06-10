@@ -16,13 +16,11 @@
     - Add up/down buttons to right-side of editor
     - Create add all buttons that adds all filtered subscriptions
 - Show add all button on empty subscriptions screen
+- Add view counter
+- Fix upload date for livestreams
 - Bring Your Own API-Key (BYOAK)
 
 # On hold due to API quotas
-- Requires additional request for every 50 playlistitems
-    - Add view counter
-    - Add video length
-    - Fix upload date for livestreams
 - Requires loading entire watched videos playlist
     - Mark (previously) watched videos
 
