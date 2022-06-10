@@ -2,9 +2,12 @@ import {Subscription} from "./Subscription";
 import type {SubscriptionsList} from "../types/SubscriptionsList";
 import type {ChannelMap} from "../types/ChannelMap";
 
+export const subscriptionsModelVersion = 2;
+
 export type Subscriptions = {
   etag: string;
   items: Subscription[];
+  version: number;
 };
 
 export function Subscriptions(subscriptionsList: SubscriptionsList, channelMap: ChannelMap): Subscriptions {
@@ -14,5 +17,6 @@ export function Subscriptions(subscriptionsList: SubscriptionsList, channelMap: 
       const channel = channelMap.get(subscription.snippet.resourceId.channelId);
       return Subscription(subscription, channel);
     })),
+    version: subscriptionsModelVersion,
   };
 }

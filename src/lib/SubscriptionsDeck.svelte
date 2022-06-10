@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {Subscriptions} from "../model/Subscriptions";
+  import {Subscriptions, subscriptionsModelVersion} from "../model/Subscriptions";
   import Spinner from "./components/Spinner.svelte";
   import SubscriptionOverview from "./SubscriptionOverview.svelte";
   import HorizontalScroll from "./components/HorizontalScroll.svelte";
@@ -28,7 +28,10 @@
   onDestroy(settingsStore.subscribe(settings => initialised && updateGroups(settings, $subscriptionsStore)));
 
   async function getSubscriptions(): Promise<Subscriptions> {
-    const storedSubscriptions = $subscriptionsStore;
+    let storedSubscriptions = $subscriptionsStore;
+    if (storedSubscriptions && storedSubscriptions.version !== subscriptionsModelVersion) {
+      storedSubscriptions = null;
+    }
     try {
       const subscriptionsList = await listAllSubscriptions(storedSubscriptions?.etag);
       const channelMap = await listAllChannels(subscriptionsList.items);

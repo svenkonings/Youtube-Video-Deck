@@ -20,13 +20,13 @@ export function Subscription(subscription: gapi.client.youtube.Subscription, cha
   };
 }
 
-export function setUploads(subscription: Subscription, uploads: gapi.client.youtube.PlaylistItemListResponse): void {
-  subscription.uploadsEtag = uploads.etag;
-  subscription.nextUploadPageToken = uploads.nextPageToken;
-  subscription.uploads = uploads.items.map(Video)
+export function setUploads(subscription: Subscription, playListItems: gapi.client.youtube.PlaylistItemListResponse, videos: gapi.client.youtube.VideoListResponse): void {
+  subscription.uploadsEtag = playListItems.etag;
+  subscription.nextUploadPageToken = playListItems.nextPageToken;
+  subscription.uploads = videos.items.map(Video)
 }
 
-export function addUploads(subscription: Subscription, uploads: gapi.client.youtube.PlaylistItemListResponse): void {
-  subscription.nextUploadPageToken = uploads.nextPageToken;
-  uploads.items.forEach(upload => subscription.uploads.push(Video(upload)));
+export function addUploads(subscription: Subscription, playListItems: gapi.client.youtube.PlaylistItemListResponse, videos: gapi.client.youtube.VideoListResponse): void {
+  subscription.nextUploadPageToken = playListItems.nextPageToken;
+  videos.items.forEach(upload => subscription.uploads.push(Video(upload)));
 }
