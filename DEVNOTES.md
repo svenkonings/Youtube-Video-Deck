@@ -16,6 +16,7 @@
     - Add up/down buttons to right-side of editor
     - Create add all buttons that adds all filtered subscriptions
 - Show add all button on empty subscriptions screen
+- Bring Your Own API-Key (BYOAK)
 
 # On hold due to API quotas
 - Requires additional request for every 50 playlistitems

@@ -337,7 +337,7 @@
               flipDurationMs,
             }} on:consider={handleSettingsDndConsider} on:finalize={handleSettingsDndFinalize}>
               {#each settingsEntries as entry (entry.id)}
-                <div class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" aria-label={entry.name} animate:flip={{duration:flipDurationMs}}>
+                <div class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl" aria-label={entry.name} animate:flip={{duration:flipDurationMs}}>
                   {#if isSubscription(entry)}
                     <img class="inline-block h-8 w-8 rounded-2xl align-top"
                          src={entry.subscription.thumbnailUrl}
@@ -385,7 +385,7 @@
                         flipDurationMs,
                       }} on:consider={e => handleGroupDndConsider(entry, e)} on:finalize={e => handleGroupDndFinalize(entry, e)}>
                         {#each entry.subscriptions as child (child.id)}
-                          <div class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl truncate" aria-label={child.name} animate:flip={{duration:flipDurationMs}}>
+                          <div class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl" aria-label={child.name} animate:flip={{duration:flipDurationMs}}>
                             <img class="inline-block h-8 w-8 rounded-2xl align-top"
                                  src={child.subscription.thumbnailUrl}
                                  alt=""
@@ -399,7 +399,7 @@
                                  on:touchstart={startDrag}
                                  on:keydown={handleKeyDown}/>
                             <span class="inline-block w-[calc(100%-4rem)] h-8 pt-1 align-top truncate" title={child.subscription.title}>{child.subscription.title}</span>
-                            <span class="inline-block h-8 w-8 px-2 cursor-pointer" aria-label="Remove" on:click={() => removeGroupEntry(entry, child)} on:keydown={e => keyClick(e) && removeGroupEntry(entry, child)} tabindex={dragDisabled ? 0 : -1}>
+                            <span class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer" aria-label="Remove" on:click={() => removeGroupEntry(entry, child)} on:keydown={e => keyClick(e) && removeGroupEntry(entry, child)} tabindex={dragDisabled ? 0 : -1}>
                               <Fa icon={faTimesCircle} translateY={0.5}/>
                             </span>
                           </div>
