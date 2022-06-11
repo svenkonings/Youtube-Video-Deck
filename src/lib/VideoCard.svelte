@@ -1,6 +1,7 @@
 <script lang="ts">
   import {DateTime, Duration} from "luxon";
   import type {Video} from "../model/Video";
+  import {abbreviate} from "../util/numbers";
   import {playerStore} from "../util/stores";
 
   export let video: Video;
@@ -16,7 +17,9 @@
   </div>
   <div class="inline-block w-[calc(100%-11.5rem)] align-top text-sm">
     <p class="font-bold truncate" title={video.title}>{video.title}</p>
-    <p class="text-neutral-400 truncate">{DateTime.fromISO(video.publishedAt).toRelative({locale: 'en'})} - {video.channelTitle}</p>
+    <p class="text-neutral-400 truncate" title="{abbreviate(video.viewCount)} views - {DateTime.fromISO(video.publishedAt).toRelative({locale: 'en'})} - {video.channelTitle}">
+      {abbreviate(video.viewCount)} views - {DateTime.fromISO(video.publishedAt).toRelative({locale: 'en'})} - {video.channelTitle}
+    </p>
     <p class="text-ellipsis line-clamp-3">{video.description}</p>
   </div>
 </a>

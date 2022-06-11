@@ -19,7 +19,7 @@
   let inView = false;
   let isLoading = false;
   let errorCount = 0;
-  let lastError;
+  let lastError: any;
 
   async function play(): Promise<void> {
     if (!subscriptionGroup.playlist) {

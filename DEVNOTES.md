@@ -16,8 +16,7 @@
     - Add up/down buttons to right-side of editor
     - Create add all buttons that adds all filtered subscriptions
 - Show add all button on empty subscriptions screen
-- Add view counter
-- Fix upload date for livestreams
+- Fix video order for livestreams
 - Bring Your Own API-Key (BYOAK)
 
 # On hold due to API quotas
