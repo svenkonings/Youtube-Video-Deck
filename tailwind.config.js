@@ -1,10 +1,10 @@
+import lineClamp from '@tailwindcss/line-clamp'
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: ['./index.html', './src/**/*.{d.ts,ts,js,svelte}'],
   theme: {
     extend: {},
   },
-  plugins: [
-    require('@tailwindcss/line-clamp'),
-  ],
+  plugins: [lineClamp],
 }

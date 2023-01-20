@@ -2,7 +2,7 @@
 import dns from 'dns'
 import {defineConfig} from 'vite'
 import {svelte} from '@sveltejs/vite-plugin-svelte'
-import preprocess from 'svelte-preprocess';
+import postcss from "./postcss.config.js";
 
 dns.setDefaultResultOrder('verbatim')
 
@@ -12,11 +12,8 @@ export default defineConfig({
   build: {
     outDir: 'docs',
   },
-  plugins: [
-    svelte({
-      preprocess: preprocess({
-        postcss: true,
-      }),
-    }),
-  ],
+  plugins: [svelte()],
+  css:{
+    postcss
+  }
 })
