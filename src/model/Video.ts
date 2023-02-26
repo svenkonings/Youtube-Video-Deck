@@ -1,3 +1,5 @@
+import type {Subscription} from "./Subscription";
+
 export type Video = {
   readonly videoId: string;
   readonly title: string;
@@ -8,10 +10,10 @@ export type Video = {
   readonly viewCount: string;
   readonly likeCount: string;
   readonly commentCount: string;
-  channelTitle?: string;
+  readonly channelTitle: string;
 };
 
-export function Video(video: gapi.client.youtube.Video): Video {
+export function Video(video: gapi.client.youtube.Video, subscription: Subscription): Video {
   return {
     videoId: video.id,
     title: video.snippet.title,
@@ -22,5 +24,6 @@ export function Video(video: gapi.client.youtube.Video): Video {
     viewCount: video.statistics.viewCount,
     likeCount: video.statistics.likeCount,
     commentCount: video.statistics.commentCount,
+    channelTitle: subscription.title,
   };
 }

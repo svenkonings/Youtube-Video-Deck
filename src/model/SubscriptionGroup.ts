@@ -70,7 +70,6 @@ export async function loadMoreVideos(subscriptionGroup: SubscriptionGroup, maxAm
       }
     }
     if (!nextVideo || !nextSubscription) break;
-    nextVideo.channelTitle = nextSubscription.subscription.title;
     subscriptionGroup.videos.push(nextVideo);
     nextSubscription.uploadIndex++;
   }
