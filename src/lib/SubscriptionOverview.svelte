@@ -125,7 +125,7 @@
       {/each}
       {#if !allVideosLoaded(subscriptionGroup)}
         {#if errorCount < 3}
-          <div use:inview on:change={e => inView = e.detail.inView}>
+          <div use:inview on:inview_change={e => inView = e.detail.inView}>
             <Spinner/>
           </div>
         {:else}
