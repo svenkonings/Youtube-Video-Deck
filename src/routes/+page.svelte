@@ -12,17 +12,13 @@
   const { isSignedIn, settings } = data;
 </script>
 
-<main class="w-full h-full overflow-x-auto x-scroll bg-neutral-700 text-white">
-  <div class="w-full h-full min-w-[22rem]">
-    <Header {isSignedIn} />
-    <section class="w-full h-[calc(100%-3rem)]">
-      {#if isSignedIn}
-        <!-- <SubscriptionsDeck/>
+<Header {isSignedIn} />
+<section class="w-full h-[calc(100%-3rem)]">
+  {#if isSignedIn}
+    <!-- <SubscriptionsDeck/>
           <Player/>
           <SubscriptionsEditor/> -->
-      {:else}
-        <LoginScreen />
-      {/if}
-    </section>
-  </div>
-</main>
+  {:else}
+    <LoginScreen />
+  {/if}
+</section>

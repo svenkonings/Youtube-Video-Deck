@@ -1,9 +1,10 @@
-import type { Handle } from "@sveltejs/kit";
+import type { Handle, HandleServerError } from "@sveltejs/kit";
 import { env } from "$env/dynamic/private";
 import { handleSession } from "svelte-kit-cookie-session";
 
 import { getUser } from "$lib/server/db";
 import { initClient, login } from "$lib/server/auth";
+import { errorString } from "$lib/util/error";
 
 export const handle = handleSession(
   {
@@ -37,3 +38,10 @@ export const handle = handleSession(
     return resolve(event);
   }
 ) satisfies Handle;
+
+export const handleError = (({ error }) => {
+  console.error(error);
+  return {
+    message: errorString(error),
+  };
+}) satisfies HandleServerError;
