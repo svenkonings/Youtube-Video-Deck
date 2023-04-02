@@ -1,12 +1,13 @@
 <script lang="ts">
+  import { enhance } from "$app/forms";
   import Center from "$lib/ui/components/Center.svelte";
   import PrimaryButton from "$lib/ui/components/PrimaryButton.svelte";
-
-  export let authUrl: string;
 </script>
 
 <Center>
   <p>Please sign in to continue</p>
   <br />
-  <PrimaryButton class="w-full" href={authUrl}>Sign in</PrimaryButton>
+  <form method="POST" action="?/login" use:enhance>
+    <PrimaryButton type="submit" class="w-full">Sign in</PrimaryButton>
+  </form>
 </Center>

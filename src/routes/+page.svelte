@@ -1,10 +1,15 @@
 <script lang="ts">
   import type { PageData } from "./$types";
+  import { browser } from "$app/environment";
   import Header from "$lib/ui/Header.svelte";
   import LoginScreen from "$lib/ui/LoginScreen.svelte";
 
+  if (browser && window.location.search) {
+    window.history.replaceState(null, "", window.location.pathname);
+  }
+
   export let data: PageData;
-  const { isSignedIn, authUrl, settings } = data;
+  const { isSignedIn, settings } = data;
 </script>
 
 <main class="w-full h-full overflow-x-auto x-scroll bg-neutral-700 text-white">
@@ -16,7 +21,7 @@
           <Player/>
           <SubscriptionsEditor/> -->
       {:else}
-        <LoginScreen {authUrl} />
+        <LoginScreen />
       {/if}
     </section>
   </div>
