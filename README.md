@@ -1,38 +1,19 @@
-# create-svelte
+# YouTube Video Deck
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+[svenkonings.github.io/Youtube-Video-Deck](https://svenkonings.github.io/Youtube-Video-Deck/)
 
-## Creating a project
+To use the deck you need to sign in with Google.
+Since the app still has the testing status you need to be manually added to the test user group to be able to sign in.
+**Please send your Google email to [youtubevideodeck@svenkonings.nl](mailto:youtubevideodeck@svenkonings.nl) if you want to try out the deck!**
 
-If you're seeing this, you've probably already done this step. Congrats!
+YouTube Video Deck is an alternative way to view your YouTube subscriptions!
+![Deck overview](img/Deck.png)
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+Subscriptions can be grouped to create a combined list:
+![Subscription group (collapsed)](img/Group-collapsed.png)
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+It is also possible to watch all videos from a subscription group in a playlist:
+![Subscription group playlist](img/Group-playlist.png)
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+Groups can be expanded to view individual subscriptions:
+![Subscription group (expanded)](img/Group-expanded.png)
