@@ -15,7 +15,7 @@
 /* Firefox scrollbar styles */
 .y-scroll {
   scrollbar-width: thin;
-  scrollbar-color: #FF3D00 #262626;
+  scrollbar-color: #ff3d00 #262626;
 }
 
 /* Webkit scrollbar styles */
@@ -24,7 +24,7 @@
 }
 
 .y-scroll::-webkit-scrollbar-thumb {
-  background: #FF3D00;
+  background: #ff3d00;
   border-radius: 1rem;
 }
 
@@ -35,12 +35,12 @@
 }
 
 .y-scroll-hover:hover {
-  scrollbar-color: #FF3D00 #262626;
+  scrollbar-color: #ff3d00 #262626;
 }
 
 @media (any-hover: none) {
   .y-scroll-hover {
-    scrollbar-color: #FF3D00 #262626;
+    scrollbar-color: #ff3d00 #262626;
   }
 }
 
@@ -50,13 +50,13 @@
 }
 
 .y-scroll-hover:hover::-webkit-scrollbar-thumb {
-  background: #FF3D00;
+  background: #ff3d00;
   border-radius: 1rem;
 }
 
 @media (any-hover: none) {
   .y-scroll-hover::-webkit-scrollbar-thumb {
-    background: #FF3D00;
+    background: #ff3d00;
     border-radius: 1rem;
   }
 }
@@ -64,7 +64,7 @@
 /* Firefox scrollbar styles */
 .x-scroll {
   scrollbar-width: thin;
-  scrollbar-color: #FF3D00 #404040
+  scrollbar-color: #ff3d00 #404040;
 }
 
 /* Webkit scrollbar styles */
@@ -73,6 +73,6 @@
 }
 
 .x-scroll::-webkit-scrollbar-thumb {
-  background: #FF3D00;
+  background: #ff3d00;
   border-radius: 1rem;
 }
