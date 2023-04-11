@@ -1,3 +1,9 @@
+<div class="text-center">
+  <span class="loader" />
+  <br />
+  <span class="font-extrabold">Loading…</span>
+</div>
+
 <style>
   .loader {
     width: 48px;
@@ -6,14 +12,14 @@
     display: inline-block;
     position: relative;
     border: 3px solid;
-    border-color: #FFF #FFF transparent transparent;
+    border-color: #fff #fff transparent transparent;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
   }
 
   .loader::after,
   .loader::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     right: 0;
@@ -21,7 +27,7 @@
     bottom: 0;
     margin: auto;
     border: 3px solid;
-    border-color: transparent transparent #FF3D00 #FF3D00;
+    border-color: transparent transparent #ff3d00 #ff3d00;
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -33,7 +39,7 @@
   .loader::before {
     width: 32px;
     height: 32px;
-    border-color: #FFF #FFF transparent transparent;
+    border-color: #fff #fff transparent transparent;
     animation: rotation 1.5s linear infinite;
   }
 
@@ -54,10 +60,4 @@
       transform: rotate(-360deg);
     }
   }
-
 </style>
-<div class="text-center">
-  <span class="loader"></span>
-  <br>
-  <span class="font-extrabold">Loading…</span>
-</div>

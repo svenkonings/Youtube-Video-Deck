@@ -16,7 +16,7 @@ export async function getUser(sub: string): Promise<User> {
   return user;
 }
 
-export async function loginUser(user: User): Promise<User> {
+export async function upsertUser(user: User): Promise<User> {
   // Finds the user and updates the credentials, then returns the updated user
   // Inserts a new user if the user does not yet exists
   const result = await users.findOneAndUpdate(

@@ -2,10 +2,10 @@ import type { Credentials } from "google-auth-library";
 import { Settings } from "$lib/model/Settings";
 
 export type User = {
-  sub: string;
-  version: number;
-  credentials: Credentials;
-  settings: Settings;
+  readonly sub: string;
+  readonly version: number;
+  readonly credentials: Credentials;
+  readonly settings: Settings;
 };
 
 export function User(sub: string, credentials: Credentials, settings: Settings = Settings()): User {

@@ -2,7 +2,7 @@ import type { OAuth2Client } from "google-auth-library";
 import { env } from "$env/dynamic/private";
 import google from "@googleapis/youtube";
 import { User } from "$lib/server/model/User";
-import { loginUser } from "$lib/server/db";
+import { upsertUser } from "$lib/server/db";
 
 export function initClient(): OAuth2Client {
   return new google.auth.OAuth2(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET, env.GOOGLE_REDIRECT_URL);
@@ -28,6 +28,6 @@ export async function login(client: OAuth2Client, code: string): Promise<User> {
   if (!sub) {
     throw new Error("Missing user ID");
   }
-  const user = await loginUser(User(sub, tokens));
+  const user = await upsertUser(User(sub, tokens));
   return user;
 }
