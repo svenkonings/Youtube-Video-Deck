@@ -1,5 +1,6 @@
-import type { Credentials } from "google-auth-library";
 import { Settings } from "$lib/model/Settings";
+
+import type { Credentials } from "google-auth-library";
 
 export type User = {
   readonly sub: string;

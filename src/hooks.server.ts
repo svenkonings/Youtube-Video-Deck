@@ -1,10 +1,11 @@
-import type { Handle, HandleServerError } from "@sveltejs/kit";
-import { env } from "$env/dynamic/private";
-import { handleSession } from "svelte-kit-cookie-session";
-
-import { getUser } from "$lib/server/db";
 import { initClient, login } from "$lib/server/auth";
+import { getUser } from "$lib/server/db";
 import { errorString } from "$lib/util/error";
+
+import { env } from "$env/dynamic/private";
+
+import type { Handle, HandleServerError } from "@sveltejs/kit";
+import { handleSession } from "svelte-kit-cookie-session";
 
 export const handle = handleSession(
   {

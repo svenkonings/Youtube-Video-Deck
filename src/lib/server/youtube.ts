@@ -1,7 +1,8 @@
-import type { OAuth2Client } from "google-auth-library";
-import google from "@googleapis/youtube";
-import type { All } from "$lib/util/types";
 import { Subscription } from "$lib/model/Subscription";
+import type { All } from "$lib/util/types";
+
+import google from "@googleapis/youtube";
+import type { OAuth2Client } from "google-auth-library";
 
 const youtube = google.youtube({
   version: "v3",

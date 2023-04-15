@@ -1,6 +1,8 @@
-import { env } from "$env/dynamic/private";
-import { MongoClient } from "mongodb";
 import type { User } from "$lib/server/model/User";
+
+import { env } from "$env/dynamic/private";
+
+import { MongoClient } from "mongodb";
 
 const client = new MongoClient(
   `mongodb://${env.MONGO_USER}:${env.MONGO_PASSWORD}@${env.MONGO_HOST}:${env.MONGO_PORT}/${env.MONGO_DATABASE}`

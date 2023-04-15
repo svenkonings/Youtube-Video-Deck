@@ -1,6 +1,9 @@
 <script lang="ts">
-  import PrimaryButton from "$lib/ui/components/PrimaryButton.svelte";
+  import { enhance } from "$app/forms";
+
   import Center from "$lib/ui/components/Center.svelte";
+  import PrimaryButton from "$lib/ui/components/PrimaryButton.svelte";
+
   // import {editorVisible, settingsStore, subscriptionsStore} from "../../../old/src/util/stores";
 
   export let isSignedIn: boolean;
@@ -20,7 +23,7 @@
     </div> -->
     <div slot="after" class="float-right p-1">
       {#if isSignedIn}
-        <form method="POST" action="?/logout">
+        <form method="POST" action="?/logout" use:enhance>
           <PrimaryButton type="submit" class="w-20 m-1">Sign out</PrimaryButton>
         </form>
       {/if}

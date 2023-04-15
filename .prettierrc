@@ -1,7 +1,11 @@
 {
-  "printWidth": 120,
   "arrowParens": "avoid",
+  "importOrder": ["^./\\$types$", "^\\$app/(.*)$", "^\\$lib/(.*)$", "^\\$env/(.*)$", "<THIRD_PARTY_MODULES>"],
+  "importOrderGroupNamespaceSpecifiers": true,
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }],
   "plugins": ["prettier-plugin-svelte"],
   "pluginSearchDirs": ["."],
-  "overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }]
+  "printWidth": 120
 }

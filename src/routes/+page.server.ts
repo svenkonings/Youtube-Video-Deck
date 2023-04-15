@@ -1,7 +1,9 @@
-import { redirect } from "@sveltejs/kit";
-import { generateAuthUrl } from "$lib/server/auth";
 import type { Actions, PageServerLoad } from "./$types";
+
+import { generateAuthUrl } from "$lib/server/auth";
 import { getSubscriptions } from "$lib/server/youtube";
+
+import { redirect } from "@sveltejs/kit";
 
 export const load = (async ({ locals }) => {
   if (!locals.user) {

@@ -1,4 +1,4 @@
-export function errorString(e: any): string {
+export function errorString(e: unknown): string {
   if (typeof e === "string") {
     return e;
   } else if (e instanceof Error) {

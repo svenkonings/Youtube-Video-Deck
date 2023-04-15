@@ -1,8 +1,10 @@
-import type { OAuth2Client } from "google-auth-library";
-import { env } from "$env/dynamic/private";
-import google from "@googleapis/youtube";
-import { User } from "$lib/server/model/User";
 import { upsertUser } from "$lib/server/db";
+import { User } from "$lib/server/model/User";
+
+import { env } from "$env/dynamic/private";
+
+import google from "@googleapis/youtube";
+import type { OAuth2Client } from "google-auth-library";
 
 export function initClient(): OAuth2Client {
   return new google.auth.OAuth2(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET, env.GOOGLE_REDIRECT_URL);

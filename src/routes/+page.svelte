@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { PageData } from "./$types";
+
   import { browser } from "$app/environment";
+
   import Header from "$lib/ui/Header.svelte";
   import LoginScreen from "$lib/ui/LoginScreen.svelte";
   import Center from "$lib/ui/components/Center.svelte";
@@ -12,13 +14,12 @@
   }
 
   export let data: PageData;
-  const { isSignedIn, settings, streamed } = data;
 </script>
 
-<Header {isSignedIn} />
+<Header isSignedIn={data.isSignedIn} />
 <section class="w-full h-[calc(100%-3rem)]">
-  {#if isSignedIn}
-    {#await streamed.subscriptions}
+  {#if data.isSignedIn}
+    {#await data.streamed.subscriptions}
       <Center>
         <Spinner />
       </Center>
