@@ -5,7 +5,7 @@ import { getSubscriptions } from "$lib/server/youtube";
 
 import { redirect } from "@sveltejs/kit";
 
-export const load = (async ({ locals }) => {
+export const load = (({ locals }) => {
   if (!locals.user) {
     return { isSignedIn: false } as const;
   } else {

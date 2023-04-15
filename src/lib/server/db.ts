@@ -2,6 +2,7 @@ import type { User } from "$lib/server/model/User";
 
 import { env } from "$env/dynamic/private";
 
+import type { Credentials } from "google-auth-library";
 import { MongoClient } from "mongodb";
 
 const client = new MongoClient(
@@ -33,4 +34,8 @@ export async function upsertUser(user: User): Promise<User> {
     throw new Error(`Failed to update user with sub ${user.sub}`);
   }
   return result.value;
+}
+
+export async function updateCredentials(sub: string, credentials: Credentials): Promise<void> {
+  await users.updateOne({ sub }, { $set: { credentials } });
 }

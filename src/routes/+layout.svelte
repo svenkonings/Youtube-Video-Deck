@@ -1,5 +1,5 @@
 <script>
-  import "../app.css";
+  import "../app.pcss";
 </script>
 
 <main class="w-full h-full overflow-x-auto x-scroll bg-neutral-700 text-white">
