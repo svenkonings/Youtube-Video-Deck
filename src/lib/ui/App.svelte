@@ -2,6 +2,7 @@
   import type { Settings } from "$lib/model/Settings";
   import type { Subscription } from "$lib/model/Subscription";
   import type { PlayerInput } from "$lib/types/PlayerInput";
+  import Player from "$lib/ui/Player.svelte";
 
   import { getContext, setContext } from "svelte";
   import { type Writable, writable } from "svelte/store";
@@ -24,7 +25,7 @@
   setContext("settingsStore", settingsStore);
 
   // Init player store
-  const playerStore: Writable<PlayerInput> = writable();
+  const playerStore: Writable<PlayerInput | null> = writable(null);
   setContext("playerStore", playerStore);
 
   // Update editor visible store
@@ -32,6 +33,6 @@
   $editorVisible = false;
 </script>
 
-<!-- <SubscriptionsDeck/>
-    <Player/>
-    <SubscriptionsEditor/> -->
+<!-- <SubscriptionsDeck/> -->
+<Player />
+<!-- <SubscriptionsEditor/> -->
