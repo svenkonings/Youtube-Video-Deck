@@ -1,5 +1,5 @@
 import { Subscription } from "$lib/model/Subscription";
-import type { All } from "$lib/util/types";
+import type { Channel, ChannelListResponse, SubscriptionListResponse } from "$lib/types/google";
 
 import google from "@googleapis/youtube";
 import type { OAuth2Client } from "google-auth-library";
@@ -9,7 +9,7 @@ const youtube = google.youtube({
   http2: true,
 });
 
-export async function getSubscriptions(auth: OAuth2Client, pageToken?: string) {
+export async function getSubscriptions(auth: OAuth2Client, pageToken?: string): Promise<Subscription[]> {
   const subscriptions = await listSubscriptions(auth, pageToken);
   let nextPage;
   if (subscriptions.nextPageToken) {
@@ -25,10 +25,7 @@ export async function getSubscriptions(auth: OAuth2Client, pageToken?: string) {
   return result;
 }
 
-async function listSubscriptions(
-  auth: OAuth2Client,
-  pageToken?: string
-): Promise<All<google.youtube_v3.Schema$SubscriptionListResponse>> {
+async function listSubscriptions(auth: OAuth2Client, pageToken?: string): Promise<SubscriptionListResponse> {
   const response = await youtube.subscriptions.list({
     auth,
     part: ["snippet"],
@@ -38,25 +35,22 @@ async function listSubscriptions(
     maxResults: 50,
     pageToken,
   });
-  return response.data as All<google.youtube_v3.Schema$SubscriptionListResponse>;
+  return response.data as SubscriptionListResponse;
 }
 
 async function getChannelMap(
   auth: OAuth2Client,
-  subscriptions: All<google.youtube_v3.Schema$SubscriptionListResponse>
-): Promise<Record<string, All<google.youtube_v3.Schema$Channel>>> {
+  subscriptions: SubscriptionListResponse
+): Promise<Record<string, Channel>> {
   const channels = await listChannels(auth, subscriptions);
-  const result: Record<string, All<google.youtube_v3.Schema$Channel>> = {};
+  const result: Record<string, Channel> = {};
   for (const channel of channels.items) {
     result[channel.id] = channel;
   }
   return result;
 }
 
-async function listChannels(
-  auth: OAuth2Client,
-  subscriptions: All<google.youtube_v3.Schema$SubscriptionListResponse>
-): Promise<All<google.youtube_v3.Schema$ChannelListResponse>> {
+async function listChannels(auth: OAuth2Client, subscriptions: SubscriptionListResponse): Promise<ChannelListResponse> {
   const response = await youtube.channels.list({
     auth,
     part: ["contentDetails"],
@@ -64,5 +58,5 @@ async function listChannels(
     id: subscriptions.items.map(subscription => subscription.snippet.resourceId.channelId),
     maxResults: 50,
   });
-  return response.data as All<google.youtube_v3.Schema$ChannelListResponse>;
+  return response.data as ChannelListResponse;
 }
