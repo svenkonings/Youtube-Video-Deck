@@ -69,7 +69,7 @@ export async function loadMoreVideos(subscriptionGroup: SubscriptionGroup, maxAm
     for (const groupSubscription of subscriptionGroup.subscriptions) {
       if (groupSubscription.uploadIndex === groupSubscription.subscription.uploads.length) {
         if (!groupSubscription.subscription.nextUploadPageToken) continue;
-        // await listPlaylistItems(groupSubscription.subscription);
+        // TODO: await listPlaylistItems(groupSubscription.subscription);
       }
       const video = groupSubscription.subscription.uploads[groupSubscription.uploadIndex];
       if (!nextVideo || video.publishedAt > nextVideo.publishedAt) {

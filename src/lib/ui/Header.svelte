@@ -4,23 +4,26 @@
   import Center from "$lib/ui/components/Center.svelte";
   import PrimaryButton from "$lib/ui/components/PrimaryButton.svelte";
 
-  // import {editorVisible, settingsStore, subscriptionsStore} from "../../../old/src/util/stores";
+  import { getContext } from "svelte";
+  import type { Writable } from "svelte/store";
 
   export let isSignedIn: boolean;
 
-  // function showEditor() {
-  //   $editorVisible = true;
-  // }
+  const editorVisible: Writable<boolean | null> = getContext("editorVisible");
+
+  function showEditor() {
+    $editorVisible = true;
+  }
 </script>
 
 <header class="w-full h-12">
   <Center>
     <a class="font-extrabold" href={"#"}>YouTube Video Deck</a>
-    <!-- <div slot="before" class="float-left p-1">
-      {#if isAuthorized && $settingsStore && $subscriptionsStore}
+    <div slot="before" class="float-left p-1">
+      {#if $editorVisible !== null}
         <PrimaryButton class="w-20 m-1" on:click={showEditor}>Edit</PrimaryButton>
       {/if}
-    </div> -->
+    </div>
     <div slot="after" class="float-right p-1">
       {#if isSignedIn}
         <form method="POST" action="?/logout" use:enhance>
