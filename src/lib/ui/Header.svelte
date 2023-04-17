@@ -9,7 +9,7 @@
 
   export let isSignedIn: boolean;
 
-  const editorVisible: Writable<boolean | null> = getContext("editorVisible");
+  const editorVisible: Writable<boolean | undefined> = getContext("editorVisible");
 
   function showEditor() {
     $editorVisible = true;
@@ -20,7 +20,7 @@
   <Center>
     <a class="font-extrabold" href={"#"}>YouTube Video Deck</a>
     <div slot="before" class="float-left p-1">
-      {#if $editorVisible !== null}
+      {#if $editorVisible !== undefined}
         <PrimaryButton class="w-20 m-1" on:click={showEditor}>Edit</PrimaryButton>
       {/if}
     </div>

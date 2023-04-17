@@ -7,8 +7,8 @@
   import { getContext, onDestroy } from "svelte";
   import type { Writable } from "svelte/store";
 
-  const editorVisible: Writable<boolean | null> = getContext("editorVisible");
-  const playerStore: Writable<PlayerInput | null> = getContext("playerStore");
+  const editorVisible: Writable<boolean | undefined> = getContext("editorVisible");
+  const playerStore: Writable<PlayerInput | undefined> = getContext("playerStore");
 
   enum PlayerInitState {
     UNINITIALISED,
@@ -89,9 +89,9 @@
   }
 
   onDestroy(
-    playerStore.subscribe((input: PlayerInput | null) => {
+    playerStore.subscribe((input: PlayerInput | undefined) => {
       if (input) {
-        playerStore.set(null);
+        playerStore.set(undefined);
         backgroundVisible = true;
         if (!input.loading) {
           play(input);

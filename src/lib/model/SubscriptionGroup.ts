@@ -64,8 +64,8 @@ export async function loadCustomPlaylist(subscriptionGroup: SubscriptionGroup): 
 
 export async function loadMoreVideos(subscriptionGroup: SubscriptionGroup, maxAmount = 10): Promise<void> {
   for (let i = 0; i < maxAmount; i++) {
-    let nextVideo: Video | null = null;
-    let nextSubscription: GroupSubscription | null = null;
+    let nextVideo: Video | undefined;
+    let nextSubscription: GroupSubscription | undefined;
     for (const groupSubscription of subscriptionGroup.subscriptions) {
       if (groupSubscription.uploadIndex === groupSubscription.subscription.uploads.length) {
         if (!groupSubscription.subscription.nextUploadPageToken) continue;

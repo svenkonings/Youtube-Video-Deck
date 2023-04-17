@@ -1,3 +1,4 @@
+import type { Settings } from "$lib/model/Settings";
 import type { User } from "$lib/server/model/User";
 
 import { env } from "$env/dynamic/private";
@@ -38,4 +39,12 @@ export async function upsertUser(user: User): Promise<User> {
 
 export async function updateCredentials(sub: string, credentials: Credentials): Promise<void> {
   await users.updateOne({ sub }, { $set: { credentials } });
+}
+
+export async function updateSettings(sub: string, settings: Settings): Promise<void> {
+  await users.updateOne({ sub }, { $set: { settings } });
+}
+
+export async function updateExpanded(sub: string, index: number, expanded: boolean): Promise<void> {
+  await users.updateOne({ sub }, { $set: { [`settings.subscriptionGroups.${index}.expanded`]: expanded } });
 }

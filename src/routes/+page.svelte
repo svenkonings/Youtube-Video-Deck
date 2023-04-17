@@ -19,8 +19,8 @@
 
   export let data: PageData;
 
-  const editorVisible: Writable<boolean | null> = writable(null);
-  $: if (!data.isSignedIn) editorVisible.set(null);
+  const editorVisible: Writable<boolean | undefined> = writable(undefined);
+  $: if (!data.isSignedIn) editorVisible.set(undefined);
   setContext("editorVisible", editorVisible);
 </script>
 

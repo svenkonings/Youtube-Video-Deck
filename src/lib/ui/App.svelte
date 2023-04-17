@@ -3,6 +3,8 @@
   import type { Subscription } from "$lib/model/Subscription";
   import type { PlayerInput } from "$lib/types/PlayerInput";
   import Player from "$lib/ui/Player.svelte";
+  import SubscriptionsDeck from "$lib/ui/SubscriptionsDeck.svelte";
+  import SubscriptionsEditor from "$lib/ui/SubscriptionsEditor.svelte";
 
   import { getContext, setContext } from "svelte";
   import { type Writable, writable } from "svelte/store";
@@ -25,14 +27,14 @@
   setContext("settingsStore", settingsStore);
 
   // Init player store
-  const playerStore: Writable<PlayerInput | null> = writable(null);
+  const playerStore: Writable<PlayerInput | undefined> = writable(undefined);
   setContext("playerStore", playerStore);
 
   // Update editor visible store
-  const editorVisible: Writable<boolean | null> = getContext("editorVisible");
+  const editorVisible: Writable<boolean | undefined> = getContext("editorVisible");
   $editorVisible = false;
 </script>
 
-<!-- <SubscriptionsDeck/> -->
+<SubscriptionsDeck {subscriptionMap} />
 <Player />
-<!-- <SubscriptionsEditor/> -->
+<SubscriptionsEditor {subscriptions} {subscriptionMap} />
