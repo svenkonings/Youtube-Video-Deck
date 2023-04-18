@@ -6,7 +6,7 @@ export type Subscription = {
   readonly title: string;
   readonly thumbnailUrl: string;
   readonly uploadsPlaylistId: string;
-  uploadsEtag?: string;
+  // uploadsEtag?: string;
   nextUploadPageToken?: string;
   uploads: Video[];
 };
@@ -21,15 +21,15 @@ export function Subscription(subscription: YTSubscription, channel: Channel): Su
   };
 }
 
-export function setUploads(
-  subscription: Subscription,
-  playListItems: PlaylistItemListResponse,
-  videos: VideoListResponse
-): void {
-  subscription.uploadsEtag = playListItems.etag;
-  subscription.nextUploadPageToken = playListItems.nextPageToken;
-  subscription.uploads = videos.items.map(upload => Video(upload, subscription));
-}
+// export function setUploads(
+//   subscription: Subscription,
+//   playListItems: PlaylistItemListResponse,
+//   videos: VideoListResponse
+// ): void {
+//   subscription.uploadsEtag = playListItems.etag;
+//   subscription.nextUploadPageToken = playListItems.nextPageToken;
+//   subscription.uploads = videos.items.map(upload => Video(upload, subscription));
+// }
 
 export function addUploads(
   subscription: Subscription,
