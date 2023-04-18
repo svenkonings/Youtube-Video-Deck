@@ -1,5 +1,5 @@
-import { Video } from "$lib/model/Video";
-import type { Channel, PlaylistItemListResponse, VideoListResponse, YTSubscription } from "$lib/types/google";
+import type { Video } from "$lib/model/Video";
+import type { Channel, YTSubscription } from "$lib/types/google";
 
 export type Subscription = {
   readonly channelId: string;
@@ -31,11 +31,11 @@ export function Subscription(subscription: YTSubscription, channel: Channel): Su
 //   subscription.uploads = videos.items.map(upload => Video(upload, subscription));
 // }
 
-export function addUploads(
-  subscription: Subscription,
-  playListItems: PlaylistItemListResponse,
-  videos: VideoListResponse
-): void {
-  subscription.nextUploadPageToken = playListItems.nextPageToken;
-  videos.items.forEach(upload => subscription.uploads.push(Video(upload, subscription)));
-}
+// export function addUploads(
+//   subscription: Subscription,
+//   playListItems: PlaylistItemListResponse,
+//   videos: VideoListResponse
+// ): void {
+//   subscription.nextUploadPageToken = playListItems.nextPageToken;
+//   videos.items.forEach(upload => subscription.uploads.push(Video(upload, subscription)));
+// }

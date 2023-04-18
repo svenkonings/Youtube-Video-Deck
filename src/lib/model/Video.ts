@@ -1,4 +1,3 @@
-import type { Subscription } from "$lib/model/Subscription";
 import type { YTVideo } from "$lib/types/google";
 
 export type Video = {
@@ -14,7 +13,7 @@ export type Video = {
   readonly channelTitle: string;
 };
 
-export function Video(video: YTVideo, subscription: Subscription): Video {
+export function Video(video: YTVideo, channelTitle: string): Video {
   return {
     videoId: video.id,
     title: video.snippet.title,
@@ -28,6 +27,6 @@ export function Video(video: YTVideo, subscription: Subscription): Video {
     viewCount: video.statistics.viewCount,
     likeCount: video.statistics.likeCount,
     commentCount: video.statistics.commentCount,
-    channelTitle: subscription.title,
+    channelTitle,
   };
 }

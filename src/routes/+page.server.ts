@@ -5,7 +5,7 @@ import { loadSubscriptions } from "$lib/server/youtube";
 
 import { redirect } from "@sveltejs/kit";
 
-export const load = (({ locals }) => {
+export const load: PageServerLoad = ({ locals }) => {
   if (!locals.user) {
     return { isSignedIn: false } as const;
   } else {
@@ -17,9 +17,9 @@ export const load = (({ locals }) => {
       },
     } as const;
   }
-}) satisfies PageServerLoad;
+};
 
-export const actions = {
+export const actions: Actions = {
   login: ({ locals }) => {
     const authUrl = generateAuthUrl(locals.auth);
     throw redirect(303, authUrl);
@@ -28,4 +28,4 @@ export const actions = {
     await Promise.all([locals.auth.revokeCredentials(), locals.session.destroy()]);
     locals.user = undefined;
   },
-} satisfies Actions;
+};

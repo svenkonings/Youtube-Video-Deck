@@ -8,7 +8,7 @@ import { env } from "$env/dynamic/private";
 import type { Handle, HandleServerError } from "@sveltejs/kit";
 import { handleSession } from "svelte-kit-cookie-session";
 
-export const handle = handleSession(
+export const handle: Handle = handleSession(
   {
     secret: env.SESSION_SECRET,
     rolling: 99,
@@ -37,7 +37,7 @@ export const handle = handleSession(
     // Continue without user
     return resolve(event);
   }
-) satisfies Handle;
+);
 
 function initUser(locals: App.Locals, user: User): void {
   locals.auth.on("tokens", async tokens => await updateCredentials(user.sub, tokens));
@@ -45,9 +45,9 @@ function initUser(locals: App.Locals, user: User): void {
   locals.user = user;
 }
 
-export const handleError = (({ error }) => {
+export const handleError: HandleServerError = ({ error }) => {
   console.error(error);
   return {
     message: errorString(error),
   };
-}) satisfies HandleServerError;
+};

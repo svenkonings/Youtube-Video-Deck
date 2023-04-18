@@ -2,6 +2,7 @@ import type { Subscription } from "$lib/model/Subscription";
 import type { Video } from "$lib/model/Video";
 // import {listPlaylistItems} from "../api/YouTube";
 import type { PlayerInput } from "$lib/types/PlayerInput";
+import type { VideosResponse } from "$lib/types/VideosResponse";
 
 const maxPlaylistLength = 200;
 
@@ -69,7 +70,7 @@ export async function loadMoreVideos(subscriptionGroup: SubscriptionGroup, maxAm
     for (const groupSubscription of subscriptionGroup.subscriptions) {
       if (groupSubscription.uploadIndex === groupSubscription.subscription.uploads.length) {
         if (!groupSubscription.subscription.nextUploadPageToken) continue;
-        // TODO: await listPlaylistItems(groupSubscription.subscription);
+        await loadUploads(groupSubscription.subscription);
       }
       const video = groupSubscription.subscription.uploads[groupSubscription.uploadIndex];
       if (!nextVideo || video.publishedAt > nextVideo.publishedAt) {
@@ -81,6 +82,20 @@ export async function loadMoreVideos(subscriptionGroup: SubscriptionGroup, maxAm
     subscriptionGroup.videos.push(nextVideo);
     nextSubscription.uploadIndex++;
   }
+}
+
+export async function loadUploads(subscription: Subscription): Promise<void> {
+  const response = await fetch(
+    "/api/videos?" +
+      new URLSearchParams({
+        channelTitle: subscription.title,
+        playlistId: subscription.uploadsPlaylistId,
+        ...(subscription.nextUploadPageToken && { pageToken: subscription.nextUploadPageToken }),
+      })
+  );
+  const videosResponse: VideosResponse = await response.json();
+  subscription.nextUploadPageToken = videosResponse.nextPageToken;
+  subscription.uploads.push(...videosResponse.videos);
 }
 
 export function allVideosLoaded(subscriptionGroup: SubscriptionGroup): boolean {

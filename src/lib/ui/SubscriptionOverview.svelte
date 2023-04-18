@@ -1,6 +1,12 @@
 <script lang="ts">
   // import type { Settings } from "$lib/model/Settings";
-  import { type SubscriptionGroup, SubscriptionGroupChild, allVideosLoaded } from "$lib/model/SubscriptionGroup";
+  import {
+    type SubscriptionGroup,
+    SubscriptionGroupChild,
+    allVideosLoaded,
+    loadCustomPlaylist,
+    loadMoreVideos,
+  } from "$lib/model/SubscriptionGroup";
   import type { PlayerInput } from "$lib/types/PlayerInput";
   import VideoCard from "$lib/ui/VideoCard.svelte";
   import PrimaryButton from "$lib/ui/components/PrimaryButton.svelte";
@@ -29,7 +35,7 @@
   async function play(): Promise<void> {
     if (!subscriptionGroup.playlist) {
       $playerStore = { loading: true };
-      // TODO: await loadCustomPlaylist(subscriptionGroup);
+      await loadCustomPlaylist(subscriptionGroup);
     }
     $playerStore = subscriptionGroup.playlist;
   }
@@ -49,7 +55,7 @@
     if (!isLoading) {
       isLoading = true;
       try {
-        // TODO: await loadMoreVideos(subscriptionGroup);
+        await loadMoreVideos(subscriptionGroup);
         subscriptionGroup.videos = subscriptionGroup.videos; // Refresh videos
         errorCount = 0;
       } catch (e) {

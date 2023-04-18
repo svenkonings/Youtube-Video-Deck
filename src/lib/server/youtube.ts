@@ -1,5 +1,7 @@
 import type { Settings } from "$lib/model/Settings";
-import { Subscription, addUploads } from "$lib/model/Subscription";
+import { Subscription } from "$lib/model/Subscription";
+import { Video } from "$lib/model/Video";
+import type { VideosResponse } from "$lib/types/VideosResponse";
 import type {
   Channel,
   ChannelListResponse,
@@ -36,7 +38,7 @@ async function loadAllSubscriptions(
     Subscription(subscription, channelMap[subscription.snippet.resourceId.channelId])
   );
   // Load uploads of active subscriptions
-  await Promise.all(result.map(s => (activeSubscriptions.has(s.channelId) ? loadUploads(auth, s) : undefined)));
+  await Promise.all(result.filter(s => activeSubscriptions.has(s.channelId)).map(s => loadUploads(auth, s)));
   if (nextPage) {
     result = result.concat(await nextPage);
   }
@@ -60,7 +62,8 @@ async function getChannelMap(
   auth: OAuth2Client,
   subscriptions: SubscriptionListResponse
 ): Promise<Record<string, Channel>> {
-  const channels = await listChannels(auth, subscriptions);
+  const channelIds = subscriptions.items.map(subscription => subscription.snippet.resourceId.channelId);
+  const channels = await listChannels(auth, channelIds);
   const result: Record<string, Channel> = {};
   for (const channel of channels.items) {
     result[channel.id] = channel;
@@ -68,42 +71,66 @@ async function getChannelMap(
   return result;
 }
 
-async function listChannels(auth: OAuth2Client, subscriptions: SubscriptionListResponse): Promise<ChannelListResponse> {
+async function listChannels(auth: OAuth2Client, id: string[]): Promise<ChannelListResponse> {
   const response = await youtube.channels.list({
     auth,
     part: ["contentDetails"],
     fields: "items(id,contentDetails/relatedPlaylists/uploads)",
-    id: subscriptions.items.map(subscription => subscription.snippet.resourceId.channelId),
+    id,
     maxResults: 50,
   });
   return response.data as ChannelListResponse;
 }
 
 export async function loadUploads(auth: OAuth2Client, subscription: Subscription): Promise<void> {
-  const playlistItems = await listPlaylistItems(auth, subscription);
-  const videos = await listVideos(auth, playlistItems);
-  addUploads(subscription, playlistItems, videos);
+  const videosResponse = await loadVideos(
+    auth,
+    subscription.title,
+    subscription.uploadsPlaylistId,
+    subscription.nextUploadPageToken
+  );
+  subscription.nextUploadPageToken = videosResponse.nextPageToken;
+  subscription.uploads.push(...videosResponse.videos);
 }
 
-async function listPlaylistItems(auth: OAuth2Client, subscription: Subscription): Promise<PlaylistItemListResponse> {
+export async function loadVideos(
+  auth: OAuth2Client,
+  channelTitle: string,
+  playlistId: string,
+  pageToken?: string
+): Promise<VideosResponse> {
+  const playlistItems = await listPlaylistItems(auth, playlistId, pageToken);
+  const videoIds = playlistItems.items.map(item => item.snippet.resourceId.videoId);
+  const videos = await listVideos(auth, videoIds);
+  return {
+    videos: videos.items.map(v => Video(v, channelTitle)),
+    nextPageToken: playlistItems.nextPageToken,
+  };
+}
+
+async function listPlaylistItems(
+  auth: OAuth2Client,
+  playlistId: string,
+  pageToken?: string
+): Promise<PlaylistItemListResponse> {
   const response = await youtube.playlistItems.list({
     auth,
     part: ["snippet"],
     fields: "items/snippet/resourceId/videoId,nextPageToken",
-    playlistId: subscription.uploadsPlaylistId,
+    playlistId,
     maxResults: 50,
-    pageToken: subscription.nextUploadPageToken,
+    pageToken,
   });
   return response.data as PlaylistItemListResponse;
 }
 
-async function listVideos(auth: OAuth2Client, playlistItems: PlaylistItemListResponse): Promise<VideoListResponse> {
+async function listVideos(auth: OAuth2Client, id: string[]): Promise<VideoListResponse> {
   const response = await youtube.videos.list({
     auth,
     part: ["id", "snippet", "liveStreamingDetails", "contentDetails", "statistics"],
     fields:
       "items(id,snippet(title,description,thumbnails/medium/url,publishedAt),liveStreamingDetails(actualStartTime,scheduledStartTime),contentDetails/duration,statistics(viewCount,likeCount,commentCount))",
-    id: playlistItems.items.map(item => item.snippet.resourceId.videoId),
+    id,
     maxResults: 50,
   });
   return response.data as VideoListResponse;
