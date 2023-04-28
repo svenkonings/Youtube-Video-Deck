@@ -16,6 +16,7 @@ import type { OAuth2Client } from "google-auth-library";
 const youtube = google.youtube({
   version: "v3",
   http2: true,
+  retry: true,
 });
 
 export async function loadSubscriptions(auth: OAuth2Client, settings: Settings): Promise<Subscription[]> {
@@ -83,13 +84,14 @@ async function listChannels(auth: OAuth2Client, id: string[]): Promise<ChannelLi
 }
 
 export async function loadUploads(auth: OAuth2Client, subscription: Subscription): Promise<void> {
+  if (subscription.nextUploadPageToken === false) return;
   const videosResponse = await loadVideos(
     auth,
     subscription.title,
     subscription.uploadsPlaylistId,
     subscription.nextUploadPageToken
   );
-  subscription.nextUploadPageToken = videosResponse.nextPageToken;
+  subscription.nextUploadPageToken = videosResponse.nextPageToken == null ? false : videosResponse.nextPageToken;
   subscription.uploads.push(...videosResponse.videos);
 }
 

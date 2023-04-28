@@ -31,7 +31,7 @@
     return [width, height];
   }
 
-  function play(input: PlayerInput): void {
+  function play(input: PlayerInput, retries = 3): void {
     if (playerInitState === PlayerInitState.UNINITIALISED) {
       playerInitState = PlayerInitState.INITIALISING;
       const [width, height] = calcPlayerSize();
@@ -48,12 +48,18 @@
             console.log("playerState", state);
             if (state.data === YT.PlayerState.BUFFERING || state.data === YT.PlayerState.PLAYING) {
               playerVisible = true;
+            } else if (backgroundVisible && state.data === YT.PlayerState.CUED) {
+              setTimeout(() => player.playVideo());
             }
           },
           onError: e => {
             console.error("playerError", e);
-            if (player.getPlaylist()) {
-              player.nextVideo();
+            if (retries > 0) {
+              play(input, retries - 1);
+            } else {
+              if (player.getPlaylist()) {
+                player.nextVideo();
+              }
             }
           },
         },
