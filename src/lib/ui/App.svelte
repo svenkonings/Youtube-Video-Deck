@@ -12,7 +12,7 @@
   export let settings: Settings;
   export let subscriptions: Subscription[];
 
-  // Transform subscriptions to map (TODO: move to server?)
+  // Transform subscriptions to map
   const subscriptionMap = new Map(subscriptions.map(s => [s.channelId, s]));
 
   // Ensure subscriptionGroups only contain currently subscribed accounts

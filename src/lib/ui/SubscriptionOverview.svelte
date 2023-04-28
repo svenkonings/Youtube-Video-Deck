@@ -1,5 +1,4 @@
 <script lang="ts">
-  // import type { Settings } from "$lib/model/Settings";
   import {
     type SubscriptionGroup,
     SubscriptionGroupChild,
@@ -22,7 +21,6 @@
   import type { Writable } from "svelte/store";
   import { fly } from "svelte/transition";
 
-  // const settingsStore: Writable<Settings> = getContext("settingsStore");
   const playerStore: Writable<PlayerInput | undefined> = getContext("playerStore");
 
   export let subscriptionGroup: SubscriptionGroup;
@@ -69,8 +67,6 @@
 
   function toggleExpanded() {
     subscriptionGroup.expanded = !subscriptionGroup.expanded;
-    // const settings = $settingsStore;
-    // settings.subscriptionGroups[index].expanded = subscriptionGroup.expanded;
     fetch("/api/settings/subscriptionGroups/expanded", {
       method: "PUT",
       body: JSON.stringify({ index, expanded: subscriptionGroup.expanded }),

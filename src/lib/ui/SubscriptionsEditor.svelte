@@ -115,7 +115,6 @@
   async function save(e: MouseEvent): Promise<void> {
     const button = e.target as HTMLButtonElement;
     button.disabled = true;
-    // TODO: Check if this triggers update or we should split it up
     $settingsStore.subscriptionGroups = settingsEntries.map(entry => ({
       name: entry.name,
       expanded: isGroup(entry) && entry.expanded,

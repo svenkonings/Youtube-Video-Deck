@@ -1,6 +1,5 @@
 import type { Subscription } from "$lib/model/Subscription";
 import type { Video } from "$lib/model/Video";
-// import {listPlaylistItems} from "../api/YouTube";
 import type { PlayerInput } from "$lib/types/PlayerInput";
 import type { VideosResponse } from "$lib/types/VideosResponse";
 
