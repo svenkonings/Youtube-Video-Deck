@@ -22,6 +22,7 @@ export const handle: Handle = handleSession(
     if (session.sub) {
       const user = await getUser(session.sub);
       initUser(event.locals, user);
+      await checkSession(event.locals);
       return resolve(event);
     }
 
@@ -43,6 +44,16 @@ function initUser(locals: App.Locals, user: User): void {
   locals.auth.on("tokens", async tokens => await updateCredentials(user.sub, tokens));
   locals.auth.setCredentials(user.credentials);
   locals.user = user;
+}
+
+async function checkSession(locals: App.Locals): Promise<void> {
+  try {
+    await locals.auth.getAccessToken();
+  } catch (e) {
+    locals.auth.setCredentials({});
+    locals.user = undefined;
+    await locals.session.destroy();
+  }
 }
 
 export const handleError: HandleServerError = ({ error }) => {
