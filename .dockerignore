@@ -4,7 +4,6 @@ node_modules
 /.github
 /.svelte-kit
 /package
-.env
 .env.*
 
 /docker
