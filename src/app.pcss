@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.fadeIn {
+  opacity: 1;
+  transition: opacity 300ms;
+}
+
+.fadeOut {
+  opacity: 0;
+  transition: opacity 300ms;
+}
+
+/* Firefox scrollbar styles */
+.y-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #ff3d00 #262626;
+}
+
+/* Webkit scrollbar styles */
+.y-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.y-scroll::-webkit-scrollbar-thumb {
+  background: #ff3d00;
+  border-radius: 1rem;
+}
+
+/* Firefox scrollbar styles */
+.y-scroll-hover {
+  scrollbar-width: thin;
+  scrollbar-color: #262626 #262626;
+}
+
+.y-scroll-hover:hover {
+  scrollbar-color: #ff3d00 #262626;
+}
+
+@media (any-hover: none) {
+  .y-scroll-hover {
+    scrollbar-color: #ff3d00 #262626;
+  }
+}
+
+/* Webkit scrollbar styles */
+.y-scroll-hover::-webkit-scrollbar {
+  width: 5px;
+}
+
+.y-scroll-hover:hover::-webkit-scrollbar-thumb {
+  background: #ff3d00;
+  border-radius: 1rem;
+}
+
+@media (any-hover: none) {
+  .y-scroll-hover::-webkit-scrollbar-thumb {
+    background: #ff3d00;
+    border-radius: 1rem;
+  }
+}
+
+/* Firefox scrollbar styles */
+.x-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #ff3d00 #404040;
+}
+
+/* Webkit scrollbar styles */
+.x-scroll::-webkit-scrollbar {
+  height: 5px;
+}
+
+.x-scroll::-webkit-scrollbar-thumb {
+  background: #ff3d00;
+  border-radius: 1rem;
+}
