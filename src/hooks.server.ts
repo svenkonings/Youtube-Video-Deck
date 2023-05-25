@@ -55,6 +55,7 @@ async function checkSession(locals: App.Locals): Promise<void> {
   try {
     await locals.auth.getAccessToken();
   } catch (e) {
+    console.error(e);
     await clearSession(locals);
   }
 }
