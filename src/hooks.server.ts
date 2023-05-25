@@ -17,22 +17,27 @@ export const handle: Handle = handleSession(
   async ({ event, resolve }) => {
     event.locals.auth = initClient();
 
-    // Get user from session
-    const session = event.locals.session.data;
-    if (session.sub) {
-      const user = await getUser(session.sub);
-      initUser(event.locals, user);
-      await checkSession(event.locals);
-      return resolve(event);
-    }
+    try {
+      // Get user from session
+      const session = event.locals.session.data;
+      if (session.sub) {
+        const user = await getUser(session.sub);
+        initUser(event.locals, user);
+        await checkSession(event.locals);
+        return resolve(event);
+      }
 
-    // Authorize user using code
-    const code = event.url.searchParams.get("code");
-    if (code) {
-      const user = await login(event.locals.auth, code);
-      await event.locals.session.set({ sub: user.sub });
-      initUser(event.locals, user);
-      return resolve(event);
+      // Authorize user using code
+      const code = event.url.searchParams.get("code");
+      if (code) {
+        const user = await login(event.locals.auth, code);
+        await event.locals.session.set({ sub: user.sub });
+        initUser(event.locals, user);
+        return resolve(event);
+      }
+    } catch (e) {
+      console.error(e);
+      await clearSession(event.locals);
     }
 
     // Continue without user
@@ -50,10 +55,14 @@ async function checkSession(locals: App.Locals): Promise<void> {
   try {
     await locals.auth.getAccessToken();
   } catch (e) {
-    locals.auth.setCredentials({});
-    locals.user = undefined;
-    await locals.session.destroy();
+    await clearSession(locals);
   }
+}
+
+async function clearSession(locals: App.Locals): Promise<void> {
+  locals.auth.setCredentials({});
+  locals.user = undefined;
+  await locals.session.destroy();
 }
 
 export const handleError: HandleServerError = ({ error }) => {
