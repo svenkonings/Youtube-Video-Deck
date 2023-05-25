@@ -3,6 +3,7 @@
 
   import { browser } from "$app/environment";
 
+  import type { Subscription } from "$lib/model/Subscription";
   import App from "$lib/ui/App.svelte";
   import Header from "$lib/ui/Header.svelte";
   import LoginScreen from "$lib/ui/LoginScreen.svelte";
@@ -22,12 +23,17 @@
   const editorVisible: Writable<boolean | undefined> = writable(undefined);
   $: if (!data.isSignedIn) editorVisible.set(undefined);
   setContext("editorVisible", editorVisible);
+
+  async function loadSubscriptions(): Promise<Subscription[]> {
+    const response = await fetch("/api/subscriptions");
+    return await response.json();
+  }
 </script>
 
 <Header isSignedIn={data.isSignedIn} />
 <section class="w-full h-[calc(100%-3rem)]">
   {#if data.isSignedIn}
-    {#await data.streamed.subscriptions}
+    {#await loadSubscriptions()}
       <Center>
         <Spinner />
       </Center>

@@ -1,7 +1,6 @@
 import type { Actions, PageServerLoad } from "./$types";
 
 import { generateAuthUrl } from "$lib/server/auth";
-import { loadSubscriptions } from "$lib/server/youtube";
 
 import { redirect } from "@sveltejs/kit";
 
@@ -12,9 +11,6 @@ export const load: PageServerLoad = ({ locals }) => {
     return {
       isSignedIn: true,
       settings: locals.user.settings,
-      streamed: {
-        subscriptions: loadSubscriptions(locals.auth, locals.user.settings),
-      },
     } as const;
   }
 };
