@@ -9,7 +9,7 @@
   import LoginScreen from "$lib/ui/LoginScreen.svelte";
   import Center from "$lib/ui/components/Center.svelte";
   import Spinner from "$lib/ui/components/Spinner.svelte";
-  import { errorString } from "$lib/util/error";
+  import { objectToErrorMessage, responseToErrorMessage } from "$lib/util/error";
 
   import { setContext } from "svelte";
   import { type Writable, writable } from "svelte/store";
@@ -26,6 +26,7 @@
 
   async function loadSubscriptions(): Promise<Subscription[]> {
     const response = await fetch("/api/subscriptions");
+    if (!response.ok) throw await responseToErrorMessage(response);
     return await response.json();
   }
 </script>
@@ -40,7 +41,7 @@
     {:then subscriptions}
       <App settings={data.settings} {subscriptions} />
     {:catch error}
-      <p class="text-center">{errorString(error)}</p>
+      <p class="text-center">{objectToErrorMessage(error)}</p>
     {/await}
   {:else}
     <LoginScreen />

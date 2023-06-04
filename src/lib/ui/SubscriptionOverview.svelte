@@ -10,7 +10,7 @@
   import VideoCard from "$lib/ui/VideoCard.svelte";
   import PrimaryButton from "$lib/ui/components/PrimaryButton.svelte";
   import Spinner from "$lib/ui/components/Spinner.svelte";
-  import { errorString } from "$lib/util/error";
+  import { objectToErrorMessage } from "$lib/util/error";
 
   import { faCircle, faCompressAlt, faExpandAlt, faPlay, faUsers } from "@fortawesome/free-solid-svg-icons";
   import { getContext } from "svelte";
@@ -57,7 +57,7 @@
         subscriptionGroup.videos = subscriptionGroup.videos; // Refresh videos
         errorCount = 0;
       } catch (e) {
-        console.error(e);
+        console.error("Error loading subscriptions", e);
         errorCount++;
         lastError = e;
       }
@@ -182,7 +182,7 @@
         {:else}
           <div class="w-full text-center">
             <p>Error loading subscriptions:</p>
-            <p>{errorString(lastError)}</p>
+            <p>{objectToErrorMessage(lastError)}</p>
             <PrimaryButton class="w-20 m-1" on:click={() => (errorCount = 0)}>Retry</PrimaryButton>
           </div>
         {/if}

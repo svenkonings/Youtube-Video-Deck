@@ -21,7 +21,10 @@ export const actions: Actions = {
     throw redirect(303, authUrl);
   },
   logout: async ({ locals }) => {
-    await Promise.all([locals.auth.revokeCredentials(), locals.session.destroy()]);
+    await Promise.all([
+      locals.auth.revokeCredentials().catch(e => console.error("Error revoking credentials", e)),
+      locals.session.destroy(),
+    ]);
     locals.user = undefined;
   },
 };

@@ -2,6 +2,7 @@ import type { Subscription } from "$lib/model/Subscription";
 import type { Video } from "$lib/model/Video";
 import type { PlayerInput } from "$lib/types/PlayerInput";
 import type { VideosResponse } from "$lib/types/VideosResponse";
+import { responseToErrorMessage } from "$lib/util/error";
 
 const maxPlaylistLength = 200;
 
@@ -92,6 +93,7 @@ export async function loadUploads(subscription: Subscription): Promise<void> {
         ...(subscription.nextUploadPageToken && { pageToken: subscription.nextUploadPageToken }),
       })
   );
+  if (!response.ok) throw await responseToErrorMessage(response);
   const videosResponse: VideosResponse = await response.json();
   subscription.nextUploadPageToken = videosResponse.nextPageToken;
   subscription.uploads.push(...videosResponse.videos);

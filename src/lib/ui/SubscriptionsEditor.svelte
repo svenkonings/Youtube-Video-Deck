@@ -10,6 +10,7 @@
   } from "$lib/types/SettingsEntry";
   import Center from "$lib/ui/components/Center.svelte";
   import PrimaryButton from "$lib/ui/components/PrimaryButton.svelte";
+  import { responseToErrorMessage } from "$lib/util/error";
   import { fade } from "$lib/util/fade";
   import { trapFocus } from "$lib/util/trapFocus";
 
@@ -122,13 +123,14 @@
         ? entry.subscriptions.map(s => s.subscription.channelId)
         : [entry.subscription.channelId],
     }));
-    await fetch("/api/settings", {
+    const response = await fetch("/api/settings", {
       method: "PUT",
       body: JSON.stringify($settingsStore),
       headers: {
         "content-type": "application/json",
       },
     });
+    if (!response.ok) throw await responseToErrorMessage(response);
     $editorVisible = false;
     button.disabled = false;
   }

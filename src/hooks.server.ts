@@ -1,7 +1,7 @@
 import { initClient, login } from "$lib/server/auth";
 import { getUser, updateCredentials } from "$lib/server/db";
 import type { User } from "$lib/server/model/User";
-import { errorString } from "$lib/util/error";
+import { objectToErrorMessage } from "$lib/util/error";
 
 import { env } from "$env/dynamic/private";
 
@@ -22,6 +22,7 @@ export const handle: Handle = handleSession(
       const session = event.locals.session.data;
       if (session.sub) {
         const user = await getUser(session.sub);
+        console.debug("Found user", user);
         initUser(event.locals, user);
         await checkSession(event.locals);
         return resolve(event);
@@ -31,12 +32,13 @@ export const handle: Handle = handleSession(
       const code = event.url.searchParams.get("code");
       if (code) {
         const user = await login(event.locals.auth, code);
+        console.debug("Login user", user);
         await event.locals.session.set({ sub: user.sub });
         initUser(event.locals, user);
         return resolve(event);
       }
     } catch (e) {
-      console.error(e);
+      console.error("Error on handle", e);
       await clearSession(event.locals);
     }
 
@@ -55,7 +57,7 @@ async function checkSession(locals: App.Locals): Promise<void> {
   try {
     await locals.auth.getAccessToken();
   } catch (e) {
-    console.error(e);
+    console.error("Error on check session", e);
     await clearSession(locals);
   }
 }
@@ -63,12 +65,12 @@ async function checkSession(locals: App.Locals): Promise<void> {
 async function clearSession(locals: App.Locals): Promise<void> {
   locals.auth.setCredentials({});
   locals.user = undefined;
-  await locals.session.destroy();
+  // await locals.session.destroy();
 }
 
 export const handleError: HandleServerError = ({ error }) => {
-  console.error(error);
+  console.error("Server error", error);
   return {
-    message: errorString(error),
+    message: objectToErrorMessage(error),
   };
 };
