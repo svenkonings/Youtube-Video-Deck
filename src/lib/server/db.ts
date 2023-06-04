@@ -21,12 +21,19 @@ export async function getUser(sub: string): Promise<User> {
 }
 
 export async function upsertUser(user: User): Promise<User> {
+  // Only set credential fields with non-null value
+  const credentialFields: Record<string, string> = {};
+  for (const [key, value] of Object.entries(user.credentials)) {
+    if (value) {
+      credentialFields[`credentials.${key}`] = value;
+    }
+  }
   // Finds the user and updates the credentials, then returns the updated user
   // Inserts a new user if the user does not yet exists
   const result = await users.findOneAndUpdate(
     { sub: user.sub },
     {
-      $set: { credentials: user.credentials },
+      $set: credentialFields,
       $setOnInsert: { sub: user.sub, version: user.version, settings: user.settings },
     },
     { upsert: true, returnDocument: "after" }
