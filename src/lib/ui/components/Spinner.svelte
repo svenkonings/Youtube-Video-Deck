@@ -4,7 +4,7 @@
   <span class="font-extrabold">Loading…</span>
 </div>
 
-<style>
+<style lang="postcss">
   .loader {
     width: 48px;
     height: 48px;

@@ -5,7 +5,9 @@
   import { fade } from "$lib/util/fade";
   import { trapFocus } from "$lib/util/trapFocus";
 
+  import { faClone, faXmark } from "@fortawesome/free-solid-svg-icons";
   import { getContext, onDestroy } from "svelte";
+  import Fa from "svelte-fa/src/fa.svelte";
   import type { Writable } from "svelte/store";
 
   const editorVisible: Writable<boolean | undefined> = getContext("editorVisible");
@@ -19,6 +21,7 @@
 
   let backgroundVisible = false;
   let playerVisible = false;
+  let playerPiP = false;
   let player: YT.Player;
   let playerInitState = PlayerInitState.UNINITIALISED;
   let currentVideo: string | undefined;
@@ -26,7 +29,16 @@
   function calcPlayerSize(): [number, number] {
     let width = Math.min(document.body.clientWidth, (16 * document.body.clientHeight) / 9);
     let height = Math.min(document.body.clientHeight, (9 * document.body.clientWidth) / 16);
-    if (width > 0.9 * document.body.clientWidth /*&& height > 0.9 * document.body.clientHeight*/) {
+    if (playerPiP) {
+      // Minimum size 240p
+      if (0.2 * width < 352 || 0.2 * height < 240) {
+        width = 352;
+        height = 240;
+      } else {
+        width *= 0.2;
+        height *= 0.2;
+      }
+    } else if (width > 0.9 * document.body.clientWidth) {
       width *= 0.9;
       height *= 0.9;
     }
@@ -44,13 +56,13 @@
           onReady: () => {
             console.log("playerReady");
             playerInitState = PlayerInitState.INITIALISED;
-            playerVisible = true;
+            if (!playerPiP) playerVisible = true;
           },
           onStateChange: state => {
             console.log("playerState", state);
             if (state.data === YT.PlayerState.BUFFERING || state.data === YT.PlayerState.PLAYING) {
-              playerVisible = true;
-            } else if (backgroundVisible && state.data === YT.PlayerState.CUED) {
+              if (!playerPiP) playerVisible = true;
+            } else if ((backgroundVisible || playerPiP) && state.data === YT.PlayerState.CUED) {
               setTimeout(() => player.playVideo());
             }
             const playlist = player.getPlaylist();
@@ -100,11 +112,35 @@
     }
   }
 
+  function resizePlayer() {
+    if (player) player.setSize(...calcPlayerSize());
+  }
+
+  function togglePiP() {
+    if (playerPiP) {
+      backgroundVisible = true;
+      playerVisible = true;
+      playerPiP = false;
+    } else {
+      playerPiP = true;
+      playerVisible = false;
+      backgroundVisible = false;
+    }
+    resizePlayer();
+  }
+
+  function hide() {
+    playerPiP = false;
+    playerVisible = false;
+    backgroundVisible = false;
+    resizePlayer();
+  }
+
   onDestroy(
     playerStore.subscribe((input: PlayerInput | undefined) => {
       if (input) {
         playerStore.set(undefined);
-        backgroundVisible = true;
+        if (!playerPiP) backgroundVisible = true;
         if (!input.loading) {
           play(input);
         }
@@ -112,38 +148,58 @@
     })
   );
 
-  $: if (!backgroundVisible) {
-    playerVisible = false;
-  }
-
-  $: if (playerInitState === PlayerInitState.INITIALISED && !backgroundVisible) {
+  $: if (playerInitState === PlayerInitState.INITIALISED && !backgroundVisible && !playerPiP) {
     player.stopVideo();
   }
 </script>
 
-<svelte:window on:resize={() => player && player.setSize(...calcPlayerSize())} />
+<svelte:window on:resize={resizePlayer} />
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div
   class="fixed inset-0 z-10 bg-black/80"
   use:fade={{ visible: backgroundVisible && !$editorVisible, initial: false }}
-  on:click|self={() => (backgroundVisible = false)}
+  on:click|self={hide}
+/>
+<div
+  class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
+  class:invisible={!backgroundVisible || playerVisible}
 >
-  <div
-    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
-    class:invisible={!backgroundVisible || playerVisible}
-  >
-    <Spinner />
-  </div>
-  <div
-    class="fixed max-w-full max-h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 overflow-y-auto y-scroll"
-    class:invisible={!backgroundVisible || !playerVisible}
-    use:trapFocus={backgroundVisible && playerVisible}
-  >
-    <!-- TODO: Add external close button so player can be closed using keyboard controls -->
-    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-    <div id="player" tabindex="0" />
-    {#if currentVideo}
-      <Comments videoId={currentVideo} />
-    {/if}
-  </div>
+  <Spinner />
 </div>
+<div
+  id="playerContainer"
+  class={`fixed z-30 ${
+    playerPiP
+      ? "bottom-3 right-0"
+      : "max-w-full max-h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-y-auto y-scroll"
+  }`}
+  class:invisible={!(backgroundVisible && playerVisible) && !playerPiP}
+  use:trapFocus={backgroundVisible && playerVisible}
+>
+  <div id="playerControls" class="absolute top-0 right-0 p-1 bg-black/40 rounded-bl-2xl">
+    <button type="button" class="p-1" on:click={togglePiP}>
+      <Fa icon={faClone} flip="vertical" />
+    </button>
+
+    <button type="button" class="p-1" on:click={hide}>
+      <Fa icon={faXmark} />
+    </button>
+  </div>
+  <!-- TODO: Add external close button so player can be closed using keyboard controls -->
+  <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+  <div id="player" tabindex="0" />
+  {#if currentVideo && !playerPiP}
+    <Comments videoId={currentVideo} />
+  {/if}
+</div>
+
+<style lang="postcss">
+  #playerControls {
+    opacity: 0;
+    transition: opacity 300ms;
+  }
+
+  #playerContainer:hover #playerControls {
+    opacity: 1;
+  }
+</style>
