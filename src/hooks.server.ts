@@ -18,23 +18,23 @@ export const handle: Handle = handleSession(
     event.locals.auth = initClient();
 
     try {
-      // Get user from session
-      const session = event.locals.session.data;
-      if (session.sub) {
-        const user = await getUser(session.sub);
-        console.debug("Found user", user);
-        initUser(event.locals, user);
-        await checkSession(event.locals);
-        return resolve(event);
-      }
-
       // Authorize user using code
       const code = event.url.searchParams.get("code");
       if (code) {
         const user = await login(event.locals.auth, code);
-        console.debug("Login user", user);
+        console.debug(event.route, "Login user", user.sub, user.credentials);
         await event.locals.session.set({ sub: user.sub });
         initUser(event.locals, user);
+        return resolve(event);
+      }
+
+      // Get user from session
+      const session = event.locals.session.data;
+      if (session.sub) {
+        const user = await getUser(session.sub);
+        console.debug(event.route, "Found user", user.sub);
+        initUser(event.locals, user);
+        await checkSession(event.locals);
         return resolve(event);
       }
     } catch (e) {

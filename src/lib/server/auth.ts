@@ -13,7 +13,7 @@ export function initClient(): OAuth2Client {
 export function generateAuthUrl(client: OAuth2Client): string {
   return client.generateAuthUrl({
     access_type: "offline",
-    scope: ["profile", "https://www.googleapis.com/auth/youtube.readonly"],
+    scope: ["profile", "https://www.googleapis.com/auth/youtube.force-ssl"],
   });
 }
 

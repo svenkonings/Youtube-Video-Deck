@@ -1,3 +1,4 @@
+import { type Comment, Comments } from "$lib/model/Comment";
 import type { Settings } from "$lib/model/Settings";
 import { Subscription } from "$lib/model/Subscription";
 import { Video } from "$lib/model/Video";
@@ -5,6 +6,7 @@ import type { VideosResponse } from "$lib/types/VideosResponse";
 import type {
   Channel,
   ChannelListResponse,
+  CommentThreadListResponse,
   PlaylistItemListResponse,
   SubscriptionListResponse,
   VideoListResponse,
@@ -136,4 +138,27 @@ async function listVideos(auth: OAuth2Client, id: string[]): Promise<VideoListRe
     maxResults: 50,
   });
   return response.data as VideoListResponse;
+}
+
+export async function loadComments(auth: OAuth2Client, videoId: string, pageToken?: string): Promise<Comment[]> {
+  const commentThreads = await listCommentThreads(auth, videoId, pageToken);
+  return Comments(commentThreads);
+}
+
+async function listCommentThreads(
+  auth: OAuth2Client,
+  videoId: string,
+  pageToken?: string
+): Promise<CommentThreadListResponse> {
+  const response = await youtube.commentThreads.list({
+    auth,
+    part: ["snippet", "replies"],
+    fields:
+      "items(snippet(topLevelComment(snippet(textDisplay,authorDisplayName,authorProfileImageUrl,authorChannelUrl,likeCount,publishedAt,updatedAt))),replies(comments(snippet(textDisplay,authorDisplayName,authorProfileImageUrl,authorChannelUrl,likeCount,publishedAt,updatedAt)))),nextPageToken",
+    videoId,
+    maxResults: 100,
+    order: "relevance",
+    pageToken,
+  });
+  return response.data as CommentThreadListResponse;
 }

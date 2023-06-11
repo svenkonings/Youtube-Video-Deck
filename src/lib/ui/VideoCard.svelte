@@ -1,9 +1,9 @@
 <script lang="ts">
   import type { Video } from "$lib/model/Video";
   import type { PlayerInput } from "$lib/types/PlayerInput";
+  import { formatDuration, relativeDate } from "$lib/util/dates";
   import { abbreviate } from "$lib/util/numbers";
 
-  import { DateTime, Duration } from "luxon";
   import { getContext } from "svelte";
   import type { Writable } from "svelte/store";
 
@@ -13,19 +13,12 @@
 
   let duration: string;
   let viewCount: string;
-  let publishedAt: string | null;
+  let publishedAt: string;
 
   $: if (video) {
-    const isoDuration = Duration.fromISO(video.duration);
-    if (isoDuration.days > 0) {
-      duration = isoDuration.toFormat("d:hh:mm:ss");
-    } else if (isoDuration.hours > 0) {
-      duration = isoDuration.toFormat("h:mm:ss");
-    } else {
-      duration = isoDuration.toFormat("m:ss");
-    }
+    duration = formatDuration(video.duration);
     viewCount = abbreviate(video.viewCount);
-    publishedAt = DateTime.fromISO(video.publishedAt).toRelative({ locale: "en" });
+    publishedAt = relativeDate(video.publishedAt);
   }
 
   function play(): void {

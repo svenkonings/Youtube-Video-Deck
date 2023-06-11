@@ -182,7 +182,7 @@
         {:else}
           <div class="w-full text-center">
             <p>Error loading subscriptions:</p>
-            <p>{objectToErrorMessage(lastError)}</p>
+            <code class="text-red-500 whitespace-pre-wrap">{objectToErrorMessage(lastError)}</code>
             <PrimaryButton class="w-20 m-1" on:click={() => (errorCount = 0)}>Retry</PrimaryButton>
           </div>
         {/if}

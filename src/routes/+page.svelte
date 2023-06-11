@@ -41,7 +41,7 @@
     {:then subscriptions}
       <App settings={data.settings} {subscriptions} />
     {:catch error}
-      <p class="text-center">{objectToErrorMessage(error)}</p>
+      <code class="text-red-500 whitespace-pre-wrap">{objectToErrorMessage(error)}</code>
     {/await}
   {:else}
     <LoginScreen />

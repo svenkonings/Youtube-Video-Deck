@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PlayerInput } from "$lib/types/PlayerInput";
+  import Comments from "$lib/ui/Comments.svelte";
   import Spinner from "$lib/ui/components/Spinner.svelte";
   import { fade } from "$lib/util/fade";
   import { trapFocus } from "$lib/util/trapFocus";
@@ -20,11 +21,12 @@
   let playerVisible = false;
   let player: YT.Player;
   let playerInitState = PlayerInitState.UNINITIALISED;
+  let currentVideo: string | undefined;
 
   function calcPlayerSize(): [number, number] {
     let width = Math.min(document.body.clientWidth, (16 * document.body.clientHeight) / 9);
     let height = Math.min(document.body.clientHeight, (9 * document.body.clientWidth) / 16);
-    if (width > 0.9 * document.body.clientWidth && height > 0.9 * document.body.clientHeight) {
+    if (width > 0.9 * document.body.clientWidth /*&& height > 0.9 * document.body.clientHeight*/) {
       width *= 0.9;
       height *= 0.9;
     }
@@ -36,8 +38,8 @@
       playerInitState = PlayerInitState.INITIALISING;
       const [width, height] = calcPlayerSize();
       const playerArgs: YT.PlayerOptions = {
-        width: width,
-        height: height,
+        width,
+        height,
         events: {
           onReady: () => {
             console.log("playerReady");
@@ -51,6 +53,8 @@
             } else if (backgroundVisible && state.data === YT.PlayerState.CUED) {
               setTimeout(() => player.playVideo());
             }
+            const playlist = player.getPlaylist();
+            if (playlist) currentVideo = playlist[player.getPlaylistIndex()];
           },
           onError: e => {
             console.error("playerError", e);
@@ -71,6 +75,7 @@
       };
       if (input.videoId) {
         playerArgs.videoId = input.videoId;
+        currentVideo = input.videoId;
       } else if (input.playlistId) {
         playerArgs.playerVars.listType = "playlist";
         playerArgs.playerVars.list = input.playlistId;
@@ -83,6 +88,7 @@
     } else if (playerInitState === PlayerInitState.INITIALISED) {
       if (input.videoId) {
         player.loadVideoById(input.videoId);
+        currentVideo = input.videoId;
       } else if (input.playlistId) {
         player.loadPlaylist({
           listType: "playlist",
@@ -129,12 +135,15 @@
     <Spinner />
   </div>
   <div
-    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
+    class="fixed max-w-full max-h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 overflow-y-auto y-scroll"
     class:invisible={!backgroundVisible || !playerVisible}
     use:trapFocus={backgroundVisible && playerVisible}
   >
     <!-- TODO: Add external close button so player can be closed using keyboard controls -->
     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
     <div id="player" tabindex="0" />
+    {#if currentVideo}
+      <Comments videoId={currentVideo} />
+    {/if}
   </div>
 </div>
