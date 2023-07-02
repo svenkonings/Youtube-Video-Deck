@@ -325,6 +325,7 @@
                 tabindex={dragDisabled ? 0 : -1}
               />
               <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+              <!-- svelte-ignore a11y-no-static-element-interactions -->
               <span
                 class="absolute right-2 h-8 cursor-pointer"
                 on:click={() => (searchInput = "")}
@@ -373,6 +374,7 @@
                   animate:flip={{ duration: flipDurationMs }}
                 >
                   <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                   <img
                     class="inline-block h-8 w-8 rounded-2xl align-top"
                     src={entry.subscription.thumbnailUrl}
@@ -427,6 +429,7 @@
                 >
                   {#if isSubscription(entry)}
                     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                     <img
                       class="inline-block h-8 w-8 rounded-2xl align-top"
                       src={entry.subscription.thumbnailUrl}
@@ -446,6 +449,7 @@
                       title={entry.subscription.title}>{entry.subscription.title}</span
                     >
                     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
                     <span
                       class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer"
                       aria-label="Remove"
@@ -457,6 +461,7 @@
                     </span>
                   {:else if isGroup(entry)}
                     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
                     <span
                       class="inline-block h-8 w-8 rounded-2xl bg-neutral-600 align-top"
                       tabindex={dragDisabled ? 0 : -1}
@@ -478,6 +483,7 @@
                     />
                     <div class="inline-block float-right h-8 w-16 -ml-16">
                       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                      <!-- svelte-ignore a11y-no-static-element-interactions -->
                       <span
                         class="inline-block h-8 w-8 px-2 cursor-pointer"
                         aria-label={entry.expanded ? "Collapse" : "Expand"}
@@ -488,6 +494,7 @@
                         <Fa icon={entry.expanded ? faCompressAlt : faExpandAlt} translateY={0.5} />
                       </span>
                       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                      <!-- svelte-ignore a11y-no-static-element-interactions -->
                       <span
                         class="inline-block float-right h-8 w-8 px-2 cursor-pointer"
                         aria-label="Remove"
@@ -518,6 +525,7 @@
                             animate:flip={{ duration: flipDurationMs }}
                           >
                             <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                            <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
                             <img
                               class="inline-block h-8 w-8 rounded-2xl align-top"
                               src={child.subscription.thumbnailUrl}
@@ -537,6 +545,7 @@
                               title={child.subscription.title}>{child.subscription.title}</span
                             >
                             <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+                            <!-- svelte-ignore a11y-no-static-element-interactions -->
                             <span
                               class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer"
                               aria-label="Remove"
