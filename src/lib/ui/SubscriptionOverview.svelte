@@ -93,11 +93,13 @@
         >{subscriptionGroup.name}</span
       >
       <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <span class="float-left inline-block h-8 w-8 px-2 cursor-pointer" title="Collapse" on:click={toggleExpanded}>
         <Fa icon={faCompressAlt} translateY={0.5} />
       </span>
       {#if subscriptionGroup.videos.length > 0}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <span class="float-right inline-block h-8 w-8 px-2 cursor-pointer" title="Play all" on:click={play}>
           <Fa icon={faPlay} translateY={0.5} />
         </span>
@@ -152,6 +154,7 @@
           title={subscriptionGroup.name}>{subscriptionGroup.name}</span
         >
         <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <span
           class="float-left inline-block h-8 w-8 px-2 -mr-8 cursor-pointer"
           title="Expand"
@@ -161,6 +164,7 @@
         </span>
         {#if subscriptionGroup.videos.length > 0}
           <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <!-- svelte-ignore a11y-no-static-element-interactions -->
           <span class="float-right inline-block h-8 w-8 px-2 -ml-8 cursor-pointer" title="Play all" on:click={play}>
             <Fa icon={faPlay} translateY={0.5} />
           </span>

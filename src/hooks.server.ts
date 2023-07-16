@@ -10,7 +10,7 @@ import { handleSession } from "svelte-kit-cookie-session";
 
 export const handle: Handle = handleSession(
   {
-    secret: env.SESSION_SECRET,
+    secret: env.SESSION_SECRET as string,
     rolling: 99,
     expires: 365,
   },
