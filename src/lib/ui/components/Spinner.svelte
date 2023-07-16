@@ -1,7 +1,11 @@
+<script lang="ts">
+  export let text = "Loading…";
+</script>
+
 <div class="text-center">
   <span class="loader" />
   <br />
-  <span class="font-extrabold">Loading…</span>
+  <span class="font-extrabold">{text}</span>
 </div>
 
 <style lang="postcss">

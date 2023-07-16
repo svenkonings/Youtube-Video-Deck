@@ -40,6 +40,7 @@
     <p class="text-neutral-400 truncate" title="{viewCount} views - {publishedAt} - {video.channelTitle}">
       {viewCount} views - {publishedAt} - {video.channelTitle}
     </p>
-    <p class="text-ellipsis line-clamp-3">{video.description}</p>
+    <!-- Maximum length measured by maximum number of | characters displayed -->
+    <p class="text-ellipsis line-clamp-3" title={video.description}>{video.description.substring(0, 275)}</p>
   </div>
 </a>

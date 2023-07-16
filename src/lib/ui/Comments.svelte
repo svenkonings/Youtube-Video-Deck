@@ -20,14 +20,12 @@
   }
 </script>
 
-<div class="bg-neutral-800 p-1 rounded-b-2xl">
-  {#await commentsPromise}
-    <Spinner />
-  {:then comments}
-    {#each comments as comment}
-      <CommentCard {comment} />
-    {/each}
-  {:catch error}
-    <code class="text-red-500 whitespace-pre-wrap">{objectToErrorMessage(error)}</code>
-  {/await}
-</div>
+{#await commentsPromise}
+  <Spinner text="Loading comments…" />
+{:then comments}
+  {#each comments as comment}
+    <CommentCard {comment} />
+  {/each}
+{:catch error}
+  <code class="text-red-500 whitespace-pre-wrap">{objectToErrorMessage(error)}</code>
+{/await}

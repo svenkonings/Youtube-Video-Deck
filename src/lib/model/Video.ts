@@ -17,7 +17,7 @@ export function Video(video: YTVideo, channelTitle: string): Video {
   return {
     videoId: video.id,
     title: video.snippet.title,
-    description: video.snippet.description.substring(0, 275), // Maximum length measured by maximum number of | characters displayed
+    description: video.snippet.description,
     thumbnailUrl: video.snippet.thumbnails.medium.url,
     publishedAt:
       video.liveStreamingDetails?.actualStartTime ||

@@ -5,6 +5,7 @@
   import { fade } from "$lib/util/fade";
   import { trapFocus } from "$lib/util/trapFocus";
 
+  import Description from "./Description.svelte";
   import { faClone, faXmark } from "@fortawesome/free-solid-svg-icons";
   import { getContext, onDestroy } from "svelte";
   import Fa from "svelte-fa/src/fa.svelte";
@@ -190,7 +191,10 @@
   <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
   <div id="player" tabindex="0" />
   {#if currentVideo && !playerPiP}
-    <Comments videoId={currentVideo} />
+    <div class="bg-neutral-800 p-1 rounded-b-2xl">
+      <Description videoId={currentVideo} />
+      <Comments videoId={currentVideo} />
+    </div>
   {/if}
 </div>
 
