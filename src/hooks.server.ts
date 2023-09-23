@@ -44,7 +44,7 @@ export const handle: Handle = handleSession(
 
     // Continue without user
     return resolve(event);
-  }
+  },
 );
 
 function initUser(locals: App.Locals, user: User): void {

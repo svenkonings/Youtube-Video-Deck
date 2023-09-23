@@ -7,7 +7,7 @@ import type { Credentials } from "google-auth-library";
 import { MongoClient } from "mongodb";
 
 const client = new MongoClient(
-  `mongodb://${env.MONGO_USER}:${env.MONGO_PASSWORD}@${env.MONGO_HOST}:${env.MONGO_PORT}/${env.MONGO_DATABASE}`
+  `mongodb://${env.MONGO_USER}:${env.MONGO_PASSWORD}@${env.MONGO_HOST}:${env.MONGO_PORT}/${env.MONGO_DATABASE}`,
 );
 const db = client.db(env.MONGO_DATABASE);
 const users = db.collection<User>("users");
@@ -36,12 +36,12 @@ export async function upsertUser(user: User): Promise<User> {
       $set: credentialFields,
       $setOnInsert: { sub: user.sub, version: user.version, settings: user.settings },
     },
-    { upsert: true, returnDocument: "after" }
+    { upsert: true, returnDocument: "after" },
   );
-  if (!result.value) {
+  if (result == null) {
     throw new Error(`Failed to update user with sub ${user.sub}`);
   }
-  return result.value;
+  return result;
 }
 
 export async function updateCredentials(sub: string, credentials: Credentials): Promise<void> {

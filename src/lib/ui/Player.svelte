@@ -146,7 +146,7 @@
           play(input);
         }
       }
-    })
+    }),
   );
 
   $: if (playerInitState === PlayerInitState.INITIALISED && !backgroundVisible && !playerPiP) {

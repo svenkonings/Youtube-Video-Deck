@@ -26,11 +26,11 @@
             SubscriptionGroup(
               s.name,
               s.expanded,
-              s.subscriptionIds.map(id => subscriptionMap.get(id) as Subscription)
-            )
-          )
-        ))
-    )
+              s.subscriptionIds.map(id => subscriptionMap.get(id) as Subscription),
+            ),
+          ),
+        )),
+    ),
   );
 </script>
 

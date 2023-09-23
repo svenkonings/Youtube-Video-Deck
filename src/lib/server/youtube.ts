@@ -29,7 +29,7 @@ export async function loadSubscriptions(auth: OAuth2Client, settings: Settings):
 async function loadAllSubscriptions(
   auth: OAuth2Client,
   activeSubscriptions: Set<string>,
-  pageToken?: string
+  pageToken?: string,
 ): Promise<Subscription[]> {
   const subscriptions = await listSubscriptions(auth, pageToken);
   let nextPage;
@@ -38,7 +38,7 @@ async function loadAllSubscriptions(
   }
   const channelMap = await getChannelMap(auth, subscriptions);
   let result = subscriptions.items.map(subscription =>
-    Subscription(subscription, channelMap[subscription.snippet.resourceId.channelId])
+    Subscription(subscription, channelMap[subscription.snippet.resourceId.channelId]),
   );
   // Load uploads of active subscriptions
   await Promise.all(result.filter(s => activeSubscriptions.has(s.channelId)).map(s => loadUploads(auth, s)));
@@ -63,7 +63,7 @@ async function listSubscriptions(auth: OAuth2Client, pageToken?: string): Promis
 
 async function getChannelMap(
   auth: OAuth2Client,
-  subscriptions: SubscriptionListResponse
+  subscriptions: SubscriptionListResponse,
 ): Promise<Record<string, Channel>> {
   const channelIds = subscriptions.items.map(subscription => subscription.snippet.resourceId.channelId);
   const channels = await listChannels(auth, channelIds);
@@ -91,7 +91,7 @@ export async function loadUploads(auth: OAuth2Client, subscription: Subscription
     auth,
     subscription.title,
     subscription.uploadsPlaylistId,
-    subscription.nextUploadPageToken
+    subscription.nextUploadPageToken,
   );
   subscription.nextUploadPageToken = videosResponse.nextPageToken == null ? false : videosResponse.nextPageToken;
   subscription.uploads.push(...videosResponse.videos);
@@ -101,9 +101,20 @@ export async function loadVideos(
   auth: OAuth2Client,
   channelTitle: string,
   playlistId: string,
-  pageToken?: string
+  pageToken?: string,
 ): Promise<VideosResponse> {
-  const playlistItems = await listPlaylistItems(auth, playlistId, pageToken);
+  let playlistItems: PlaylistItemListResponse;
+  try {
+    playlistItems = await listPlaylistItems(auth, playlistId, pageToken);
+  } catch (e: any) {
+    if (e?.response?.status === 404) {
+      return {
+        videos: [],
+      };
+    } else {
+      throw e;
+    }
+  }
   const videoIds = playlistItems.items.map(item => item.snippet.resourceId.videoId);
   const videos = await listVideos(auth, videoIds);
   return {
@@ -115,7 +126,7 @@ export async function loadVideos(
 async function listPlaylistItems(
   auth: OAuth2Client,
   playlistId: string,
-  pageToken?: string
+  pageToken?: string,
 ): Promise<PlaylistItemListResponse> {
   const response = await youtube.playlistItems.list({
     auth,
@@ -159,7 +170,7 @@ export async function loadComments(auth: OAuth2Client, videoId: string, pageToke
 async function listCommentThreads(
   auth: OAuth2Client,
   videoId: string,
-  pageToken?: string
+  pageToken?: string,
 ): Promise<CommentThreadListResponse> {
   const response = await youtube.commentThreads.list({
     auth,

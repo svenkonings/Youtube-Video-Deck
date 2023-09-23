@@ -5,7 +5,7 @@ export type FadeParams = {
 
 export function fade(
   node: HTMLElement,
-  params: FadeParams
+  params: FadeParams,
 ): {
   update: (params: FadeParams) => void;
   destroy: () => void;

@@ -57,8 +57,8 @@
     if (filterEnabled) {
       const enabledChannels = new Set(
         settingsEntries.flatMap(e =>
-          isGroup(e) ? e.subscriptions.map(s => s.subscription.channelId) : [e.subscription.channelId]
-        )
+          isGroup(e) ? e.subscriptions.map(s => s.subscription.channelId) : [e.subscription.channelId],
+        ),
       );
       filteredEntries = subscriptionEntries.filter(e => !enabledChannels.has(e.subscription.channelId));
     } else {
@@ -189,7 +189,7 @@
       const channelId = draggedEntry.subscription.channelId;
       return settingsEntries.some(
         e =>
-          !(e as any)[SHADOW_ITEM_MARKER_PROPERTY_NAME] && isSubscription(e) && e.subscription.channelId === channelId
+          !(e as any)[SHADOW_ITEM_MARKER_PROPERTY_NAME] && isSubscription(e) && e.subscription.channelId === channelId,
       );
     } else {
       return false;
@@ -225,7 +225,7 @@
     if (isSubscription(draggedEntry)) {
       const channelId = draggedEntry.subscription.channelId;
       return entry.subscriptions.some(
-        s => !(s as any)[SHADOW_ITEM_MARKER_PROPERTY_NAME] && s.subscription.channelId === channelId
+        s => !(s as any)[SHADOW_ITEM_MARKER_PROPERTY_NAME] && s.subscription.channelId === channelId,
       );
     } else {
       return true;

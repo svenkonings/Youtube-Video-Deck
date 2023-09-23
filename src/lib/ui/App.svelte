@@ -17,7 +17,7 @@
 
   // Ensure subscriptionGroups only contain currently subscribed accounts
   settings.subscriptionGroups.forEach(
-    g => (g.subscriptionIds = g.subscriptionIds.filter(id => subscriptionMap.has(id)))
+    g => (g.subscriptionIds = g.subscriptionIds.filter(id => subscriptionMap.has(id))),
   );
   settings.subscriptionGroups = settings.subscriptionGroups.filter(g => g.subscriptionIds.length > 0);
 

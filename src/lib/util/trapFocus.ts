@@ -3,7 +3,7 @@ import { tick } from "svelte";
 
 export function trapFocus(
   node: HTMLElement,
-  enabled: boolean
+  enabled: boolean,
 ): {
   update: (enabled: boolean) => void;
   destroy: () => void;

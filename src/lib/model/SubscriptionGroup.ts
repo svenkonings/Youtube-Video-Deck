@@ -22,7 +22,7 @@ export type GroupSubscription = {
 export async function SubscriptionGroup(
   name: string,
   expanded: boolean,
-  subscriptions: Subscription[]
+  subscriptions: Subscription[],
 ): Promise<SubscriptionGroup> {
   const subscriptionGroup = {
     name: name,
@@ -91,7 +91,7 @@ export async function loadUploads(subscription: Subscription): Promise<void> {
         channelTitle: subscription.title,
         playlistId: subscription.uploadsPlaylistId,
         ...(subscription.nextUploadPageToken && { pageToken: subscription.nextUploadPageToken }),
-      })
+      }),
   );
   if (!response.ok) throw await responseToErrorMessage(response);
   const videosResponse: VideosResponse = await response.json();
@@ -101,6 +101,6 @@ export async function loadUploads(subscription: Subscription): Promise<void> {
 
 export function allVideosLoaded(subscriptionGroup: SubscriptionGroup): boolean {
   return subscriptionGroup.subscriptions.every(
-    s => s.uploadIndex === s.subscription.uploads.length && !s.subscription.nextUploadPageToken
+    s => s.uploadIndex === s.subscription.uploads.length && !s.subscription.nextUploadPageToken,
   );
 }

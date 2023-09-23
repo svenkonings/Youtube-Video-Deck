@@ -11,7 +11,7 @@
   onDestroy(
     scroll.subscribe(value => {
       if (scrollWheelActive) container.scrollLeft = value;
-    })
+    }),
   );
 
   function updateScroll(event: WheelEvent): void {

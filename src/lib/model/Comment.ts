@@ -13,7 +13,7 @@ export type Comment = {
 
 export function Comments(commentThreads: CommentThreadListResponse): Comment[] {
   return commentThreads.items.map(commentThread =>
-    Comment(commentThread.snippet.topLevelComment.snippet, commentThread.replies?.comments)
+    Comment(commentThread.snippet.topLevelComment.snippet, commentThread.replies?.comments),
   );
 }
 
