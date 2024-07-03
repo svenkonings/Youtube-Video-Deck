@@ -6,7 +6,7 @@
   const duration = 100;
   const scroll = tweened(0, { duration: duration });
   let scrollWheelActive = false;
-  let scrollSyncTimeout: any;
+  let scrollSyncTimeout: number;
 
   onDestroy(
     scroll.subscribe(value => {

@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   videodeck-mongo:
     image: mongo:latest

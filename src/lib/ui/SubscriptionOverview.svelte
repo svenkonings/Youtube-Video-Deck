@@ -14,8 +14,7 @@
 
   import { faCircle, faCompressAlt, faExpandAlt, faPlay, faUsers } from "@fortawesome/free-solid-svg-icons";
   import { getContext } from "svelte";
-  import FaLayers from "svelte-fa/src/fa-layers.svelte";
-  import Fa from "svelte-fa/src/fa.svelte";
+  import { Fa, FaLayers } from "svelte-fa";
   import { inview } from "svelte-inview";
   import { backOut } from "svelte/easing";
   import type { Writable } from "svelte/store";
@@ -28,7 +27,7 @@
   let inView = false;
   let isLoading = false;
   let errorCount = 0;
-  let lastError: any;
+  let lastError: unknown;
 
   async function play(): Promise<void> {
     if (!subscriptionGroup.playlist) {

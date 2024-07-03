@@ -11,6 +11,7 @@ import type {
   SubscriptionListResponse,
   VideoListResponse,
 } from "$lib/types/google";
+import { hasProperty } from "$lib/util/types";
 
 import google from "@googleapis/youtube";
 import type { OAuth2Client } from "google-auth-library";
@@ -106,8 +107,8 @@ export async function loadVideos(
   let playlistItems: PlaylistItemListResponse;
   try {
     playlistItems = await listPlaylistItems(auth, playlistId, pageToken);
-  } catch (e: any) {
-    if (e?.response?.status === 404) {
+  } catch (e: unknown) {
+    if (hasProperty(e, "response") && hasProperty(e.response, "status") && e.response.status === 404) {
       return {
         videos: [],
       };

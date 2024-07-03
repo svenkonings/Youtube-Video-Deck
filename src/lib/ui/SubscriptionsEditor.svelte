@@ -18,8 +18,7 @@
   import { getContext, onDestroy } from "svelte";
   import type { DndEvent } from "svelte-dnd-action";
   import { SHADOW_ITEM_MARKER_PROPERTY_NAME, SOURCES, TRIGGERS, dndzone } from "svelte-dnd-action";
-  import FaLayers from "svelte-fa/src/fa-layers.svelte";
-  import Fa from "svelte-fa/src/fa.svelte";
+  import { Fa, FaLayers } from "svelte-fa";
   import { flip } from "svelte/animate";
   import { tweened } from "svelte/motion";
   import type { Writable } from "svelte/store";
@@ -187,10 +186,7 @@
   function settingsDropDisabled(): boolean {
     if (isSubscription(draggedEntry)) {
       const channelId = draggedEntry.subscription.channelId;
-      return settingsEntries.some(
-        e =>
-          !(e as any)[SHADOW_ITEM_MARKER_PROPERTY_NAME] && isSubscription(e) && e.subscription.channelId === channelId,
-      );
+      return settingsEntries.some(e => !isShadowItem(e) && isSubscription(e) && e.subscription.channelId === channelId);
     } else {
       return false;
     }
@@ -224,9 +220,7 @@
   function groupDropDisabled(entry: SubscriptionGroupEntry): boolean {
     if (isSubscription(draggedEntry)) {
       const channelId = draggedEntry.subscription.channelId;
-      return entry.subscriptions.some(
-        s => !(s as any)[SHADOW_ITEM_MARKER_PROPERTY_NAME] && s.subscription.channelId === channelId,
-      );
+      return entry.subscriptions.some(s => !isShadowItem(s) && s.subscription.channelId === channelId);
     } else {
       return true;
     }
@@ -260,12 +254,12 @@
   const scrollOffset = 32;
   const duration = 100;
   const autoScroll = tweened(0, { duration: 2 * duration });
-  let autoScrollInterval: any;
-  let autoScrollSyncTimeout: any;
+  let autoScrollInterval: number | undefined;
+  let autoScrollSyncTimeout: number;
 
   onDestroy(autoScroll.subscribe(value => deckElement && (deckElement.scrollTop = value)));
 
-  function startAutoScroll() {
+  function startAutoScroll(): void {
     if (!autoScrollInterval) {
       deckBounds = deckElement.getBoundingClientRect();
       autoScrollInterval = setInterval(updateAutoScroll, duration);
@@ -286,7 +280,7 @@
       }
     } else {
       clearInterval(autoScrollInterval);
-      autoScrollInterval = null;
+      autoScrollInterval = undefined;
     }
   }
 
@@ -299,6 +293,14 @@
     autoScrollSyncTimeout = setTimeout(() => {
       autoScroll.set(deckElement.scrollTop, { duration: 0 });
     }, duration);
+  }
+
+  function isShadowItem(obj: object): boolean {
+    return (
+      SHADOW_ITEM_MARKER_PROPERTY_NAME in obj &&
+      typeof obj[SHADOW_ITEM_MARKER_PROPERTY_NAME] === "boolean" &&
+      obj[SHADOW_ITEM_MARKER_PROPERTY_NAME]
+    );
   }
 </script>
 

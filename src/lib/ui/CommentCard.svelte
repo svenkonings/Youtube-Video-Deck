@@ -4,7 +4,7 @@
   import { abbreviate } from "$lib/util/numbers";
 
   import { faThumbsUp } from "@fortawesome/free-solid-svg-icons";
-  import Fa from "svelte-fa/src/fa.svelte";
+  import { Fa } from "svelte-fa";
 
   export let comment: Comment;
 </script>
@@ -26,6 +26,7 @@
     {#if comment.updatedAt}
       <span class="text-sm text-neutral-400">(edited {relativeDate(comment.publishedAt)})</span>
     {/if}
+    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     <p>{@html comment.textDisplay}</p>
     <p class="text-neutral-300">
       {abbreviate(String(comment.likeCount))}

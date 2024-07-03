@@ -8,7 +8,7 @@
   import Description from "./Description.svelte";
   import { faClone, faXmark } from "@fortawesome/free-solid-svg-icons";
   import { getContext, onDestroy } from "svelte";
-  import Fa from "svelte-fa/src/fa.svelte";
+  import { Fa } from "svelte-fa";
   import type { Writable } from "svelte/store";
 
   const editorVisible: Writable<boolean | undefined> = getContext("editorVisible");

@@ -1,5 +1,8 @@
 # Potential improvements
 
+- Reuse animation after loading from old version
+- Fix sorting imports
+- Add support for Youtube Lounge API
 - Apply transitions where applicable
 - Check screen reader support
 - Improve editor loading animation on save
@@ -7,8 +10,6 @@
 - Add ripple effect to buttons
   - https://css-tricks.com/how-to-recreate-the-ripple-effect-of-material-design-buttons/
 - Limit refresh time of cached requests
-- Use new google sign-in library
-  - Find a way to preserve auth states through reloads
 - Performance optimization with https://github.com/Skayo/svelte-tiny-virtual-list
 - Scroll per horizontal item (on small screens)
 - Editor button controls
