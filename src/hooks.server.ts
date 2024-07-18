@@ -13,6 +13,7 @@ export const handle: Handle = handleSession(
     secret: env.SESSION_SECRET as string,
     rolling: 99,
     expires: 365,
+    expires_in: "days",
   },
   async ({ event, resolve }) => {
     event.locals.auth = initClient();
