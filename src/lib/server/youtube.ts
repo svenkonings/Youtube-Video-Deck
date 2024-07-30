@@ -20,6 +20,8 @@ const youtube = google.youtube({
   version: "v3",
   http2: true,
   retry: true,
+  headers: { "Accept-Encoding": "gzip,deflate,compress" },
+  errorRedactor: false,
 });
 
 export async function loadSubscriptions(auth: OAuth2Client, settings: Settings): Promise<Subscription[]> {
