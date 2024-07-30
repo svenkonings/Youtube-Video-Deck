@@ -27,7 +27,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-svelte": "^2.43.0",
     "focus-trap": "^7.5.4",
-    "gaxios": "~6.6.0",
+    "gaxios": "~6.1.1",
     "globals": "^15.8.0",
     "luxon": "^3.4.4",
     "mongodb": "^6.8.0",
