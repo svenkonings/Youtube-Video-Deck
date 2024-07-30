@@ -1,10 +1,22 @@
 {
   "arrowParens": "avoid",
-  "importOrder": ["^./\\$types$", "^\\$app/(.*)$", "^\\$lib/(.*)$", "^\\$env/(.*)$", "<THIRD_PARTY_MODULES>"],
-  "importOrderGroupNamespaceSpecifiers": true,
-  "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true,
+  "importOrder": [
+    "",
+    "<BUILTIN_MODULES>",
+    "",
+    "^./\\$types$",
+    "",
+    "^\\$app/(.*)$",
+    "",
+    "^\\$lib/(.*)$",
+    "",
+    "^\\$env/(.*)$",
+    "",
+    "<THIRD_PARTY_MODULES>",
+    ""
+  ],
+  "importOrderTypeScriptVersion": "5.5.4",
   "overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }],
-  "plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-svelte"],
+  "plugins": ["@ianvs/prettier-plugin-sort-imports", "prettier-plugin-svelte"],
   "printWidth": 120
 }

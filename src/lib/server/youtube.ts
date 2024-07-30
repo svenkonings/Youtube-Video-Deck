@@ -1,7 +1,6 @@
-import { type Comment, Comments } from "$lib/model/Comment";
+import { Comments, type Comment } from "$lib/model/Comment";
 import { Subscription } from "$lib/model/Subscription";
 import { Video } from "$lib/model/Video";
-import type { VideosResponse } from "$lib/types/VideosResponse";
 import type {
   Channel,
   ChannelListResponse,
@@ -10,6 +9,7 @@ import type {
   SubscriptionListResponse,
   VideoListResponse,
 } from "$lib/types/google";
+import type { VideosResponse } from "$lib/types/VideosResponse";
 import { hasProperty } from "$lib/util/types";
 
 import google from "@googleapis/youtube";

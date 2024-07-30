@@ -2,11 +2,11 @@
   import type { Settings } from "$lib/model/Settings";
   import type { Subscription } from "$lib/model/Subscription";
   import {
+    isGroup,
+    isSubscription,
     type SettingsEntry,
     type SubscriptionEntry,
     type SubscriptionGroupEntry,
-    isGroup,
-    isSubscription,
   } from "$lib/types/SettingsEntry";
   import Center from "$lib/ui/components/Center.svelte";
   import PrimaryButton from "$lib/ui/components/PrimaryButton.svelte";
@@ -16,8 +16,7 @@
 
   import { faCircle, faCompressAlt, faExpandAlt, faTimesCircle, faUsers } from "@fortawesome/free-solid-svg-icons";
   import { getContext, onDestroy } from "svelte";
-  import type { DndEvent } from "svelte-dnd-action";
-  import { SHADOW_ITEM_MARKER_PROPERTY_NAME, SOURCES, TRIGGERS, dndzone } from "svelte-dnd-action";
+  import { dndzone, SHADOW_ITEM_MARKER_PROPERTY_NAME, SOURCES, TRIGGERS, type DndEvent } from "svelte-dnd-action";
   import { Fa, FaLayers } from "svelte-fa";
   import { flip } from "svelte/animate";
   import { tweened } from "svelte/motion";

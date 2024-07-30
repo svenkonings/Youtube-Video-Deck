@@ -7,7 +7,7 @@
   import SubscriptionsEditor from "$lib/ui/SubscriptionsEditor.svelte";
 
   import { getContext, setContext } from "svelte";
-  import { type Writable, writable } from "svelte/store";
+  import { writable, type Writable } from "svelte/store";
 
   export let settings: Settings;
   export let subscriptions: Subscription[];

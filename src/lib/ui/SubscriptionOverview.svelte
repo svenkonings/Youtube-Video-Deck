@@ -1,15 +1,15 @@
 <script lang="ts">
   import {
-    type SubscriptionGroup,
-    SubscriptionGroupChild,
     allVideosLoaded,
     loadCustomPlaylist,
     loadMoreVideos,
+    SubscriptionGroupChild,
+    type SubscriptionGroup,
   } from "$lib/model/SubscriptionGroup";
   import type { PlayerInput } from "$lib/types/PlayerInput";
-  import VideoCard from "$lib/ui/VideoCard.svelte";
   import PrimaryButton from "$lib/ui/components/PrimaryButton.svelte";
   import Spinner from "$lib/ui/components/Spinner.svelte";
+  import VideoCard from "$lib/ui/VideoCard.svelte";
   import { objectToErrorMessage } from "$lib/util/error";
 
   import { faCircle, faCompressAlt, faExpandAlt, faPlay, faUsers } from "@fortawesome/free-solid-svg-icons";

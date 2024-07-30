@@ -2,10 +2,10 @@
   import type { Settings } from "$lib/model/Settings";
   import type { Subscription } from "$lib/model/Subscription";
   import { SubscriptionGroup } from "$lib/model/SubscriptionGroup";
-  import SubscriptionOverview from "$lib/ui/SubscriptionOverview.svelte";
   import Center from "$lib/ui/components/Center.svelte";
   import HorizontalScroll from "$lib/ui/components/HorizontalScroll.svelte";
   import Spinner from "$lib/ui/components/Spinner.svelte";
+  import SubscriptionOverview from "$lib/ui/SubscriptionOverview.svelte";
   import { fade } from "$lib/util/fade";
 
   import { getContext, onDestroy } from "svelte";

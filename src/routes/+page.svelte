@@ -5,14 +5,14 @@
 
   import type { Subscription } from "$lib/model/Subscription";
   import App from "$lib/ui/App.svelte";
-  import Header from "$lib/ui/Header.svelte";
-  import LoginScreen from "$lib/ui/LoginScreen.svelte";
   import Center from "$lib/ui/components/Center.svelte";
   import Spinner from "$lib/ui/components/Spinner.svelte";
+  import Header from "$lib/ui/Header.svelte";
+  import LoginScreen from "$lib/ui/LoginScreen.svelte";
   import { objectToErrorMessage, responseToErrorMessage } from "$lib/util/error";
 
   import { setContext } from "svelte";
-  import { type Writable, writable } from "svelte/store";
+  import { writable, type Writable } from "svelte/store";
 
   if (browser && window.location.search) {
     window.history.replaceState(null, "", window.location.pathname);
