@@ -19,11 +19,7 @@ export type GroupSubscription = {
   uploadIndex: number;
 };
 
-export async function SubscriptionGroup(
-  name: string,
-  expanded: boolean,
-  subscriptions: Subscription[],
-): Promise<SubscriptionGroup> {
+export function SubscriptionGroup(name: string, expanded: boolean, subscriptions: Subscription[]): SubscriptionGroup {
   const subscriptionGroup = {
     name: name,
     expanded: expanded,
@@ -34,7 +30,6 @@ export async function SubscriptionGroup(
     videos: [],
     ...(subscriptions.length === 1 && { playlistId: subscriptions[0].uploadsPlaylistId }),
   };
-  await loadMoreVideos(subscriptionGroup);
   return subscriptionGroup;
 }
 
@@ -95,12 +90,12 @@ export async function loadUploads(subscription: Subscription): Promise<void> {
   );
   if (!response.ok) throw await responseToErrorMessage(response);
   const videosResponse: VideosResponse = await response.json();
-  subscription.nextUploadPageToken = videosResponse.nextPageToken;
+  subscription.nextUploadPageToken = videosResponse.nextPageToken == null ? false : videosResponse.nextPageToken;
   subscription.uploads.push(...videosResponse.videos);
 }
 
 export function allVideosLoaded(subscriptionGroup: SubscriptionGroup): boolean {
   return subscriptionGroup.subscriptions.every(
-    s => s.uploadIndex === s.subscription.uploads.length && !s.subscription.nextUploadPageToken,
+    s => s.uploadIndex === s.subscription.uploads.length && s.subscription.nextUploadPageToken === false,
   );
 }

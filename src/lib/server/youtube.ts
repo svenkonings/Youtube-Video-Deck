@@ -1,5 +1,4 @@
 import { type Comment, Comments } from "$lib/model/Comment";
-import type { Settings } from "$lib/model/Settings";
 import { Subscription } from "$lib/model/Subscription";
 import { Video } from "$lib/model/Video";
 import type { VideosResponse } from "$lib/types/VideosResponse";
@@ -19,30 +18,18 @@ import type { OAuth2Client } from "google-auth-library";
 const youtube = google.youtube({
   version: "v3",
   retry: true,
-  errorRedactor: false,
 });
 
-export async function loadSubscriptions(auth: OAuth2Client, settings: Settings): Promise<Subscription[]> {
-  const activeSubscriptions = new Set(settings.subscriptionGroups.flatMap(s => s.subscriptionIds));
-  return await loadAllSubscriptions(auth, activeSubscriptions);
-}
-
-async function loadAllSubscriptions(
-  auth: OAuth2Client,
-  activeSubscriptions: Set<string>,
-  pageToken?: string,
-): Promise<Subscription[]> {
+export async function loadSubscriptions(auth: OAuth2Client, pageToken?: string): Promise<Subscription[]> {
   const subscriptions = await listSubscriptions(auth, pageToken);
   let nextPage;
   if (subscriptions.nextPageToken) {
-    nextPage = loadAllSubscriptions(auth, activeSubscriptions, subscriptions.nextPageToken);
+    nextPage = loadSubscriptions(auth, subscriptions.nextPageToken);
   }
   const channelMap = await getChannelMap(auth, subscriptions);
   let result = subscriptions.items.map(subscription =>
     Subscription(subscription, channelMap[subscription.snippet.resourceId.channelId]),
   );
-  // Load uploads of active subscriptions
-  await Promise.all(result.filter(s => activeSubscriptions.has(s.channelId)).map(s => loadUploads(auth, s)));
   if (nextPage) {
     result = result.concat(await nextPage);
   }
@@ -84,18 +71,6 @@ async function listChannels(auth: OAuth2Client, id: string[]): Promise<ChannelLi
     maxResults: 50,
   });
   return response.data as ChannelListResponse;
-}
-
-export async function loadUploads(auth: OAuth2Client, subscription: Subscription): Promise<void> {
-  if (subscription.nextUploadPageToken === false) return;
-  const videosResponse = await loadVideos(
-    auth,
-    subscription.title,
-    subscription.uploadsPlaylistId,
-    subscription.nextUploadPageToken,
-  );
-  subscription.nextUploadPageToken = videosResponse.nextPageToken == null ? false : videosResponse.nextPageToken;
-  subscription.uploads.push(...videosResponse.videos);
 }
 
 export async function loadVideos(

@@ -8,6 +8,6 @@ export const GET: RequestHandler = async ({ locals }) => {
   if (!locals.user) {
     throw error(401, "User not logged in");
   }
-  const subscriptionsResponse = await loadSubscriptions(locals.auth, locals.user.settings);
+  const subscriptionsResponse = await loadSubscriptions(locals.auth);
   return json(subscriptionsResponse);
 };
