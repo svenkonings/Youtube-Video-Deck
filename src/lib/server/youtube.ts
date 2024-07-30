@@ -18,9 +18,7 @@ import type { OAuth2Client } from "google-auth-library";
 
 const youtube = google.youtube({
   version: "v3",
-  http2: true,
   retry: true,
-  headers: { "Accept-Encoding": "gzip,deflate,compress" },
   errorRedactor: false,
 });
 
