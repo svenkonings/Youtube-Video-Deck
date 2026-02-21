@@ -2,8 +2,6 @@ import { Comments, type Comment } from "$lib/model/Comment";
 import { Subscription } from "$lib/model/Subscription";
 import { Video } from "$lib/model/Video";
 import type {
-  Channel,
-  ChannelListResponse,
   CommentThreadListResponse,
   PlaylistItemListResponse,
   SubscriptionListResponse,
@@ -22,16 +20,9 @@ const youtube = google.youtube({
 
 export async function loadSubscriptions(auth: OAuth2Client, pageToken?: string): Promise<Subscription[]> {
   const subscriptions = await listSubscriptions(auth, pageToken);
-  let nextPage;
+  let result = subscriptions.items.map(Subscription);
   if (subscriptions.nextPageToken) {
-    nextPage = loadSubscriptions(auth, subscriptions.nextPageToken);
-  }
-  const channelMap = await getChannelMap(auth, subscriptions);
-  let result = subscriptions.items.map(subscription =>
-    Subscription(subscription, channelMap[subscription.snippet.resourceId.channelId]),
-  );
-  if (nextPage) {
-    result = result.concat(await nextPage);
+    result = result.concat(await loadSubscriptions(auth, subscriptions.nextPageToken));
   }
   return result;
 }
@@ -47,30 +38,6 @@ async function listSubscriptions(auth: OAuth2Client, pageToken?: string): Promis
     pageToken,
   });
   return response.data as SubscriptionListResponse;
-}
-
-async function getChannelMap(
-  auth: OAuth2Client,
-  subscriptions: SubscriptionListResponse,
-): Promise<Record<string, Channel>> {
-  const channelIds = subscriptions.items.map(subscription => subscription.snippet.resourceId.channelId);
-  const channels = await listChannels(auth, channelIds);
-  const result: Record<string, Channel> = {};
-  for (const channel of channels.items) {
-    result[channel.id] = channel;
-  }
-  return result;
-}
-
-async function listChannels(auth: OAuth2Client, id: string[]): Promise<ChannelListResponse> {
-  const response = await youtube.channels.list({
-    auth,
-    part: ["contentDetails"],
-    fields: "items(id,contentDetails/relatedPlaylists/uploads)",
-    id,
-    maxResults: 50,
-  });
-  return response.data as ChannelListResponse;
 }
 
 export async function loadVideos(

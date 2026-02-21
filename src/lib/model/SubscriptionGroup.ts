@@ -1,4 +1,6 @@
-import type { Subscription } from "$lib/model/Subscription";
+import type { SubscriptionGroupSettings } from "$lib/model/Settings";
+import { subscriptionFromSettings, type Subscription } from "$lib/model/Subscription";
+import type { SubscriptionPlaylist } from "$lib/model/SubscriptionPlaylist";
 import type { Video } from "$lib/model/Video";
 import type { PlayerInput } from "$lib/types/PlayerInput";
 import type { VideosResponse } from "$lib/types/VideosResponse";
@@ -9,44 +11,45 @@ const maxPlaylistLength = 200;
 export type SubscriptionGroup = {
   name: string;
   expanded: boolean;
-  subscriptions: GroupSubscription[];
+  subscriptions: Subscription[];
   videos: Video[];
   playlist?: PlayerInput;
 };
 
-export type GroupSubscription = {
-  subscription: Subscription;
-  uploadIndex: number;
-};
-
 export function SubscriptionGroup(name: string, expanded: boolean, subscriptions: Subscription[]): SubscriptionGroup {
-  const subscriptionGroup = {
-    name: name,
-    expanded: expanded,
-    subscriptions: subscriptions.map(subscription => ({
-      subscription: subscription,
-      uploadIndex: 0,
-    })),
+  return {
+    name,
+    expanded,
+    subscriptions,
     videos: [],
-    ...(subscriptions.length === 1 && { playlistId: subscriptions[0].uploadsPlaylistId }),
+    ...(subscriptions.length === 1 &&
+      subscriptions[0].playlists.length === 1 && {
+        playlistId: subscriptions[0].playlists[0].playlistPrefix + subscriptions[0].id,
+      }),
   };
-  return subscriptionGroup;
 }
 
 export function SubscriptionGroupChild(subscription: Subscription): SubscriptionGroup {
-  const videos = subscription.uploads.slice(0, 10);
   return {
     name: subscription.title,
     expanded: false,
-    subscriptions: [
-      {
-        subscription: subscription,
-        uploadIndex: videos.length,
-      },
-    ],
-    videos: videos,
-    playlist: { playlistId: subscription.uploadsPlaylistId },
+    subscriptions: [subscription],
+    videos: [],
+    ...(subscription.playlists.length === 1 && {
+      playlistId: subscription.playlists[0].playlistPrefix + subscription.id,
+    }),
   };
+}
+
+export function subscriptionGroupFromSettings(
+  subscriptionGroupSettings: SubscriptionGroupSettings,
+  subscriptionMap: Map<string, Subscription>,
+): SubscriptionGroup {
+  return SubscriptionGroup(
+    subscriptionGroupSettings.name,
+    subscriptionGroupSettings.expanded,
+    subscriptionGroupSettings.subscriptions.map(s => subscriptionFromSettings(s, subscriptionMap)),
+  );
 }
 
 export async function loadCustomPlaylist(subscriptionGroup: SubscriptionGroup): Promise<void> {
@@ -60,42 +63,48 @@ export async function loadCustomPlaylist(subscriptionGroup: SubscriptionGroup): 
 
 export async function loadMoreVideos(subscriptionGroup: SubscriptionGroup, maxAmount = 10): Promise<void> {
   for (let i = 0; i < maxAmount; i++) {
-    let nextVideo: Video | undefined;
-    let nextSubscription: GroupSubscription | undefined;
-    for (const groupSubscription of subscriptionGroup.subscriptions) {
-      if (groupSubscription.uploadIndex === groupSubscription.subscription.uploads.length) {
-        if (groupSubscription.subscription.nextUploadPageToken === false) continue;
-        await loadUploads(groupSubscription.subscription);
-      }
-      const video = groupSubscription.subscription.uploads[groupSubscription.uploadIndex];
-      if (!nextVideo || video.publishedAt > nextVideo.publishedAt) {
-        nextVideo = video;
-        nextSubscription = groupSubscription;
+    let nextPlaylist: SubscriptionPlaylist | undefined;
+    for (const subscription of subscriptionGroup.subscriptions) {
+      for (const playlist of subscription.playlists) {
+        if (playlist.currentIndex === playlist.videos.length) {
+          if (playlist.nextPageToken === false) {
+            continue;
+          }
+          await loadPlaylist(subscription, playlist);
+        }
+        if (
+          !nextPlaylist ||
+          playlist.videos[playlist.currentIndex].publishedAt >
+            nextPlaylist.videos[nextPlaylist.currentIndex].publishedAt
+        ) {
+          nextPlaylist = playlist;
+        }
       }
     }
-    if (!nextVideo || !nextSubscription) break;
-    subscriptionGroup.videos.push(nextVideo);
-    nextSubscription.uploadIndex++;
+    if (!nextPlaylist) {
+      break;
+    }
+    subscriptionGroup.videos.push(nextPlaylist.videos[nextPlaylist.currentIndex++]);
   }
 }
 
-export async function loadUploads(subscription: Subscription): Promise<void> {
+export async function loadPlaylist(subscription: Subscription, playlist: SubscriptionPlaylist): Promise<void> {
   const response = await fetch(
     "/api/videos?" +
       new URLSearchParams({
         channelTitle: subscription.title,
-        playlistId: subscription.uploadsPlaylistId,
-        ...(subscription.nextUploadPageToken && { pageToken: subscription.nextUploadPageToken }),
+        playlistId: playlist.playlistPrefix + subscription.id,
+        ...(playlist.nextPageToken && { pageToken: playlist.nextPageToken }),
       }),
   );
   if (!response.ok) throw await responseToErrorMessage(response);
   const videosResponse: VideosResponse = await response.json();
-  subscription.nextUploadPageToken = videosResponse.nextPageToken == null ? false : videosResponse.nextPageToken;
-  subscription.uploads.push(...videosResponse.videos);
+  playlist.videos.push(...videosResponse.videos);
+  playlist.nextPageToken = videosResponse.nextPageToken == null ? false : videosResponse.nextPageToken;
 }
 
 export function allVideosLoaded(subscriptionGroup: SubscriptionGroup): boolean {
-  return subscriptionGroup.subscriptions.every(
-    s => s.uploadIndex === s.subscription.uploads.length && s.subscription.nextUploadPageToken === false,
+  return subscriptionGroup.subscriptions.every(s =>
+    s.playlists.every(p => p.currentIndex === p.videos.length && p.nextPageToken === false),
   );
 }

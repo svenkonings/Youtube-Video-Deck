@@ -1,4 +1,4 @@
-import type { Settings } from "$lib/model/Settings";
+import { subscriptionSettingsFromId, type Settings } from "$lib/model/Settings";
 import type { User } from "$lib/server/model/User";
 
 import { env } from "$env/dynamic/private";
@@ -17,6 +17,7 @@ export async function getUser(sub: string): Promise<User> {
   if (!user) {
     throw new Error(`User with sub ${sub} not found`);
   }
+  migrateUser(user);
   return user;
 }
 
@@ -41,7 +42,18 @@ export async function upsertUser(user: User): Promise<User> {
   if (result == null) {
     throw new Error(`Failed to update user with sub ${user.sub}`);
   }
+  migrateUser(result);
   return result;
+}
+
+function migrateUser(user: User): void {
+  for (const subscriptionGroup of user.settings.subscriptionGroups) {
+    // subscriptionIds should be migrated to subscriptions
+    if (subscriptionGroup.subscriptionIds !== undefined) {
+      subscriptionGroup.subscriptions = subscriptionGroup.subscriptionIds.map(subscriptionSettingsFromId);
+      delete subscriptionGroup.subscriptionIds;
+    }
+  }
 }
 
 export async function updateCredentials(sub: string, credentials: Credentials): Promise<void> {

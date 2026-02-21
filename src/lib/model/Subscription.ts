@@ -1,21 +1,29 @@
-import type { Video } from "$lib/model/Video";
-import type { Channel, YTSubscription } from "$lib/types/google";
+import type { SubscriptionSettings } from "$lib/model/Settings";
+import { playlistsFromSettings, type SubscriptionPlaylist } from "$lib/model/SubscriptionPlaylist";
+import type { YTSubscription } from "$lib/types/google";
 
 export type Subscription = {
-  readonly channelId: string;
+  readonly id: string;
   readonly title: string;
   readonly thumbnailUrl: string;
-  readonly uploadsPlaylistId: string;
-  nextUploadPageToken?: string | false;
-  uploads: Video[];
+  playlists: SubscriptionPlaylist[];
 };
 
-export function Subscription(subscription: YTSubscription, channel: Channel): Subscription {
+export function Subscription(subscription: YTSubscription): Subscription {
   return {
-    channelId: subscription.snippet.resourceId.channelId,
+    id: subscription.snippet.resourceId.channelId.substring(2), // Channel IDs are prefixed with UC
     title: subscription.snippet.title,
     thumbnailUrl: subscription.snippet.thumbnails.default.url,
-    uploadsPlaylistId: channel.contentDetails.relatedPlaylists.uploads,
-    uploads: [],
+    playlists: [],
+  };
+}
+
+export function subscriptionFromSettings(
+  subscriptionSettings: SubscriptionSettings,
+  subscriptionMap: Map<string, Subscription>,
+): Subscription {
+  return {
+    ...(subscriptionMap.get(subscriptionSettings.id) as Subscription),
+    playlists: playlistsFromSettings(subscriptionSettings.playlistTypes),
   };
 }

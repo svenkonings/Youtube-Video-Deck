@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Settings } from "$lib/model/Settings";
-  import type { Subscription } from "$lib/model/Subscription";
+  import { SubscriptionSettings, type Settings } from "$lib/model/Settings";
+  import { subscriptionFromSettings, type Subscription } from "$lib/model/Subscription";
   import {
     isGroup,
     isSubscription,
@@ -54,11 +54,9 @@
   function updateFilter() {
     if (filterEnabled) {
       const enabledChannels = new Set(
-        settingsEntries.flatMap(e =>
-          isGroup(e) ? e.subscriptions.map(s => s.subscription.channelId) : [e.subscription.channelId],
-        ),
+        settingsEntries.flatMap(e => (isGroup(e) ? e.subscriptions.map(s => s.subscription.id) : [e.subscription.id])),
       );
-      filteredEntries = subscriptionEntries.filter(e => !enabledChannels.has(e.subscription.channelId));
+      filteredEntries = subscriptionEntries.filter(e => !enabledChannels.has(e.subscription.id));
     } else {
       filteredEntries = subscriptionEntries;
     }
@@ -87,19 +85,19 @@
       name: s.title,
       subscription: s,
     }));
-    settingsEntries = $settingsStore.subscriptionGroups.map(s => {
-      const groupSubscriptions = s.subscriptionIds.map(id => subscriptionMap.get(id) as Subscription);
-      if (groupSubscriptions.length === 1 && s.name === groupSubscriptions[0].title) {
+    settingsEntries = $settingsStore.subscriptionGroups.map(sg => {
+      const groupSubscriptions = sg.subscriptions.map(s => subscriptionFromSettings(s, subscriptionMap));
+      if (groupSubscriptions.length === 1 && sg.name === groupSubscriptions[0].title) {
         return {
           id: idCounter++,
-          name: s.name,
+          name: sg.name,
           subscription: groupSubscriptions[0],
         };
       } else {
         return {
           id: idCounter++,
-          name: s.name,
-          expanded: s.expanded,
+          name: sg.name,
+          expanded: sg.expanded,
           subscriptions: groupSubscriptions.map(subscription => ({
             id: idCounter++,
             name: subscription.title,
@@ -117,9 +115,9 @@
     $settingsStore.subscriptionGroups = settingsEntries.map(entry => ({
       name: entry.name,
       expanded: isGroup(entry) && entry.expanded,
-      subscriptionIds: isGroup(entry)
-        ? entry.subscriptions.map(s => s.subscription.channelId)
-        : [entry.subscription.channelId],
+      subscriptions: isGroup(entry)
+        ? entry.subscriptions.map(s => SubscriptionSettings(s.subscription))
+        : [SubscriptionSettings(entry.subscription)],
     }));
     const response = await fetch("/api/settings", {
       method: "PUT",
@@ -184,8 +182,8 @@
 
   function settingsDropDisabled(): boolean {
     if (isSubscription(draggedEntry)) {
-      const channelId = draggedEntry.subscription.channelId;
-      return settingsEntries.some(e => !isShadowItem(e) && isSubscription(e) && e.subscription.channelId === channelId);
+      const id = draggedEntry.subscription.id;
+      return settingsEntries.some(e => !isShadowItem(e) && isSubscription(e) && e.subscription.id === id);
     } else {
       return false;
     }
@@ -218,8 +216,8 @@
 
   function groupDropDisabled(entry: SubscriptionGroupEntry): boolean {
     if (isSubscription(draggedEntry)) {
-      const channelId = draggedEntry.subscription.channelId;
-      return entry.subscriptions.some(s => !isShadowItem(s) && s.subscription.channelId === channelId);
+      const id = draggedEntry.subscription.id;
+      return entry.subscriptions.some(s => !isShadowItem(s) && s.subscription.id === id);
     } else {
       return true;
     }
