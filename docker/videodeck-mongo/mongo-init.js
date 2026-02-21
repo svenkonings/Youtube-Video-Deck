@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 db = db.getSiblingDB("videodeck");
 db.createUser({
   user: "videodeck",

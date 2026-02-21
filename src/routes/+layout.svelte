@@ -1,9 +1,9 @@
 <script>
-  import "../app.pcss";
+  import "../app.css";
 </script>
 
-<main class="w-full h-full overflow-x-auto x-scroll bg-neutral-700 text-white">
-  <div class="w-full h-full min-w-[22rem]">
+<main class="x-scroll h-full w-full overflow-x-auto bg-neutral-700 text-white">
+  <div class="h-full w-full min-w-88">
     <slot />
   </div>
 </main>

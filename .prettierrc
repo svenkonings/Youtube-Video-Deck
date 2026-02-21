@@ -15,8 +15,9 @@
     "<THIRD_PARTY_MODULES>",
     ""
   ],
-  "importOrderTypeScriptVersion": "5.5.4",
+  "importOrderTypeScriptVersion": "5.9.3",
   "overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }],
-  "plugins": ["@ianvs/prettier-plugin-sort-imports", "prettier-plugin-svelte"],
-  "printWidth": 120
+  "plugins": ["@ianvs/prettier-plugin-sort-imports", "prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
+  "printWidth": 120,
+  "tailwindStylesheet": "./src/app.css"
 }

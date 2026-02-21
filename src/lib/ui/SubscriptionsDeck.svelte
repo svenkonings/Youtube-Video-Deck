@@ -45,9 +45,10 @@
     <p>Click the "Edit" button to add subscriptions</p>
   </Center>
 {:else}
-  <div class="w-full h-[calc(100%-6px)]" use:fade={{ visible: !$editorVisible, initial: true }}>
+  <div class="h-[calc(100%-6px)] w-full" use:fade={{ visible: !$editorVisible, initial: true }}>
     <HorizontalScroll>
-      <div class="w-max h-full">
+      <div class="h-full w-max">
+        <!-- eslint-disable-next-line svelte/require-each-key -->
         {#each subscriptionGroups as subscriptionGroup, index}
           <SubscriptionOverview {subscriptionGroup} {index} />
         {/each}

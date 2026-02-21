@@ -17,12 +17,12 @@
   }
 </script>
 
-<div class="bg-neutral-700 m-2 p-2 rounded-2xl">
+<div class="m-2 rounded-2xl bg-neutral-700 p-2">
   {#await descriptionPromise}
     <Spinner text="Loading description…" />
   {:then description}
     <span class="whitespace-pre-wrap">{description}</span>
   {:catch error}
-    <code class="text-red-500 whitespace-pre-wrap">{objectToErrorMessage(error)}</code>
+    <code class="whitespace-pre-wrap text-red-500">{objectToErrorMessage(error)}</code>
   {/await}
 </div>

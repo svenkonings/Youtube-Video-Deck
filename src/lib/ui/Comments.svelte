@@ -23,9 +23,10 @@
 {#await commentsPromise}
   <Spinner text="Loading comments…" />
 {:then comments}
+  <!-- eslint-disable-next-line svelte/require-each-key -->
   {#each comments as comment}
     <CommentCard {comment} />
   {/each}
 {:catch error}
-  <code class="text-red-500 whitespace-pre-wrap">{objectToErrorMessage(error)}</code>
+  <code class="whitespace-pre-wrap text-red-500">{objectToErrorMessage(error)}</code>
 {/await}

@@ -27,20 +27,20 @@
 </script>
 
 <a
-  class="block w-[calc(100%-1rem)] bg-neutral-600 p-2 m-2 first:mt-0 last:mb-0 rounded-2xl"
+  class="m-2 block w-[calc(100%-1rem)] rounded-2xl bg-neutral-600 p-2 first:mt-0 last:mb-0"
   href="https://www.youtube.com/watch?v={video.videoId}"
   on:click|preventDefault={play}
 >
-  <div class="inline-block relative w-[11rem] align-text-bottom p-1">
+  <div class="relative inline-block w-44 p-1 align-text-bottom">
     <img src={video.thumbnailUrl} alt="" loading="lazy" width="320" height="180" />
-    <span class="absolute right-0 bottom-0 m-1.5 px-0.5 rounded bg-black/80 text-sm">{duration}</span>
+    <span class="absolute right-0 bottom-0 m-1.5 rounded bg-black/80 px-0.5 text-sm">{duration}</span>
   </div>
   <div class="inline-block w-[calc(100%-11.5rem)] align-top text-sm">
-    <p class="font-bold truncate" title={video.title}>{video.title}</p>
-    <p class="text-neutral-400 truncate" title="{viewCount} views - {publishedAt} - {video.channelTitle}">
+    <p class="truncate font-bold" title={video.title}>{video.title}</p>
+    <p class="truncate text-neutral-400" title="{viewCount} views - {publishedAt} - {video.channelTitle}">
       {viewCount} views - {publishedAt} - {video.channelTitle}
     </p>
     <!-- Maximum length measured by maximum number of | characters displayed -->
-    <p class="text-ellipsis line-clamp-3" title={video.description}>{video.description.substring(0, 275)}</p>
+    <p class="line-clamp-3 text-ellipsis" title={video.description}>{video.description.substring(0, 275)}</p>
   </div>
 </a>

@@ -161,9 +161,9 @@
   class="fixed inset-0 z-10 bg-black/80"
   use:fade={{ visible: backgroundVisible && !$editorVisible, initial: false }}
   on:click|self={hide}
-/>
+></div>
 <div
-  class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
+  class="fixed top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
   class:invisible={!backgroundVisible || playerVisible}
 >
   <Spinner />
@@ -172,13 +172,13 @@
   id="playerContainer"
   class={`fixed z-30 ${
     playerPiP
-      ? "bottom-3 right-0"
-      : "max-w-full max-h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-y-auto y-scroll"
+      ? "right-0 bottom-3"
+      : "y-scroll top-1/2 left-1/2 max-h-full max-w-full -translate-x-1/2 -translate-y-1/2 overflow-y-auto"
   }`}
   class:invisible={!(backgroundVisible && playerVisible) && !playerPiP}
   use:trapFocus={backgroundVisible && playerVisible}
 >
-  <div id="playerControls" class="absolute top-0 right-0 p-1 bg-black/40 rounded-bl-2xl">
+  <div id="playerControls" class="absolute top-0 right-0 rounded-bl-2xl bg-black/40 p-1">
     <button type="button" class="p-1" on:click={togglePiP}>
       <Fa icon={faClone} flip="vertical" />
     </button>
@@ -189,16 +189,16 @@
   </div>
   <!-- TODO: Add external close button so player can be closed using keyboard controls -->
   <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-  <div id="player" tabindex="0" />
+  <div id="player" tabindex="0"></div>
   {#if currentVideo && !playerPiP}
-    <div class="bg-neutral-800 p-1 rounded-b-2xl">
+    <div class="rounded-b-2xl bg-neutral-800 p-1">
       <Description videoId={currentVideo} />
       <Comments videoId={currentVideo} />
     </div>
   {/if}
 </div>
 
-<style lang="postcss">
+<style>
   #playerControls {
     opacity: 0;
     transition: opacity 300ms;

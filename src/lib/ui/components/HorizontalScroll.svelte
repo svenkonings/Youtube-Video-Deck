@@ -6,7 +6,7 @@
   const duration = 100;
   const scroll = tweened(0, { duration: duration });
   let scrollWheelActive = false;
-  let scrollSyncTimeout: number;
+  let scrollSyncTimeout: NodeJS.Timeout | string | number | undefined;
 
   onDestroy(
     scroll.subscribe(value => {
@@ -39,7 +39,7 @@
 
 <div
   bind:this={container}
-  class="w-full h-full pb-[2px] overflow-x-scroll x-scroll"
+  class="x-scroll h-full w-full overflow-x-scroll pb-0.5"
   on:wheel|passive={updateScroll}
   on:scroll={scrollSync}
 >

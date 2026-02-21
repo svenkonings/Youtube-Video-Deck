@@ -253,8 +253,8 @@
   const scrollOffset = 32;
   const duration = 100;
   const autoScroll = tweened(0, { duration: 2 * duration });
-  let autoScrollInterval: number | undefined;
-  let autoScrollSyncTimeout: number;
+  let autoScrollInterval: NodeJS.Timeout | string | number | undefined;
+  let autoScrollSyncTimeout: NodeJS.Timeout | string | number | undefined;
 
   onDestroy(autoScroll.subscribe(value => deckElement && (deckElement.scrollTop = value)));
 
@@ -309,16 +309,16 @@
   use:trapFocus={!!$editorVisible}
 >
   <div
-    class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[40rem] bg-neutral-700 rounded-2xl overflow-x-auto x-scroll"
+    class="x-scroll absolute inset-y-0 left-1/2 w-full max-w-160 -translate-x-1/2 overflow-x-auto rounded-2xl bg-neutral-700"
   >
-    <div class="min-w-[20.5rem] w-full h-full">
-      <div class="w-full h-24">
+    <div class="h-full w-full min-w-82">
+      <div class="h-24 w-full">
         <Center>
-          <div class="min-w-[14rem]">
+          <div class="min-w-56">
             <p class="font-extrabold">Deck Editor</p>
-            <div class="relative w-full h-8 m-1">
+            <div class="relative m-1 h-8 w-full">
               <input
-                class="w-full h-8 pl-2 pr-7 pb-0.5 bg-neutral-600 rounded-2xl"
+                class="h-8 w-full rounded-2xl bg-neutral-600 pr-7 pb-0.5 pl-2"
                 type="text"
                 bind:value={searchInput}
                 placeholder="Search subscriptions..."
@@ -348,16 +348,14 @@
           </div>
         </Center>
       </div>
-      <div class="w-full h-[calc(100%-9rem)]">
-        <div
-          class="inline-block w-[calc(50%-0.65rem)] min-w-[9.5rem] h-[calc(100%-0.5rem)] m-1 bg-neutral-800 rounded-xl"
-        >
-          <div class="w-full h-6">
+      <div class="h-[calc(100%-9rem)] w-full">
+        <div class="m-1 inline-block h-[calc(100%-0.5rem)] w-[calc(50%-0.65rem)] min-w-38 rounded-xl bg-neutral-800">
+          <div class="h-6 w-full">
             <Center>Subscriptions</Center>
           </div>
-          <div class="w-full h-[calc(100%-2rem)] overflow-y-auto y-scroll mb-2">
+          <div class="y-scroll mb-2 h-[calc(100%-2rem)] w-full overflow-y-auto">
             <div
-              class="w-[calc(100%-4px)] h-max min-h-[calc(100%-0.5rem)] mx-[2px] rounded-xl"
+              class="mx-0.5 h-max min-h-[calc(100%-0.5rem)] w-[calc(100%-4px)] rounded-xl"
               aria-label="Subscriptions"
               use:dndzone={{
                 items: filteredEntries,
@@ -370,7 +368,7 @@
             >
               {#each filteredEntries as entry (entry.id)}
                 <div
-                  class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl"
+                  class="m-1 w-[calc(100%-0.5rem)] rounded-2xl bg-neutral-700 p-0.5"
                   aria-label={entry.name}
                   animate:flip={{ duration: flipDurationMs }}
                 >
@@ -391,7 +389,7 @@
                     on:keydown={handleKeyDown}
                   />
                   <span
-                    class="inline-block w-[calc(100%-2.5rem)] h-8 pt-1 align-top truncate"
+                    class="inline-block h-8 w-[calc(100%-2.5rem)] truncate pt-1 align-top"
                     title={entry.subscription.title}>{entry.subscription.title}</span
                   >
                 </div>
@@ -399,19 +397,17 @@
             </div>
           </div>
         </div>
-        <div
-          class="inline-block w-[calc(50%-0.65rem)] min-w-[9.5rem] h-[calc(100%-0.5rem)] m-1 bg-neutral-800 rounded-xl"
-        >
-          <div class="w-full h-6">
+        <div class="m-1 inline-block h-[calc(100%-0.5rem)] w-[calc(50%-0.65rem)] min-w-38 rounded-xl bg-neutral-800">
+          <div class="h-6 w-full">
             <Center>Deck</Center>
           </div>
           <div
-            class="w-full h-[calc(100%-2rem)] overflow-y-auto y-scroll mb-2"
+            class="y-scroll mb-2 h-[calc(100%-2rem)] w-full overflow-y-auto"
             bind:this={deckElement}
             on:scroll={autoScrollSync}
           >
             <div
-              class="w-[calc(100%-4px)] h-max min-h-[calc(100%-0.5rem)] mx-[2px] rounded-xl"
+              class="mx-0.5 h-max min-h-[calc(100%-0.5rem)] w-[calc(100%-4px)] rounded-xl"
               aria-label="Deck"
               use:dndzone={{
                 items: settingsEntries,
@@ -424,7 +420,7 @@
             >
               {#each settingsEntries as entry (entry.id)}
                 <div
-                  class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl"
+                  class="m-1 w-[calc(100%-0.5rem)] rounded-2xl bg-neutral-700 p-0.5"
                   aria-label={entry.name}
                   animate:flip={{ duration: flipDurationMs }}
                 >
@@ -446,13 +442,13 @@
                       on:keydown={handleKeyDown}
                     />
                     <span
-                      class="inline-block w-[calc(100%-4rem)] h-8 pt-1 align-top truncate"
+                      class="inline-block h-8 w-[calc(100%-4rem)] truncate pt-1 align-top"
                       title={entry.subscription.title}>{entry.subscription.title}</span
                     >
                     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                     <!-- svelte-ignore a11y-no-static-element-interactions -->
                     <span
-                      class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer"
+                      class="float-right -ml-8 inline-block h-8 w-8 cursor-pointer px-2"
                       aria-label="Remove"
                       on:click={() => removeSettingsEntry(entry)}
                       on:keydown={e => keyClick(e) && removeSettingsEntry(entry)}
@@ -479,14 +475,14 @@
                     </span>
                     <input
                       bind:value={entry.name}
-                      class="w-[calc(100%-6rem)] h-8 px-2 pb-0.5 bg-neutral-600 align-top rounded-2xl"
+                      class="h-8 w-[calc(100%-6rem)] rounded-2xl bg-neutral-600 px-2 pb-0.5 align-top"
                       tabindex={dragDisabled ? 0 : -1}
                     />
-                    <div class="inline-block float-right h-8 w-16 -ml-16">
+                    <div class="float-right -ml-16 inline-block h-8 w-16">
                       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                       <!-- svelte-ignore a11y-no-static-element-interactions -->
                       <span
-                        class="inline-block h-8 w-8 px-2 cursor-pointer"
+                        class="inline-block h-8 w-8 cursor-pointer px-2"
                         aria-label={entry.expanded ? "Collapse" : "Expand"}
                         on:click={() => (entry.expanded = !entry.expanded)}
                         on:keydown={e => keyClick(e) && (entry.expanded = !entry.expanded)}
@@ -497,7 +493,7 @@
                       <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                       <!-- svelte-ignore a11y-no-static-element-interactions -->
                       <span
-                        class="inline-block float-right h-8 w-8 px-2 cursor-pointer"
+                        class="float-right inline-block h-8 w-8 cursor-pointer px-2"
                         aria-label="Remove"
                         on:click={() => removeSettingsEntry(entry)}
                         on:keydown={e => keyClick(e) && removeSettingsEntry(entry)}
@@ -508,7 +504,7 @@
                     </div>
                     {#if entry.expanded}
                       <div
-                        class="w-full bg-neutral-500 mt-1 py-0.5 rounded-2xl"
+                        class="mt-1 w-full rounded-2xl bg-neutral-500 py-0.5"
                         aria-label={entry.name + " subscriptions"}
                         use:dndzone={{
                           items: entry.subscriptions,
@@ -521,7 +517,7 @@
                       >
                         {#each entry.subscriptions as child (child.id)}
                           <div
-                            class="w-[calc(100%-0.5rem)] bg-neutral-700 m-1 p-0.5 rounded-2xl"
+                            class="m-1 w-[calc(100%-0.5rem)] rounded-2xl bg-neutral-700 p-0.5"
                             aria-label={child.name}
                             animate:flip={{ duration: flipDurationMs }}
                           >
@@ -542,13 +538,13 @@
                               on:keydown={handleKeyDown}
                             />
                             <span
-                              class="inline-block w-[calc(100%-4rem)] h-8 pt-1 align-top truncate"
+                              class="inline-block h-8 w-[calc(100%-4rem)] truncate pt-1 align-top"
                               title={child.subscription.title}>{child.subscription.title}</span
                             >
                             <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                             <!-- svelte-ignore a11y-no-static-element-interactions -->
                             <span
-                              class="inline-block float-right h-8 w-8 px-2 -ml-8 cursor-pointer"
+                              class="float-right -ml-8 inline-block h-8 w-8 cursor-pointer px-2"
                               aria-label="Remove"
                               on:click={() => removeGroupEntry(entry, child)}
                               on:keydown={e => keyClick(e) && removeGroupEntry(entry, child)}
@@ -577,14 +573,14 @@
           </div>
         </div>
       </div>
-      <div class="w-full h-12">
-        <PrimaryButton class="w-20 m-1 float-left" on:click={close} tabindex={dragDisabled ? 0 : -1}
+      <div class="h-12 w-full">
+        <PrimaryButton class="float-left m-1 w-20" on:click={close} tabindex={dragDisabled ? 0 : -1}
           >Close</PrimaryButton
         >
-        <div class="inline-block w-[calc(100%-11.5rem)] m-1">
+        <div class="m-1 inline-block w-[calc(100%-11.5rem)]">
           <input
             type="text"
-            class="w-[calc(100%-6rem)] bg-neutral-800 p-1.5 rounded-l-2xl"
+            class="w-[calc(100%-6rem)] rounded-l-2xl bg-neutral-800 p-1.5"
             bind:value={groupNameInput}
             tabindex={dragDisabled ? 0 : -1}
           /><!--
@@ -594,7 +590,7 @@
             tabindex={dragDisabled ? 0 : -1}>Add group</PrimaryButton
           >
         </div>
-        <PrimaryButton class="w-20 m-1 float-right" on:click={save} tabindex={dragDisabled ? 0 : -1}>Save</PrimaryButton
+        <PrimaryButton class="float-right m-1 w-20" on:click={save} tabindex={dragDisabled ? 0 : -1}>Save</PrimaryButton
         >
       </div>
     </div>

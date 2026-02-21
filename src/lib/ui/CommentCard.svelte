@@ -10,7 +10,8 @@
 </script>
 
 <div class="m-3">
-  <a class="inline-block align-top mt-2" href={comment.authorChannelUrl} target="_blank">
+  <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+  <a class="mt-2 inline-block align-top" href={comment.authorChannelUrl} target="_blank">
     <img
       class="inline-block rounded-full"
       src={comment.authorProfileImageUrl}
@@ -21,6 +22,7 @@
     />
   </a>
   <div class="inline-block w-[calc(100%-45px)]">
+    <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
     <a class="font-bold" href={comment.authorChannelUrl} target="_blank">{comment.authorDisplayName}</a>
     <span class="text-sm text-neutral-400">{relativeDate(comment.publishedAt)}</span>
     {#if comment.updatedAt}
@@ -32,6 +34,7 @@
       {abbreviate(String(comment.likeCount))}
       <Fa class="inline-block" icon={faThumbsUp} />
     </p>
+    <!-- eslint-disable-next-line svelte/require-each-key -->
     {#each comment.replies as reply}
       <svelte:self comment={reply} />
     {/each}

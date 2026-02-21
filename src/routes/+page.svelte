@@ -32,7 +32,7 @@
 </script>
 
 <Header isSignedIn={data.isSignedIn} />
-<section class="w-full h-[calc(100%-3rem)]">
+<section class="h-[calc(100%-3rem)] w-full">
   {#if data.isSignedIn}
     {#await loadSubscriptions()}
       <Center>
@@ -41,7 +41,7 @@
     {:then subscriptions}
       <App settings={data.settings} {subscriptions} />
     {:catch error}
-      <code class="text-red-500 whitespace-pre-wrap">{objectToErrorMessage(error)}</code>
+      <code class="whitespace-pre-wrap text-red-500">{objectToErrorMessage(error)}</code>
     {/await}
   {:else}
     <LoginScreen />

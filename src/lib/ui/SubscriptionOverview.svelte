@@ -38,11 +38,13 @@
   }
 
   $: if (inView && errorCount < 3) {
+    // eslint-disable-next-line svelte/infinite-reactive-loop
     loadWhileInView();
   }
 
   async function loadWhileInView() {
     if (inView && errorCount < 3) {
+      // eslint-disable-next-line svelte/infinite-reactive-loop
       await loadMore();
       setTimeout(loadWhileInView, 100);
     }
@@ -54,6 +56,7 @@
       try {
         await loadMoreVideos(subscriptionGroup);
         subscriptionGroup.videos = subscriptionGroup.videos; // Refresh videos
+        // eslint-disable-next-line svelte/infinite-reactive-loop
         errorCount = 0;
       } catch (e) {
         console.error("Error loading subscriptions", e);
@@ -79,32 +82,33 @@
 {#if subscriptionGroup.expanded && subscriptionGroup.subscriptions.length > 1}
   <div
     in:fly={{ x: 100, easing: backOut }}
-    class="inline-block h-full w-max bg-neutral-900 p-1 pb-4 ml-1 mr-1 rounded-2xl align-top"
+    class="mr-1 ml-1 inline-block h-full w-max rounded-2xl bg-neutral-900 p-1 pb-4 align-top"
   >
-    <p class="font-bold h-8 mb-1">
+    <p class="mb-1 h-8 font-bold">
       <span class="inline-block h-8 align-middle">
         <FaLayers size="2x" class="-mx-1">
           <Fa icon={faCircle} color="rgb(82 82 82)" />
           <Fa icon={faUsers} scale={0.5} />
         </FaLayers>
       </span>
-      <span class="inline-block h-8 max-w-[26rem] align-text-top truncate cursor-default" title={subscriptionGroup.name}
+      <span class="inline-block h-8 max-w-104 cursor-default truncate align-text-top" title={subscriptionGroup.name}
         >{subscriptionGroup.name}</span
       >
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <span class="float-left inline-block h-8 w-8 px-2 cursor-pointer" title="Collapse" on:click={toggleExpanded}>
+      <span class="float-left inline-block h-8 w-8 cursor-pointer px-2" title="Collapse" on:click={toggleExpanded}>
         <Fa icon={faCompressAlt} translateY={0.5} />
       </span>
       {#if subscriptionGroup.videos.length > 0}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <span class="float-right inline-block h-8 w-8 px-2 cursor-pointer" title="Play all" on:click={play}>
+        <span class="float-right inline-block h-8 w-8 cursor-pointer px-2" title="Play all" on:click={play}>
           <Fa icon={faPlay} translateY={0.5} />
         </span>
       {/if}
     </p>
     <div class="h-[calc(100%-2.25rem)]">
+      <!-- eslint-disable-next-line svelte/require-each-key -->
       {#each subscriptionGroup.subscriptions as groupSubscription}
         <svelte:self subscriptionGroup={SubscriptionGroupChild(groupSubscription.subscription)} {index} />
       {/each}
@@ -113,9 +117,9 @@
 {:else}
   <div
     in:fly={{ x: 100, easing: backOut }}
-    class="inline-block h-full w-screen max-w-[32rem] min-w-[22rem] bg-neutral-800 p-1 pb-4 ml-1 mr-1 rounded-2xl align-top"
+    class="mr-1 ml-1 inline-block h-full w-screen max-w-lg min-w-88 rounded-2xl bg-neutral-800 p-1 pb-4 align-top"
   >
-    <p class="text-center font-bold h-8 mb-1">
+    <p class="mb-1 h-8 text-center font-bold">
       {#if subscriptionGroup.subscriptions.length === 1}
         <a href="https://www.youtube.com/channel/{subscriptionGroup.subscriptions[0].subscription.channelId}">
           <img
@@ -126,13 +130,13 @@
             width="88"
             height="88"
           />
-          <span class="inline-block h-8 max-w-[26rem] align-text-top truncate" title={subscriptionGroup.name}>
+          <span class="inline-block h-8 max-w-104 truncate align-text-top" title={subscriptionGroup.name}>
             {subscriptionGroup.name}
           </span>
         </a>
         {#if subscriptionGroup.videos.length > 0}
           <a
-            class="float-right h-8 w-8 px-2 -ml-8"
+            class="float-right -ml-8 h-8 w-8 px-2"
             title="Play all"
             href="https://www.youtube.com/watch?v={subscriptionGroup.videos[0].videoId}&list={subscriptionGroup
               .subscriptions[0].subscription.uploadsPlaylistId}"
@@ -148,14 +152,13 @@
             <Fa icon={faUsers} scale={0.5} />
           </FaLayers>
         </span>
-        <span
-          class="inline-block h-8 max-w-[26rem] align-text-top truncate cursor-default"
-          title={subscriptionGroup.name}>{subscriptionGroup.name}</span
+        <span class="inline-block h-8 max-w-104 cursor-default truncate align-text-top" title={subscriptionGroup.name}
+          >{subscriptionGroup.name}</span
         >
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <span
-          class="float-left inline-block h-8 w-8 px-2 -mr-8 cursor-pointer"
+          class="float-left -mr-8 inline-block h-8 w-8 cursor-pointer px-2"
           title="Expand"
           on:click={toggleExpanded}
         >
@@ -164,16 +167,17 @@
         {#if subscriptionGroup.videos.length > 0}
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <!-- svelte-ignore a11y-no-static-element-interactions -->
-          <span class="float-right inline-block h-8 w-8 px-2 -ml-8 cursor-pointer" title="Play all" on:click={play}>
+          <span class="float-right -ml-8 inline-block h-8 w-8 cursor-pointer px-2" title="Play all" on:click={play}>
             <Fa icon={faPlay} translateY={0.5} />
           </span>
         {/if}
       {/if}
     </p>
     <div
-      class="h-[calc(100%-2.25rem)] overflow-y-scroll y-scroll-hover overflow-x-hidden"
+      class="y-scroll-hover h-[calc(100%-2.25rem)] overflow-x-hidden overflow-y-scroll"
       on:wheel|stopPropagation|passive
     >
+      <!-- eslint-disable-next-line svelte/require-each-key -->
       {#each subscriptionGroup.videos as video}
         <VideoCard {video} />
       {/each}
@@ -185,8 +189,8 @@
         {:else}
           <div class="w-full text-center">
             <p>Error loading subscriptions:</p>
-            <code class="text-red-500 whitespace-pre-wrap">{objectToErrorMessage(lastError)}</code>
-            <PrimaryButton class="w-20 m-1" on:click={() => (errorCount = 0)}>Retry</PrimaryButton>
+            <code class="whitespace-pre-wrap text-red-500">{objectToErrorMessage(lastError)}</code>
+            <PrimaryButton class="m-1 w-20" on:click={() => (errorCount = 0)}>Retry</PrimaryButton>
           </div>
         {/if}
       {/if}
