@@ -1,7 +1,21 @@
+# Future feature ideas
+
+- Filter videos/livestreams/shorts/membersonly
+- Change video sorting
+- Manage queue
+- Add playlists to deck
+- Manage watched videos
+- Hide/skip watched videos
+- Like/dislike/comment on videos
+- Search Deck for subscriptions/videos
+- Search YouTube
+- Manage subscriptions
+- Manage playlists
+- Manage watch later
+
 # Potential improvements
 
 - Reuse animation after loading from old version
-- Fix sorting imports
 - Add support for Youtube Lounge API
 - Apply transitions where applicable
 - Check screen reader support
@@ -25,18 +39,3 @@
 
 - Requires loading entire watched videos playlist
   - Mark (previously) watched videos
-
-# Future feature ideas
-
-- Small player + manage queue
-- Add playlists to deck
-- Manage watched videos
-- Hide/skip watched videos
-- Change video sorting
-- Show description/comments
-- Like/dislike/comment on videos
-- Search Deck for subscriptions/videos
-- Search YouTube
-- Manage subscriptions
-- Manage playlists
-- Manage watch later
