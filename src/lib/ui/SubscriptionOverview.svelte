@@ -94,17 +94,13 @@
       <span class="inline-block h-8 max-w-104 cursor-default truncate align-text-top" title={subscriptionGroup.name}
         >{subscriptionGroup.name}</span
       >
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <span class="float-left inline-block h-8 w-8 cursor-pointer px-2" title="Collapse" on:click={toggleExpanded}>
-        <Fa icon={faCompressAlt} translateY={0.5} />
-      </span>
+      <button type="button" class="float-left h-8 w-8 cursor-pointer px-2" title="Collapse" on:click={toggleExpanded}>
+        <Fa icon={faCompressAlt} />
+      </button>
       {#if subscriptionGroup.videos.length > 0}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <span class="float-right inline-block h-8 w-8 cursor-pointer px-2" title="Play all" on:click={play}>
-          <Fa icon={faPlay} translateY={0.5} />
-        </span>
+        <button type="button" class="float-right h-8 w-8 cursor-pointer px-2" title="Play all" on:click={play}>
+          <Fa icon={faPlay} />
+        </button>
       {/if}
     </p>
     <div class="h-[calc(100%-2.25rem)]">
@@ -155,21 +151,18 @@
         <span class="inline-block h-8 max-w-104 cursor-default truncate align-text-top" title={subscriptionGroup.name}
           >{subscriptionGroup.name}</span
         >
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <span
-          class="float-left -mr-8 inline-block h-8 w-8 cursor-pointer px-2"
+        <button
+          type="button"
+          class="float-left -mr-8 h-8 w-8 cursor-pointer px-2"
           title="Expand"
           on:click={toggleExpanded}
         >
-          <Fa icon={faExpandAlt} translateY={0.5} />
-        </span>
+          <Fa icon={faExpandAlt} />
+        </button>
         {#if subscriptionGroup.videos.length > 0}
-          <!-- svelte-ignore a11y-click-events-have-key-events -->
-          <!-- svelte-ignore a11y-no-static-element-interactions -->
-          <span class="float-right -ml-8 inline-block h-8 w-8 cursor-pointer px-2" title="Play all" on:click={play}>
-            <Fa icon={faPlay} translateY={0.5} />
-          </span>
+          <button type="button" class="float-right -ml-8 h-8 w-8 cursor-pointer px-2" title="Play all" on:click={play}>
+            <Fa icon={faPlay} />
+          </button>
         {/if}
       {/if}
     </p>

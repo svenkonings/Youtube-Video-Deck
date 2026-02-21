@@ -325,16 +325,15 @@
                 aria-label="Search subscriptions"
                 tabindex={dragDisabled ? 0 : -1}
               />
-              <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-              <!-- svelte-ignore a11y-no-static-element-interactions -->
-              <span
+              <button
+                type="button"
                 class="absolute right-2 h-8 cursor-pointer"
                 on:click={() => (searchInput = "")}
                 on:keydown={e => keyClick(e) && (searchInput = "")}
                 tabindex={dragDisabled ? 0 : -1}
               >
-                <Fa icon={faTimesCircle} translateY={0.5} />
-              </span>
+                <Fa icon={faTimesCircle} />
+              </button>
             </div>
             <label class="block">
               <input
@@ -445,17 +444,16 @@
                       class="inline-block h-8 w-[calc(100%-4rem)] truncate pt-1 align-top"
                       title={entry.subscription.title}>{entry.subscription.title}</span
                     >
-                    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                    <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <span
-                      class="float-right -ml-8 inline-block h-8 w-8 cursor-pointer px-2"
+                    <button
+                      type="button"
+                      class="float-right -ml-8 h-8 w-8 cursor-pointer px-2"
                       aria-label="Remove"
                       on:click={() => removeSettingsEntry(entry)}
                       on:keydown={e => keyClick(e) && removeSettingsEntry(entry)}
                       tabindex={dragDisabled ? 0 : -1}
                     >
-                      <Fa icon={faTimesCircle} translateY={0.5} />
-                    </span>
+                      <Fa icon={faTimesCircle} />
+                    </button>
                   {:else if isGroup(entry)}
                     <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                     <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -479,28 +477,26 @@
                       tabindex={dragDisabled ? 0 : -1}
                     />
                     <div class="float-right -ml-16 inline-block h-8 w-16">
-                      <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                      <!-- svelte-ignore a11y-no-static-element-interactions -->
-                      <span
-                        class="inline-block h-8 w-8 cursor-pointer px-2"
+                      <button
+                        type="button"
+                        class="h-8 w-8 cursor-pointer px-2"
                         aria-label={entry.expanded ? "Collapse" : "Expand"}
                         on:click={() => (entry.expanded = !entry.expanded)}
                         on:keydown={e => keyClick(e) && (entry.expanded = !entry.expanded)}
                         tabindex={dragDisabled ? 0 : -1}
                       >
-                        <Fa icon={entry.expanded ? faCompressAlt : faExpandAlt} translateY={0.5} />
-                      </span>
-                      <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                      <!-- svelte-ignore a11y-no-static-element-interactions -->
-                      <span
-                        class="float-right inline-block h-8 w-8 cursor-pointer px-2"
+                        <Fa icon={entry.expanded ? faCompressAlt : faExpandAlt} />
+                      </button>
+                      <button
+                        type="button"
+                        class="float-right h-8 w-8 cursor-pointer px-2"
                         aria-label="Remove"
                         on:click={() => removeSettingsEntry(entry)}
                         on:keydown={e => keyClick(e) && removeSettingsEntry(entry)}
                         tabindex={dragDisabled ? 0 : -1}
                       >
-                        <Fa icon={faTimesCircle} translateY={0.5} />
-                      </span>
+                        <Fa icon={faTimesCircle} />
+                      </button>
                     </div>
                     {#if entry.expanded}
                       <div
@@ -541,17 +537,16 @@
                               class="inline-block h-8 w-[calc(100%-4rem)] truncate pt-1 align-top"
                               title={child.subscription.title}>{child.subscription.title}</span
                             >
-                            <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-                            <!-- svelte-ignore a11y-no-static-element-interactions -->
-                            <span
-                              class="float-right -ml-8 inline-block h-8 w-8 cursor-pointer px-2"
+                            <button
+                              type="button"
+                              class="float-right -ml-8 h-8 w-8 cursor-pointer px-2"
                               aria-label="Remove"
                               on:click={() => removeGroupEntry(entry, child)}
                               on:keydown={e => keyClick(e) && removeGroupEntry(entry, child)}
                               tabindex={dragDisabled ? 0 : -1}
                             >
-                              <Fa icon={faTimesCircle} translateY={0.5} />
-                            </span>
+                              <Fa icon={faTimesCircle} />
+                            </button>
                           </div>
                         {:else}
                           <div class="w-[calc(100%-0.5rem)] h-8 m-1.5">

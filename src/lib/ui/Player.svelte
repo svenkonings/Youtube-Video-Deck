@@ -179,11 +179,11 @@
   use:trapFocus={backgroundVisible && playerVisible}
 >
   <div id="playerControls" class="absolute top-0 right-0 rounded-bl-2xl bg-black/40 p-1">
-    <button type="button" class="p-1" on:click={togglePiP}>
+    <button type="button" class="cursor-pointer p-1" on:click={togglePiP}>
       <Fa icon={faClone} flip="vertical" />
     </button>
 
-    <button type="button" class="p-1" on:click={hide}>
+    <button type="button" class="cursor-pointer p-1" on:click={hide}>
       <Fa icon={faXmark} />
     </button>
   </div>

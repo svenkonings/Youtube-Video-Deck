@@ -8,7 +8,7 @@
 <button
   on:click
   {type}
-  class="rounded-2xl bg-blue-600 p-1.5 text-white hover:enabled:bg-blue-700 disabled:opacity-60 {className}"
+  class="cursor-pointer rounded-2xl bg-blue-600 p-1.5 text-white hover:enabled:bg-blue-700 disabled:opacity-60 {className}"
   {tabindex}
 >
   <slot />
