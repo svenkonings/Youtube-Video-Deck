@@ -1,8 +1,6 @@
 import type google from "@googleapis/youtube";
 
-type All<T> = {
-  [P in keyof T]-?: All<NonNullable<T[P]>>;
-};
+type All<T> = {[P in keyof T]-?: All<NonNullable<T[P]>>};
 
 export type YTSubscriptionListResponse = All<google.youtube_v3.Schema$SubscriptionListResponse>;
 export type YTSubscription = All<google.youtube_v3.Schema$Subscription>;

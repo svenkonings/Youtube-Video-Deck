@@ -1,29 +1,23 @@
-import type { RequestHandler } from "./$types";
+import type {RequestHandler} from "./$types";
 
-import { ajv } from "$lib/server/ajv";
-import { updateExpanded } from "$lib/server/db";
+import {ajv} from "$lib/server/ajv";
+import {updateExpanded} from "$lib/server/db";
 
-import { error } from "@sveltejs/kit";
-import type { JSONSchemaType } from "ajv";
+import {error} from "@sveltejs/kit";
+import type {JSONSchemaType} from "ajv";
 
-type PutType = {
-  groupIndex: number;
-  expanded: boolean;
-};
+type PutType = {groupIndex: number; expanded: boolean};
 
 const putSchema: JSONSchemaType<PutType> = {
   type: "object",
-  properties: {
-    groupIndex: { type: "integer" },
-    expanded: { type: "boolean" },
-  },
+  properties: {groupIndex: {type: "integer"}, expanded: {type: "boolean"}},
   required: ["groupIndex", "expanded"],
   additionalProperties: false,
 };
 
 const putValidate = ajv.compile(putSchema);
 
-export const PUT: RequestHandler = async ({ locals, request }) => {
+export const PUT: RequestHandler = async ({locals, request}) => {
   if (!locals.user) {
     throw error(401, "User not logged in");
   }

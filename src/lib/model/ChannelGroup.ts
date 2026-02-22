@@ -1,4 +1,4 @@
-import type { Channel } from "$lib/model/Channel";
+import type {Channel} from "$lib/model/Channel";
 
 /** A group of channels. */
 export type ChannelGroup = {
@@ -18,7 +18,7 @@ export type ChannelGroup = {
  * @returns the created group
  */
 export function ChannelGroup(name: string, expanded: boolean, channels: Channel[]): ChannelGroup {
-  return { name, expanded, channels };
+  return {name, expanded, channels};
 }
 
 /**

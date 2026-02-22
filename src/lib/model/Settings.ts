@@ -1,4 +1,4 @@
-import type { ChannelGroup } from "$lib/model/ChannelGroup";
+import type {ChannelGroup} from "$lib/model/ChannelGroup";
 
 /**
  * The settings for the logged in user.
@@ -18,11 +18,7 @@ export type Settings = {
  * These are for backwards compatibility only,
  * SubscriptionGroupSettings have been migrated to ChannelGroup.
  */
-export type SubscriptionGroupSettings = {
-  name: string;
-  expanded: boolean;
-  subscriptionIds: string[];
-};
+export type SubscriptionGroupSettings = {name: string; expanded: boolean; subscriptionIds: string[]};
 
 /**
  * Create settings based on the provided channel groups.
@@ -30,5 +26,5 @@ export type SubscriptionGroupSettings = {
  * @returns the created settings
  */
 export function Settings(channelGroups: ChannelGroup[] = []): Settings {
-  return { channelGroups };
+  return {channelGroups};
 }

@@ -1,6 +1,3 @@
-import type { Video } from "$lib/model/Video";
+import type {Video} from "$lib/model/Video";
 
-export type VideosResponse = {
-  videos: Video[];
-  nextPageToken?: string;
-};
+export type VideosResponse = {videos: Video[]; nextPageToken?: string};

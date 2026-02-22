@@ -1,5 +1,5 @@
-import { Playlist } from "$lib/model/Playlist";
-import type { YTSubscription } from "$lib/types/google";
+import {Playlist} from "$lib/model/Playlist";
+import type {YTSubscription} from "$lib/types/google";
 
 /**
  * A channel consists of channel information and a list of playlists.

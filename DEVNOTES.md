@@ -1,3 +1,9 @@
+# TODO
+
+- Add loading of videos again
+- Add cache for subscription and playlists
+- Add editorVisible context?
+
 # Notes
 
 - PlaylistCache can be a global map
@@ -13,7 +19,8 @@
 - Comments can be cached on Video resource
 - What is the distinction between types and model?
 
-- Choice 1: Do we want subscriptions (synced with currently subscribed list) or channels (will not be removed after unsub)
+- Choice 1: Do we want subscriptions (synced with currently subscribed list) or channels (will not be removed after
+  unsub)
   - Subscriptions
     - Automatically updates if channel changes name or thumbnail
     - Autmatically removed on unsubscribe
@@ -23,7 +30,8 @@
     - Does not require subscribing to be added
     - We could still update channel titles or thumbnails based on the ID if we wanted
   - Result: We will use channels
-- Choice 2: Should a group be a collection of channels (and channels have playlists) or a collection of playlists (and if they are all from the same channel the group is displayed as a channel)
+- Choice 2: Should a group be a collection of channels (and channels have playlists) or a collection of playlists (and
+  if they are all from the same channel the group is displayed as a channel)
   - Collection of channels
     - Easier to enable/disable different playlists
     - Easier to disinguish between groups

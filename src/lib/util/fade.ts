@@ -1,15 +1,4 @@
-export type FadeParams = {
-  visible: boolean;
-  initial: boolean;
-};
-
-export function fade(
-  node: HTMLElement,
-  params: FadeParams,
-): {
-  update: (params: FadeParams) => void;
-  destroy: () => void;
-} {
+export function fade(node: HTMLElement, visible: boolean): {update: (visible: boolean) => void; destroy: () => void} {
   const transitionEnd = () => {
     if (node.classList.contains("fadeOut")) {
       node.classList.add("hidden");
@@ -17,15 +6,8 @@ export function fade(
   };
   node.addEventListener("transitionend", transitionEnd);
 
-  if (params.initial) {
-    node.classList.add("fadeIn");
-  } else {
-    node.classList.add("hidden");
-    node.classList.add("fadeOut");
-  }
-
-  const update = (params: FadeParams) => {
-    if (params.visible) {
+  const update = (visible: boolean) => {
+    if (visible) {
       node.classList.remove("hidden");
       setTimeout(() => node.classList.replace("fadeOut", "fadeIn"));
     } else {
@@ -37,6 +19,6 @@ export function fade(
     node.removeEventListener("transitionend", transitionEnd);
   };
 
-  update(params);
-  return { update, destroy };
+  update(visible);
+  return {update, destroy};
 }

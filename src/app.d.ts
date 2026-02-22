@@ -1,11 +1,9 @@
-import type { User } from "$lib/server/model/User";
+import type {User} from "$lib/server/model/User";
 
-import type { OAuth2Client } from "google-auth-library";
-import type { Session } from "svelte-kit-cookie-session";
+import type {OAuth2Client} from "google-auth-library";
+import type {Session} from "svelte-kit-cookie-session";
 
-type SessionData = {
-  sub?: string;
-};
+type SessionData = {sub?: string};
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces

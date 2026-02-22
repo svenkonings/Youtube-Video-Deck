@@ -1,4 +1,4 @@
-import type { Video } from "$lib/model/Video";
+import type {Video} from "$lib/model/Video";
 
 /**
  * A cache for the retrieved videos of a playlist.
@@ -20,5 +20,5 @@ export type PlaylistCache = {
  * @returns the created cache
  */
 export function PlaylistCache(): PlaylistCache {
-  return { videos: [] };
+  return {videos: []};
 }

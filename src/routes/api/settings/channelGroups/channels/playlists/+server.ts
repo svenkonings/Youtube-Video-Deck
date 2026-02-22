@@ -1,30 +1,24 @@
-import type { RequestHandler } from "./$types";
+import type {RequestHandler} from "./$types";
 
-import type { Playlist } from "$lib/model/Playlist";
-import { ajv } from "$lib/server/ajv";
-import { updatePlaylists } from "$lib/server/db";
+import type {Playlist} from "$lib/model/Playlist";
+import {ajv} from "$lib/server/ajv";
+import {updatePlaylists} from "$lib/server/db";
 
-import { error } from "@sveltejs/kit";
-import type { JSONSchemaType } from "ajv";
+import {error} from "@sveltejs/kit";
+import type {JSONSchemaType} from "ajv";
 
-type PutType = {
-  groupIndex: number;
-  channelIndex: number;
-  playlists: Playlist[];
-};
+type PutType = {groupIndex: number; channelIndex: number; playlists: Playlist[]};
 
 const putSchema: JSONSchemaType<PutType> = {
   type: "object",
   properties: {
-    groupIndex: { type: "integer" },
-    channelIndex: { type: "integer" },
+    groupIndex: {type: "integer"},
+    channelIndex: {type: "integer"},
     playlists: {
       type: "array",
       items: {
         type: "object",
-        properties: {
-          playlistPrefix: { type: "string" },
-        },
+        properties: {playlistPrefix: {type: "string"}},
         required: ["playlistPrefix"],
         additionalProperties: false,
       },
@@ -36,7 +30,7 @@ const putSchema: JSONSchemaType<PutType> = {
 
 const putValidate = ajv.compile(putSchema);
 
-export const PUT: RequestHandler = async ({ locals, request }) => {
+export const PUT: RequestHandler = async ({locals, request}) => {
   if (!locals.user) {
     throw error(401, "User not logged in");
   }

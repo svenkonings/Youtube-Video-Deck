@@ -1,6 +1,6 @@
-import { Channel } from "$lib/model/Channel";
-import { Comments, type Comment } from "$lib/model/Comment";
-import { Video } from "$lib/model/Video";
+import {Channel} from "$lib/model/Channel";
+import {Comments, type Comment} from "$lib/model/Comment";
+import {Video} from "$lib/model/Video";
 import type {
   YTChannel,
   YTChannelListResponse,
@@ -9,16 +9,13 @@ import type {
   YTSubscriptionListResponse,
   YTVideoListResponse,
 } from "$lib/types/google";
-import type { VideosResponse } from "$lib/types/VideosResponse";
-import { hasProperty } from "$lib/util/types";
+import type {VideosResponse} from "$lib/types/VideosResponse";
+import {hasProperty} from "$lib/util/types";
 
 import google from "@googleapis/youtube";
-import type { OAuth2Client } from "google-auth-library";
+import type {OAuth2Client} from "google-auth-library";
 
-const youtube = google.youtube({
-  version: "v3",
-  retry: true,
-});
+const youtube = google.youtube({version: "v3", retry: true});
 
 export async function loadSubscriptions(auth: OAuth2Client, pageToken?: string): Promise<Channel[]> {
   const subscriptions = await listSubscriptions(auth, pageToken);
@@ -75,19 +72,14 @@ export async function loadVideos(auth: OAuth2Client, playlistId: string, pageTok
     playlistItems = await listPlaylistItems(auth, playlistId, pageToken);
   } catch (e: unknown) {
     if (hasProperty(e, "response") && hasProperty(e.response, "status") && e.response.status === 404) {
-      return {
-        videos: [],
-      };
+      return {videos: []};
     } else {
       throw e;
     }
   }
   const videoIds = playlistItems.items.map(item => item.snippet.resourceId.videoId);
   const videos = await listVideos(auth, videoIds);
-  return {
-    videos: videos.items.map(Video),
-    nextPageToken: playlistItems.nextPageToken,
-  };
+  return {videos: videos.items.map(Video), nextPageToken: playlistItems.nextPageToken};
 }
 
 async function listPlaylistItems(

@@ -4,9 +4,7 @@
  *
  * TODO: Add playlists with custom playlist IDs.
  */
-export type Playlist = {
-  readonly playlistPrefix: PlaylistPrefix;
-};
+export type Playlist = {readonly playlistPrefix: PlaylistPrefix};
 
 /**
  * Prefix for a channel ID to get a playlist of uploaded content.
@@ -27,5 +25,5 @@ export type PlaylistPrefix =
  * @returns the created playlist
  */
 export function Playlist(playlistPrefix: PlaylistPrefix) {
-  return { playlistPrefix };
+  return {playlistPrefix};
 }

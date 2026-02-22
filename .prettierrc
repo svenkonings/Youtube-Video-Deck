@@ -1,5 +1,7 @@
 {
   "arrowParens": "avoid",
+  "bracketSameLine": true,
+  "bracketSpacing": false,
   "importOrder": [
     "",
     "<BUILTIN_MODULES>",
@@ -16,8 +18,10 @@
     ""
   ],
   "importOrderTypeScriptVersion": "5.9.3",
-  "overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }],
+  "objectWrap": "collapse",
+  "overrides": [{"files": "*.svelte", "options": {"parser": "svelte"}}],
   "plugins": ["@ianvs/prettier-plugin-sort-imports", "prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
   "printWidth": 120,
+  "proseWrap": "always",
   "tailwindStylesheet": "./src/app.css"
 }

@@ -1,4 +1,4 @@
-import type { YTComment, YTCommentSnippet, YTCommentThreadListResponse } from "$lib/types/google";
+import type {YTComment, YTCommentSnippet, YTCommentThreadListResponse} from "$lib/types/google";
 
 export type Comment = {
   readonly authorDisplayName: string;

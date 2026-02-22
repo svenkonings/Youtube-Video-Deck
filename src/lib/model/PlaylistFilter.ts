@@ -1,4 +1,4 @@
-import { Playlist } from "$lib/model/Playlist";
+import {Playlist} from "$lib/model/Playlist";
 
 /**
  * A filter for which types of upload playlists to enable.

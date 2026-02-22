@@ -1,5 +1,5 @@
-import type { Comment } from "$lib/model/Comment";
-import type { YTVideo } from "$lib/types/google";
+import type {Comment} from "$lib/model/Comment";
+import type {YTVideo} from "$lib/types/google";
 
 export type Video = {
   readonly videoId: string;

@@ -1,4 +1,4 @@
-import { DateTime, Duration } from "luxon";
+import {DateTime, Duration} from "luxon";
 
 export function formatDuration(isoDuration: string): string {
   const duration = Duration.fromISO(isoDuration);
@@ -12,5 +12,5 @@ export function formatDuration(isoDuration: string): string {
 }
 
 export function relativeDate(isoDate: string): string {
-  return DateTime.fromISO(isoDate).toRelative({ locale: "en" }) as string;
+  return DateTime.fromISO(isoDate).toRelative({locale: "en"}) as string;
 }
