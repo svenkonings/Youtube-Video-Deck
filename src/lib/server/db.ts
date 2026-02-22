@@ -1,4 +1,5 @@
-import { subscriptionSettingsFromId, type Settings } from "$lib/model/Settings";
+import type { Settings } from "$lib/model/Settings";
+import { subscriptionSettingsFromId } from "$lib/model/Subscription";
 import type { User } from "$lib/server/model/User";
 
 import { env } from "$env/dynamic/private";

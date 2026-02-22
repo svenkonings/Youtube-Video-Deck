@@ -23,28 +23,12 @@ const putSchema: JSONSchemaType<Settings> = {
               type: "object",
               properties: {
                 id: { type: "string" },
-                playlistTypes: {
-                  type: "object",
-                  properties: {
-                    videos: { type: "boolean" },
-                    liveStreams: { type: "boolean" },
-                    shorts: { type: "boolean" },
-                    membersOnlyVideos: { type: "boolean" },
-                    membersOnlyLiveStreams: { type: "boolean" },
-                    membersOnlyShorts: { type: "boolean" },
-                  },
-                  required: [
-                    "videos",
-                    "liveStreams",
-                    "shorts",
-                    "membersOnlyVideos",
-                    "membersOnlyLiveStreams",
-                    "membersOnlyShorts",
-                  ],
-                  additionalProperties: false,
+                playlistPrefixes: {
+                  type: "array",
+                  items: { type: "string" },
                 },
               },
-              required: ["id", "playlistTypes"],
+              required: ["id", "playlistPrefixes"],
               additionalProperties: false,
             },
           },

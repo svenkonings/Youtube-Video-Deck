@@ -2,10 +2,10 @@ import { Comments, type Comment } from "$lib/model/Comment";
 import { Subscription } from "$lib/model/Subscription";
 import { Video } from "$lib/model/Video";
 import type {
-  CommentThreadListResponse,
-  PlaylistItemListResponse,
-  SubscriptionListResponse,
-  VideoListResponse,
+  YTCommentThreadListResponse,
+  YTPlaylistItemListResponse,
+  YTSubscriptionListResponse,
+  YTVideoListResponse,
 } from "$lib/types/google";
 import type { VideosResponse } from "$lib/types/VideosResponse";
 import { hasProperty } from "$lib/util/types";
@@ -27,7 +27,7 @@ export async function loadSubscriptions(auth: OAuth2Client, pageToken?: string):
   return result;
 }
 
-async function listSubscriptions(auth: OAuth2Client, pageToken?: string): Promise<SubscriptionListResponse> {
+async function listSubscriptions(auth: OAuth2Client, pageToken?: string): Promise<YTSubscriptionListResponse> {
   const response = await youtube.subscriptions.list({
     auth,
     part: ["snippet"],
@@ -37,7 +37,7 @@ async function listSubscriptions(auth: OAuth2Client, pageToken?: string): Promis
     maxResults: 50,
     pageToken,
   });
-  return response.data as SubscriptionListResponse;
+  return response.data as YTSubscriptionListResponse;
 }
 
 export async function loadVideos(
@@ -46,7 +46,7 @@ export async function loadVideos(
   playlistId: string,
   pageToken?: string,
 ): Promise<VideosResponse> {
-  let playlistItems: PlaylistItemListResponse;
+  let playlistItems: YTPlaylistItemListResponse;
   try {
     playlistItems = await listPlaylistItems(auth, playlistId, pageToken);
   } catch (e: unknown) {
@@ -70,7 +70,7 @@ async function listPlaylistItems(
   auth: OAuth2Client,
   playlistId: string,
   pageToken?: string,
-): Promise<PlaylistItemListResponse> {
+): Promise<YTPlaylistItemListResponse> {
   const response = await youtube.playlistItems.list({
     auth,
     part: ["snippet"],
@@ -79,10 +79,10 @@ async function listPlaylistItems(
     maxResults: 50,
     pageToken,
   });
-  return response.data as PlaylistItemListResponse;
+  return response.data as YTPlaylistItemListResponse;
 }
 
-async function listVideos(auth: OAuth2Client, id: string[]): Promise<VideoListResponse> {
+async function listVideos(auth: OAuth2Client, id: string[]): Promise<YTVideoListResponse> {
   const response = await youtube.videos.list({
     auth,
     part: ["id", "snippet", "liveStreamingDetails", "contentDetails", "statistics"],
@@ -91,7 +91,7 @@ async function listVideos(auth: OAuth2Client, id: string[]): Promise<VideoListRe
     id,
     maxResults: 50,
   });
-  return response.data as VideoListResponse;
+  return response.data as YTVideoListResponse;
 }
 
 export async function loadDescription(auth: OAuth2Client, videoId: string): Promise<string> {
@@ -101,7 +101,7 @@ export async function loadDescription(auth: OAuth2Client, videoId: string): Prom
     fields: "items/snippet/description",
     id: [videoId],
   });
-  const data = response.data as VideoListResponse;
+  const data = response.data as YTVideoListResponse;
   return data.items[0].snippet.description;
 }
 
@@ -114,7 +114,7 @@ async function listCommentThreads(
   auth: OAuth2Client,
   videoId: string,
   pageToken?: string,
-): Promise<CommentThreadListResponse> {
+): Promise<YTCommentThreadListResponse> {
   const response = await youtube.commentThreads.list({
     auth,
     part: ["snippet", "replies"],
@@ -125,5 +125,5 @@ async function listCommentThreads(
     order: "relevance",
     pageToken,
   });
-  return response.data as CommentThreadListResponse;
+  return response.data as YTCommentThreadListResponse;
 }
