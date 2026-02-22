@@ -1,6 +1,6 @@
 import { Playlist } from "$lib/model/Playlist";
 import { initClient, login } from "$lib/server/auth";
-import { getUser, updateCredentials } from "$lib/server/db";
+import { getUser, updateCredentials, updateSettings } from "$lib/server/db";
 import type { User } from "$lib/server/model/User";
 import { getChannelMap } from "$lib/server/youtube";
 import { objectToErrorMessage } from "$lib/util/error";
@@ -28,6 +28,7 @@ export const handle: Handle = handleSession(
         console.debug(event.route, "Login user", user.sub, user.credentials);
         await event.locals.session.set({ sub: user.sub });
         initUser(event.locals, user);
+        await migrateUser(event.locals);
         return resolve(event);
       }
 
@@ -38,6 +39,7 @@ export const handle: Handle = handleSession(
         console.debug(event.route, "Found user", user.sub);
         initUser(event.locals, user);
         await checkSession(event.locals);
+        await migrateUser(event.locals);
         return resolve(event);
       }
     } catch (e) {
@@ -50,22 +52,20 @@ export const handle: Handle = handleSession(
   },
 );
 
-/** Async for backwards compatibility only */
-async function initUser(locals: App.Locals, user: User): Promise<void> {
+function initUser(locals: App.Locals, user: User): void {
   locals.auth.on("tokens", async tokens => await updateCredentials(user.sub, tokens));
   locals.auth.setCredentials(user.credentials);
-  await migrateUser(locals, user);
   locals.user = user;
 }
 
 /** These are for backwards compatibility only */
-async function migrateUser(locals: App.Locals, user: User): Promise<void> {
-  if (user.settings.subscriptionGroups !== undefined) {
-    const channelIds = user.settings.subscriptionGroups.flatMap(sg => sg.subscriptionIds);
+async function migrateUser(locals: App.Locals): Promise<void> {
+  if (locals.user !== undefined && locals.user.settings.subscriptionGroups !== undefined) {
+    const channelIds = locals.user.settings.subscriptionGroups.flatMap(sg => sg.subscriptionIds);
     const channelMap = await getChannelMap(locals.auth, channelIds);
-    user.settings.channelGroups = [];
-    for (const subscriptionGroup of user.settings.subscriptionGroups) {
-      user.settings.channelGroups.push({
+    locals.user.settings.channelGroups = [];
+    for (const subscriptionGroup of locals.user.settings.subscriptionGroups) {
+      locals.user.settings.channelGroups.push({
         name: subscriptionGroup.name,
         expanded: subscriptionGroup.expanded,
         channels: subscriptionGroup.subscriptionIds.map(sId => ({
@@ -76,7 +76,8 @@ async function migrateUser(locals: App.Locals, user: User): Promise<void> {
         })),
       });
     }
-    delete user.settings.subscriptionGroups;
+    delete locals.user.settings.subscriptionGroups;
+    await updateSettings(locals.user.sub, locals.user.settings);
   }
 }
 

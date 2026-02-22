@@ -47,10 +47,13 @@ async function listSubscriptions(auth: OAuth2Client, pageToken?: string): Promis
  * used to retrieve additional channel information while converting subscriptionGroups to channelGroups
  */
 export async function getChannelMap(auth: OAuth2Client, channelIds: string[]): Promise<Record<string, YTChannel>> {
-  const channels = await listChannels(auth, channelIds);
   const result: Record<string, YTChannel> = {};
-  for (const channel of channels.items) {
-    result[channel.id] = channel;
+  for (let i = 0; i < channelIds.length; i += 50) {
+    const channelIdSlice = channelIds.slice(i, Math.min(i + 50, channelIds.length));
+    const channels = await listChannels(auth, channelIdSlice);
+    for (const channel of channels.items) {
+      result[channel.id] = channel;
+    }
   }
   return result;
 }
@@ -58,8 +61,8 @@ export async function getChannelMap(auth: OAuth2Client, channelIds: string[]): P
 async function listChannels(auth: OAuth2Client, id: string[]): Promise<YTChannelListResponse> {
   const response = await youtube.channels.list({
     auth,
-    part: ["contentDetails"],
-    fields: "items(id,contentDetails/relatedPlaylists/uploads)",
+    part: ["snippet"],
+    fields: "items(id,snippet(title,thumbnails/default/url))",
     id,
     maxResults: 50,
   });
