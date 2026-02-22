@@ -10,6 +10,46 @@ import type { JSONSchemaType } from "ajv";
 const putSchema: JSONSchemaType<Settings> = {
   type: "object",
   properties: {
+    channelGroups: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          expanded: { type: "boolean" },
+          channels: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                channelId: { type: "string" },
+                title: { type: "string" },
+                thumbnailUrl: { type: "string" },
+                playlists: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      playlistPrefix: { type: "string" },
+                    },
+                    required: ["playlistPrefix"],
+                    additionalProperties: false,
+                  },
+                },
+              },
+              required: ["channelId", "title", "thumbnailUrl", "playlists"],
+              additionalProperties: false,
+            },
+          },
+        },
+        required: ["name", "expanded", "channels"],
+        additionalProperties: false,
+      },
+    },
+    /**
+     * These are for backwards compatibility only,
+     * subscriptionGroups have been migrated to channelGroups.
+     */
     subscriptionGroups: {
       type: "array",
       items: {
@@ -17,34 +57,23 @@ const putSchema: JSONSchemaType<Settings> = {
         properties: {
           name: { type: "string" },
           expanded: { type: "boolean" },
-          subscriptions: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                id: { type: "string" },
-                playlistPrefixes: {
-                  type: "array",
-                  items: { type: "string" },
-                },
-              },
-              required: ["id", "playlistPrefixes"],
-              additionalProperties: false,
-            },
-          },
           subscriptionIds: {
             type: "array",
             items: { type: "string" },
-            nullable: true,
           },
         },
-        required: ["name", "expanded", "subscriptions"],
-        not: { required: ["subscriptionIds"] },
+        required: ["name", "expanded", "subscriptionIds"],
         additionalProperties: false,
       },
+      nullable: true,
     },
   },
-  required: ["subscriptionGroups"],
+  required: ["channelGroups"],
+  /**
+   * These are for backwards compatibility only,
+   * subscriptionGroups have been migrated to channelGroups.
+   */
+  not: { required: ["subscriptionGroups"] },
   additionalProperties: false,
 };
 

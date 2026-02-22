@@ -1,6 +1,8 @@
+import { Playlist } from "$lib/model/Playlist";
 import { initClient, login } from "$lib/server/auth";
 import { getUser, updateCredentials } from "$lib/server/db";
 import type { User } from "$lib/server/model/User";
+import { getChannelMap } from "$lib/server/youtube";
 import { objectToErrorMessage } from "$lib/util/error";
 
 import { env } from "$env/dynamic/private";
@@ -48,10 +50,34 @@ export const handle: Handle = handleSession(
   },
 );
 
-function initUser(locals: App.Locals, user: User): void {
+/** Async for backwards compatibility only */
+async function initUser(locals: App.Locals, user: User): Promise<void> {
   locals.auth.on("tokens", async tokens => await updateCredentials(user.sub, tokens));
   locals.auth.setCredentials(user.credentials);
+  await migrateUser(locals, user);
   locals.user = user;
+}
+
+/** These are for backwards compatibility only */
+async function migrateUser(locals: App.Locals, user: User): Promise<void> {
+  if (user.settings.subscriptionGroups !== undefined) {
+    const channelIds = user.settings.subscriptionGroups.flatMap(sg => sg.subscriptionIds);
+    const channelMap = await getChannelMap(locals.auth, channelIds);
+    user.settings.channelGroups = [];
+    for (const subscriptionGroup of user.settings.subscriptionGroups) {
+      user.settings.channelGroups.push({
+        name: subscriptionGroup.name,
+        expanded: subscriptionGroup.expanded,
+        channels: subscriptionGroup.subscriptionIds.map(sId => ({
+          channelId: sId.substring(2),
+          title: channelMap[sId].snippet.title,
+          thumbnailUrl: channelMap[sId].snippet.thumbnails.default.url,
+          playlists: [Playlist("UU")],
+        })),
+      });
+    }
+    delete user.settings.subscriptionGroups;
+  }
 }
 
 async function checkSession(locals: App.Locals): Promise<void> {

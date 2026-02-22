@@ -1,7 +1,9 @@
+import { Channel } from "$lib/model/Channel";
 import { Comments, type Comment } from "$lib/model/Comment";
-import { Subscription } from "$lib/model/Subscription";
 import { Video } from "$lib/model/Video";
 import type {
+  YTChannel,
+  YTChannelListResponse,
   YTCommentThreadListResponse,
   YTPlaylistItemListResponse,
   YTSubscriptionListResponse,
@@ -18,9 +20,9 @@ const youtube = google.youtube({
   retry: true,
 });
 
-export async function loadSubscriptions(auth: OAuth2Client, pageToken?: string): Promise<Subscription[]> {
+export async function loadSubscriptions(auth: OAuth2Client, pageToken?: string): Promise<Channel[]> {
   const subscriptions = await listSubscriptions(auth, pageToken);
-  let result = subscriptions.items.map(Subscription);
+  let result = subscriptions.items.map(Channel);
   if (subscriptions.nextPageToken) {
     result = result.concat(await loadSubscriptions(auth, subscriptions.nextPageToken));
   }
@@ -40,12 +42,31 @@ async function listSubscriptions(auth: OAuth2Client, pageToken?: string): Promis
   return response.data as YTSubscriptionListResponse;
 }
 
-export async function loadVideos(
-  auth: OAuth2Client,
-  channelTitle: string,
-  playlistId: string,
-  pageToken?: string,
-): Promise<VideosResponse> {
+/**
+ * These are for backwards compatibility only,
+ * used to retrieve additional channel information while converting subscriptionGroups to channelGroups
+ */
+export async function getChannelMap(auth: OAuth2Client, channelIds: string[]): Promise<Record<string, YTChannel>> {
+  const channels = await listChannels(auth, channelIds);
+  const result: Record<string, YTChannel> = {};
+  for (const channel of channels.items) {
+    result[channel.id] = channel;
+  }
+  return result;
+}
+
+async function listChannels(auth: OAuth2Client, id: string[]): Promise<YTChannelListResponse> {
+  const response = await youtube.channels.list({
+    auth,
+    part: ["contentDetails"],
+    fields: "items(id,contentDetails/relatedPlaylists/uploads)",
+    id,
+    maxResults: 50,
+  });
+  return response.data as YTChannelListResponse;
+}
+
+export async function loadVideos(auth: OAuth2Client, playlistId: string, pageToken?: string): Promise<VideosResponse> {
   let playlistItems: YTPlaylistItemListResponse;
   try {
     playlistItems = await listPlaylistItems(auth, playlistId, pageToken);
@@ -61,7 +82,7 @@ export async function loadVideos(
   const videoIds = playlistItems.items.map(item => item.snippet.resourceId.videoId);
   const videos = await listVideos(auth, videoIds);
   return {
-    videos: videos.items.map(v => Video(v, channelTitle)),
+    videos: videos.items.map(Video),
     nextPageToken: playlistItems.nextPageToken,
   };
 }
@@ -87,22 +108,11 @@ async function listVideos(auth: OAuth2Client, id: string[]): Promise<YTVideoList
     auth,
     part: ["id", "snippet", "liveStreamingDetails", "contentDetails", "statistics"],
     fields:
-      "items(id,snippet(title,description,thumbnails/medium/url,publishedAt),liveStreamingDetails(actualStartTime,scheduledStartTime),contentDetails/duration,statistics(viewCount,likeCount,commentCount))",
+      "items(id,snippet(channelTitle,title,description,thumbnails/medium/url,publishedAt),liveStreamingDetails(actualStartTime,scheduledStartTime),contentDetails/duration,statistics(viewCount,likeCount,commentCount))",
     id,
     maxResults: 50,
   });
   return response.data as YTVideoListResponse;
-}
-
-export async function loadDescription(auth: OAuth2Client, videoId: string): Promise<string> {
-  const response = await youtube.videos.list({
-    auth,
-    part: ["snippet"],
-    fields: "items/snippet/description",
-    id: [videoId],
-  });
-  const data = response.data as YTVideoListResponse;
-  return data.items[0].snippet.description;
 }
 
 export async function loadComments(auth: OAuth2Client, videoId: string, pageToken?: string): Promise<Comment[]> {
