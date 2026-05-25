@@ -1,5 +1,9 @@
+<svelte:options runes />
+
 <script lang="ts">
-  export let text = "Loading…";
+  type Props = {text?: string};
+
+  let {text = "Loading…"}: Props = $props();
 </script>
 
 <div class="text-center">

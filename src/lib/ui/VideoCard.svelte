@@ -1,36 +1,29 @@
+<svelte:options runes />
+
 <script lang="ts">
-  import type { Video } from "$lib/model/Video";
-  import type { PlayerInput } from "$lib/types/PlayerInput";
-  import { formatDuration, relativeDate } from "$lib/util/dates";
-  import { abbreviate } from "$lib/util/numbers";
+  import type {Video} from "$lib/model/Video";
+  import {play} from "$lib/ui/Player.svelte";
+  import {formatDuration, relativeDate} from "$lib/util/dates";
+  import {abbreviate} from "$lib/util/numbers";
 
-  import { getContext } from "svelte";
-  import type { Writable } from "svelte/store";
+  type Props = {video: Video};
 
-  export let video: Video;
+  let {video}: Props = $props();
 
-  const playerStore: Writable<PlayerInput | undefined> = getContext("playerStore");
+  let duration = $derived(formatDuration(video.duration));
+  let viewCount = $derived(abbreviate(video.viewCount));
+  let publishedAt = $derived(relativeDate(video.publishedAt));
 
-  let duration: string;
-  let viewCount: string;
-  let publishedAt: string;
-
-  $: if (video) {
-    duration = formatDuration(video.duration);
-    viewCount = abbreviate(video.viewCount);
-    publishedAt = relativeDate(video.publishedAt);
-  }
-
-  function play(): void {
-    $playerStore = { videoId: video.videoId };
+  function onclick(event: Event): void {
+    event.preventDefault();
+    play({videoId: video.videoId});
   }
 </script>
 
 <a
   class="m-2 block w-[calc(100%-1rem)] rounded-2xl bg-neutral-600 p-2 first:mt-0 last:mb-0"
   href="https://www.youtube.com/watch?v={video.videoId}"
-  on:click|preventDefault={play}
->
+  {onclick}>
   <div class="relative inline-block w-44 p-1 align-text-bottom">
     <img src={video.thumbnailUrl} alt="" loading="lazy" width="320" height="180" />
     <span class="absolute right-0 bottom-0 m-1.5 rounded bg-black/80 px-0.5 text-sm">{duration}</span>

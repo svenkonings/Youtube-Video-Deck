@@ -110,6 +110,17 @@ async function listVideos(auth: OAuth2Client, id: string[]): Promise<YTVideoList
   return response.data as YTVideoListResponse;
 }
 
+export async function loadDescription(auth: OAuth2Client, videoId: string): Promise<string> {
+  const response = await youtube.videos.list({
+    auth,
+    part: ["snippet"],
+    fields: "items/snippet/description",
+    id: [videoId],
+  });
+  const data = response.data as YTVideoListResponse;
+  return data.items[0].snippet.description;
+}
+
 export async function loadComments(auth: OAuth2Client, videoId: string, pageToken?: string): Promise<Comment[]> {
   const commentThreads = await listCommentThreads(auth, videoId, pageToken);
   return Comments(commentThreads);

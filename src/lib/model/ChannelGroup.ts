@@ -1,4 +1,4 @@
-import type {Channel} from "$lib/model/Channel";
+import {copyChannel, type Channel} from "$lib/model/Channel";
 
 /** A group of channels. */
 export type ChannelGroup = {
@@ -28,5 +28,15 @@ export function ChannelGroup(name: string, expanded: boolean, channels: Channel[
  * @returns the created group
  */
 export function channelGroupFromChannel(channel: Channel): ChannelGroup {
-  return ChannelGroup(channel.title, false, [channel]);
+  return ChannelGroup(channel.title, false, [copyChannel(channel)]);
+}
+
+/**
+ * Create a copy of the provided channel group.
+ * Creates a copy of the channels to avoid sharing changes.
+ * @param channelGroup the channel group to copy
+ * @returns the copied channel group
+ */
+export function copyChannelGroup(channelGroup: ChannelGroup): ChannelGroup {
+  return {name: channelGroup.name, expanded: channelGroup.expanded, channels: channelGroup.channels.map(copyChannel)};
 }

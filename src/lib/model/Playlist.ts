@@ -1,3 +1,5 @@
+import type {Channel} from "$lib/model/Channel";
+
 /**
  * A playlist belongs to a channel.
  * A playlist for uploaded content consists of a prefix for a channel ID.
@@ -24,6 +26,16 @@ export type PlaylistPrefix =
  * @param playlistPrefix the playlist prefix to use
  * @returns the created playlist
  */
-export function Playlist(playlistPrefix: PlaylistPrefix) {
+export function Playlist(playlistPrefix: PlaylistPrefix): Playlist {
   return {playlistPrefix};
+}
+
+/**
+ * Get the playlist ID of this playlist.
+ * @param channel the channel this playlist belongs to
+ * @param playlist the playlist
+ * @returns the playlist ID
+ */
+export function getPlaylistId(channel: Channel, playlist: Playlist): string {
+  return playlist.playlistPrefix + channel.channelId;
 }

@@ -1,48 +1,32 @@
+<svelte:options runes />
+
 <script lang="ts">
-  import type { PageData } from "./$types";
+  import type {PageData} from "./$types";
 
-  import { browser } from "$app/environment";
+  import {browser} from "$app/environment";
 
-  import type { Subscription } from "$lib/model/Subscription";
   import App from "$lib/ui/App.svelte";
-  import Center from "$lib/ui/components/Center.svelte";
-  import Spinner from "$lib/ui/components/Spinner.svelte";
   import Header from "$lib/ui/Header.svelte";
   import LoginScreen from "$lib/ui/LoginScreen.svelte";
-  import { objectToErrorMessage, responseToErrorMessage } from "$lib/util/error";
-
-  import { setContext } from "svelte";
-  import { writable, type Writable } from "svelte/store";
 
   if (browser && window.location.search) {
     window.history.replaceState(null, "", window.location.pathname);
   }
 
-  export let data: PageData;
+  type Props = {data: PageData};
 
-  const editorVisible: Writable<boolean | undefined> = writable(undefined);
-  $: if (!data.isSignedIn) editorVisible.set(undefined);
-  setContext("editorVisible", editorVisible);
-
-  async function loadSubscriptions(): Promise<Subscription[]> {
-    const response = await fetch("/api/subscriptions");
-    if (!response.ok) throw await responseToErrorMessage(response);
-    return await response.json();
-  }
+  let props: Props = $props();
+  let data = $derived.by(() => {
+    // Make data deeply reactive
+    const data = $state(props.data);
+    return data;
+  });
 </script>
 
 <Header isSignedIn={data.isSignedIn} />
 <section class="h-[calc(100%-3rem)] w-full">
   {#if data.isSignedIn}
-    {#await loadSubscriptions()}
-      <Center>
-        <Spinner />
-      </Center>
-    {:then subscriptions}
-      <App settings={data.settings} {subscriptions} />
-    {:catch error}
-      <code class="whitespace-pre-wrap text-red-500">{objectToErrorMessage(error)}</code>
-    {/await}
+    <App settings={data.settings} />
   {:else}
     <LoginScreen />
   {/if}

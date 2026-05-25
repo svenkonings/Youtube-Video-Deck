@@ -1,12 +1,17 @@
+<svelte:options runes />
+
 <script lang="ts">
-  import type { Comment } from "$lib/model/Comment";
-  import { relativeDate } from "$lib/util/dates";
-  import { abbreviate } from "$lib/util/numbers";
+  import type {Comment} from "$lib/model/Comment";
+  import CommentCard from "$lib/ui/CommentCard.svelte";
+  import {relativeDate} from "$lib/util/dates";
+  import {abbreviate} from "$lib/util/numbers";
 
-  import { faThumbsUp } from "@fortawesome/free-solid-svg-icons";
-  import { Fa } from "svelte-fa";
+  import {faThumbsUp} from "@fortawesome/free-solid-svg-icons";
+  import {Fa} from "svelte-fa";
 
-  export let comment: Comment;
+  type Props = {comment: Comment};
+
+  let {comment}: Props = $props();
 </script>
 
 <div class="m-3">
@@ -18,8 +23,7 @@
       width="40"
       height="40"
       alt=""
-      loading="lazy"
-    />
+      loading="lazy" />
   </a>
   <div class="inline-block w-[calc(100%-45px)]">
     <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
@@ -34,9 +38,8 @@
       {abbreviate(String(comment.likeCount))}
       <Fa class="inline-block" icon={faThumbsUp} />
     </p>
-    <!-- eslint-disable-next-line svelte/require-each-key -->
-    {#each comment.replies as reply}
-      <svelte:self comment={reply} />
+    {#each comment.replies as reply (reply)}
+      <CommentCard comment={reply} />
     {/each}
   </div>
 </div>

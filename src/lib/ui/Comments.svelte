@@ -1,15 +1,15 @@
+<svelte:options runes />
+
 <script lang="ts">
-  import type { Comment } from "$lib/model/Comment";
+  import type {Comment} from "$lib/model/Comment";
   import CommentCard from "$lib/ui/CommentCard.svelte";
   import Spinner from "$lib/ui/components/Spinner.svelte";
-  import { objectToErrorMessage, responseToErrorMessage } from "$lib/util/error";
+  import {objectToErrorMessage, responseToErrorMessage} from "$lib/util/error";
 
-  export let videoId: string;
-  let commentsPromise: Promise<Comment[]>;
+  type Props = {videoId: string};
 
-  $: if (videoId) {
-    commentsPromise = loadComments(videoId);
-  }
+  let {videoId}: Props = $props();
+  let commentsPromise: Promise<Comment[]> = $derived(loadComments(videoId));
 
   async function loadComments(videoId: string, pageToken?: string): Promise<Comment[]> {
     let url = `/api/comments?videoId=${videoId}`;
@@ -23,8 +23,7 @@
 {#await commentsPromise}
   <Spinner text="Loading comments…" />
 {:then comments}
-  <!-- eslint-disable-next-line svelte/require-each-key -->
-  {#each comments as comment}
+  {#each comments as comment (comment)}
     <CommentCard {comment} />
   {/each}
 {:catch error}

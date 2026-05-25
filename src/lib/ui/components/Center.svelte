@@ -1,7 +1,17 @@
+<svelte:options runes />
+
+<script lang="ts">
+  import type {Snippet} from "svelte";
+
+  type Props = {before?: Snippet; children?: Snippet; after?: Snippet};
+
+  let {before, children, after}: Props = $props();
+</script>
+
 <div class="relative h-full w-full">
-  <slot name="before" />
+  {@render before?.()}
   <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-    <slot />
+    {@render children?.()}
   </div>
-  <slot name="after" />
+  {@render after?.()}
 </div>

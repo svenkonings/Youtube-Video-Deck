@@ -1,13 +1,13 @@
+<svelte:options runes />
+
 <script lang="ts">
   import Spinner from "$lib/ui/components/Spinner.svelte";
-  import { objectToErrorMessage, responseToErrorMessage } from "$lib/util/error";
+  import {objectToErrorMessage, responseToErrorMessage} from "$lib/util/error";
 
-  export let videoId: string;
-  let descriptionPromise: Promise<string>;
+  type Props = {videoId: string};
 
-  $: if (videoId) {
-    descriptionPromise = loadDescription(videoId);
-  }
+  let {videoId}: Props = $props();
+  let descriptionPromise: Promise<string> = $derived(loadDescription(videoId));
 
   async function loadDescription(videoId: string): Promise<string> {
     let url = `/api/description?videoId=${videoId}`;

@@ -3,6 +3,7 @@
 - Add loading of videos again
 - Add cache for subscription and playlists
 - Add editorVisible context?
+- Add cache for videos
 
 # Notes
 
