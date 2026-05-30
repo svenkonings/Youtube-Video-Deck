@@ -39,7 +39,6 @@
   import {trapFocus} from "$lib/util/trapFocus.svelte";
 
   import {faCircle, faCompressAlt, faExpandAlt, faTimesCircle, faUsers} from "@fortawesome/free-solid-svg-icons";
-  import {onDestroy} from "svelte";
   import {
     dragHandle,
     dragHandleZone,
@@ -50,19 +49,18 @@
   } from "svelte-dnd-action";
   import Fa, {FaLayers} from "svelte-fa";
   import {flip} from "svelte/animate";
-  import {tweened} from "svelte/motion";
 
   type Props = {channelGroups: ChannelGroup[]};
 
   let {channelGroups = $bindable()}: Props = $props();
 
   let idCounter: number = 0;
-  let subscriptionEntries: ChannelEntry[] = $state()!;
-  let settingsEntries: SettingsEntry[] = $state()!;
+  let subscriptionEntries: ChannelEntry[] | undefined = $state();
+  let settingsEntries: SettingsEntry[] = $derived(channelGroups.map(c => SettingsEntry(nextId, c)));
   let searchInput: string = $state("");
   let hideAddedSubscriptions = $state(true);
   let filteredSubscriptions: ChannelEntry[] = $derived(
-    filterSubscriptions(subscriptionEntries, searchInput, hideAddedSubscriptions),
+    filterSubscriptions(subscriptionEntries, settingsEntries, searchInput, hideAddedSubscriptions),
   );
   let groupNameInput: string = $state("");
 
@@ -70,16 +68,11 @@
     return (idCounter++).toString(10);
   }
 
-  async function initEntries(editorVisible: boolean): Promise<void> {
+  async function initSubscriptions(editorVisible: boolean): Promise<void> {
     // Only load subscriptions after opening editor
-    if (!editorVisible) return;
-
-    if (subscriptionEntries === undefined) {
+    if (editorVisible && subscriptionEntries === undefined) {
       const subscriptions = await loadSubscriptions();
       subscriptionEntries = subscriptions.map(s => ChannelEntry(nextId, s));
-    }
-    if (settingsEntries === undefined) {
-      settingsEntries = channelGroups.map(c => SettingsEntry(nextId, c));
     }
   }
 
@@ -91,6 +84,7 @@
 
   function filterSubscriptions(
     subscriptionEntries: ChannelEntry[] | undefined,
+    settingsEntries: SettingsEntry[],
     searchInput: string,
     hideAddedSubscriptions: boolean,
   ): ChannelEntry[] {
@@ -101,7 +95,7 @@
     // Filter based on added subscriptions
     if (hideAddedSubscriptions) {
       const enabledChannelIds = new Set(
-        settingsEntries?.flatMap(s => (isChannelEntry(s) ? [s.channelId] : s.channels.map(c => c.channelId))),
+        settingsEntries.flatMap(s => (isChannelEntry(s) ? [s.channelId] : s.channels.map(c => c.channelId))),
       );
       filteredSubscriptions = filteredSubscriptions.filter(s => !enabledChannelIds.has(s.channelId));
     }
@@ -115,10 +109,6 @@
     return filteredSubscriptions;
   }
 
-  function updateFilter() {
-    filteredSubscriptions = filterSubscriptions(subscriptionEntries, searchInput, hideAddedSubscriptions);
-  }
-
   function addGroup() {
     const groupName = groupNameInput.trim();
     if (groupName !== "") {
@@ -130,15 +120,18 @@
   async function save(e: MouseEvent): Promise<void> {
     const button = e.target as HTMLButtonElement;
     button.disabled = true;
-    channelGroups = settingsEntries.map(e => settingsEntryToChannelGroup(e));
-    const response = await fetch("/api/settings", {
-      method: "PUT",
-      body: JSON.stringify({channelGroups}),
-      headers: {"content-type": "application/json"},
-    });
-    if (!response.ok) throw await responseToErrorMessage(response);
-    closeEditor();
-    button.disabled = false;
+    try {
+      channelGroups = settingsEntries.map(e => settingsEntryToChannelGroup(e));
+      const response = await fetch("/api/settings", {
+        method: "PUT",
+        body: JSON.stringify({channelGroups}),
+        headers: {"content-type": "application/json"},
+      });
+      if (!response.ok) throw await responseToErrorMessage(response);
+      closeEditor();
+    } finally {
+      button.disabled = false;
+    }
   }
 
   /*
@@ -149,34 +142,30 @@
   let draggedEntry: SettingsEntry | undefined = $state();
 
   function handleSubscriptionDndConsider(e: CustomEvent<DndEvent>): void {
-    console.log("handleSubscriptionDndConsider", e);
-    if (e.detail.info.source === SOURCES.POINTER && e.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
+    if (
+      subscriptionEntries &&
+      e.detail.info.source === SOURCES.POINTER &&
+      e.detail.info.trigger === TRIGGERS.DRAG_STARTED
+    ) {
       const index = subscriptionEntries.findIndex(s => s.id === e.detail.info.id);
       draggedEntry = subscriptionEntries[index];
       // Create a copy with a different id
       subscriptionEntries[index] = {...draggedEntry, id: nextId()};
-      updateFilter();
-      startAutoScroll();
     }
   }
 
   function handleSettingsDndConsider(e: CustomEvent<DndEvent>): void {
-    console.log("handleSettingsDndConsider", e);
     if (e.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
       draggedEntry = settingsEntries.find(s => s.id === e.detail.info.id)!;
-      startAutoScroll();
     }
     settingsEntries = e.detail.items as SettingsEntry[];
   }
 
   function handleSettingsDndFinalize(e: CustomEvent<DndEvent>): void {
-    console.log("handleSettingsDndFinalize", e);
     settingsEntries = e.detail.items as SettingsEntry[];
-    updateFilter();
   }
 
   function settingsDropDisabled(): boolean {
-    console.log("settingsDropDisabled");
     if (draggedEntry && isChannelEntry(draggedEntry)) {
       const channelId = draggedEntry.channelId;
       return settingsEntries.some(e => !isShadowItem(e) && isChannelEntry(e) && e.channelId === channelId);
@@ -186,28 +175,21 @@
   }
 
   function removeSettingsEntry(entry: SettingsEntry): void {
-    console.log("removeSettingsEntry", entry);
     settingsEntries = settingsEntries.filter(s => s.id !== entry.id);
-    updateFilter();
   }
 
   function handleGroupDndConsider(group: ChannelGroupEntry, e: CustomEvent<DndEvent>): void {
-    console.log("handleGroupDndConsider", group, e);
     if (e.detail.info.trigger === TRIGGERS.DRAG_STARTED) {
       draggedEntry = group.channels.find(c => c.id === e.detail.info.id);
-      startAutoScroll();
     }
     group.channels = e.detail.items as ChannelEntry[];
   }
 
   function handleGroupDndFinalize(group: ChannelGroupEntry, e: CustomEvent<DndEvent>): void {
-    console.log("handleGroupDndFinalize", group, e);
     group.channels = e.detail.items as ChannelEntry[];
-    updateFilter();
   }
 
   function groupDropDisabled(entry: ChannelGroupEntry): boolean {
-    console.log("groupDropDisabled", entry);
     if (draggedEntry && isChannelEntry(draggedEntry)) {
       const channelId = draggedEntry.channelId;
       return entry.channels.some(c => !isShadowItem(c) && c.channelId === channelId);
@@ -217,64 +199,11 @@
   }
 
   function removeGroupEntry(entry: ChannelGroupEntry, child: ChannelEntry): void {
-    console.log("removeGroupEntry", entry, child);
     entry.channels = entry.channels.filter(s => s.id !== child.id);
-    updateFilter();
   }
 
   function keyClick(e: KeyboardEvent): boolean {
-    console.log("keyClick", e);
     return e.key === "Enter" || e.key === " ";
-  }
-
-  /*
-   * Auto-scroll code
-   */
-
-  let deckElement: HTMLDivElement;
-  let deckBounds: DOMRect;
-  const scrollOffset = 32;
-  const duration = 100;
-  const autoScroll = tweened(0, {duration: 2 * duration});
-  let autoScrollInterval: NodeJS.Timeout | string | number | undefined;
-  let autoScrollSyncTimeout: NodeJS.Timeout | string | number | undefined;
-
-  onDestroy(autoScroll.subscribe(value => deckElement && (deckElement.scrollTop = value)));
-
-  function startAutoScroll(): void {
-    if (!autoScrollInterval) {
-      deckBounds = deckElement.getBoundingClientRect();
-      autoScrollInterval = setInterval(updateAutoScroll, duration);
-    }
-  }
-
-  function updateAutoScroll(): void {
-    const draggedElement = document.getElementById("dnd-action-dragged-el");
-    if (draggedElement) {
-      const top =
-        parseFloat(draggedElement.style.top.slice(0, -2)) +
-        parseFloat(draggedElement.style.transform.split(", ")[1].slice(0, -2));
-      const bottom = top + parseFloat(draggedElement.style.height.slice(0, -2));
-      if (bottom + scrollOffset >= deckBounds.bottom) {
-        autoScroll.update(value => clampToContainer(value + bottom + scrollOffset - deckBounds.bottom));
-      } else if (top - scrollOffset <= deckBounds.top) {
-        autoScroll.update(value => clampToContainer(value + top - scrollOffset - deckBounds.top));
-      }
-    } else {
-      clearInterval(autoScrollInterval);
-      autoScrollInterval = undefined;
-    }
-  }
-
-  function clampToContainer(value: number): number {
-    return Math.max(0, Math.min(value, deckElement.scrollHeight - deckElement.clientHeight));
-  }
-
-  function autoScrollSync(): void {
-    clearTimeout(autoScrollSyncTimeout);
-    autoScrollSyncTimeout = setTimeout(() => {
-      autoScroll.set(deckElement.scrollTop, {duration: 0});
-    }, duration);
   }
 
   function isShadowItem(obj: object): boolean {
@@ -325,7 +254,7 @@
             <Center>Subscriptions</Center>
           </div>
           <div class="y-scroll mb-2 h-[calc(100%-2rem)] w-full overflow-y-auto">
-            {#await initEntries(editorVisible)}
+            {#await initSubscriptions(editorVisible)}
               <Center><Spinner /></Center>
             {:then}
               <div
@@ -360,10 +289,7 @@
           <div class="h-6 w-full">
             <Center>Deck</Center>
           </div>
-          <div
-            class="y-scroll mb-2 h-[calc(100%-2rem)] w-full overflow-y-auto"
-            bind:this={deckElement}
-            onscroll={autoScrollSync}>
+          <div class="y-scroll mb-2 h-[calc(100%-2rem)] w-full overflow-y-auto">
             {#if settingsEntries === undefined}
               <Center><Spinner /></Center>
             {:else}
