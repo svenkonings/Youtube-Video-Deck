@@ -185,7 +185,7 @@
   <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <div id="player" class="mx-auto" tabindex="0"></div>
   {#if currentVideo && !playerPiP}
-    <div class="rounded-b-2xl bg-neutral-800 p-1">
+    <div class="rounded-b-2xl bg-neutral-800 p-1 wrap-anywhere">
       <Description videoId={currentVideo} />
       <Comments videoId={currentVideo} />
     </div>
