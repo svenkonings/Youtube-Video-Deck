@@ -8,9 +8,9 @@ export type Channel = {
   /** The Channel ID without the UC prefix */
   readonly channelId: string;
   /** The title of the channel */
-  readonly title: string;
+  title: string;
   /** The default thumbnail of the channel */
-  readonly thumbnailUrl: string;
+  thumbnailUrl: string;
   /** The playlists for this channel */
   playlists: Playlist[];
 };

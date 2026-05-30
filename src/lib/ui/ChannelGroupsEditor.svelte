@@ -57,6 +57,7 @@
     // Only load subscriptions after opening editor
     if (editorVisible && subscriptionEntries === undefined) {
       const subscriptions = await loadSubscriptions();
+      await updateChannels(subscriptions);
       subscriptionEntries = subscriptions.map(s => ChannelEntry(nextId, s));
     }
   }
@@ -65,6 +66,53 @@
     const response = await fetch("/api/subscriptions");
     if (!response.ok) throw await responseToErrorMessage(response);
     return await response.json();
+  }
+
+  async function updateChannels(subscriptions: Channel[]): Promise<void> {
+    const subscriptionMap = new Map(subscriptions.map(s => [s.channelId, s]));
+    let changed = false;
+
+    let i = 0;
+    while (i < channelGroups.length) {
+      const channelGroup = channelGroups[i];
+      // If this group has no channels to begin with, continue to the next group
+      if (channelGroup.channels.length === 0) {
+        i++;
+        continue;
+      }
+      let j = 0;
+      while (j < channelGroup.channels.length) {
+        const channel = channelGroup.channels[j];
+        const subscription = subscriptionMap.get(channel.channelId);
+        if (subscription === undefined) {
+          // No longer subscribed to this channel, remove it
+          channelGroup.channels.splice(j, 1);
+          changed = true;
+        } else {
+          if (channel.title !== subscription.title) {
+            channel.title = subscription.title;
+            changed = true;
+          }
+          if (channel.thumbnailUrl !== subscription.thumbnailUrl) {
+            channel.thumbnailUrl = subscription.thumbnailUrl;
+            changed = true;
+          }
+          j++;
+        }
+      }
+      // No more channels in group after deletion, remove channel group
+      if (channelGroup.channels.length === 0) {
+        channelGroups.splice(i, 1);
+        changed = true;
+      } else {
+        i++;
+      }
+    }
+
+    // Store updated channels in database
+    if (changed) {
+      await saveChannelGroups();
+    }
   }
 
   function filterSubscriptions(
@@ -102,17 +150,21 @@
     }
   }
 
+  async function saveChannelGroups(): Promise<void> {
+    channelGroups = settingsEntries.map(e => settingsEntryToChannelGroup(e));
+    const response = await fetch("/api/settings", {
+      method: "PUT",
+      body: JSON.stringify({channelGroups}),
+      headers: {"content-type": "application/json"},
+    });
+    if (!response.ok) throw await responseToErrorMessage(response);
+  }
+
   async function save(e: MouseEvent): Promise<void> {
     const button = e.target as HTMLButtonElement;
     button.disabled = true;
     try {
-      channelGroups = settingsEntries.map(e => settingsEntryToChannelGroup(e));
-      const response = await fetch("/api/settings", {
-        method: "PUT",
-        body: JSON.stringify({channelGroups}),
-        headers: {"content-type": "application/json"},
-      });
-      if (!response.ok) throw await responseToErrorMessage(response);
+      await saveChannelGroups();
       hideEditor();
     } finally {
       button.disabled = false;
@@ -120,7 +172,10 @@
   }
 
   function closeEditor(): void {
-    settingsEntries = channelGroups.map(c => SettingsEntry(nextId, c));
+    settingsEntries = channelGroups.map(c => {
+      const settingsEntry = $state(SettingsEntry(nextId, c));
+      return settingsEntry;
+    });
     hideEditor();
   }
 
