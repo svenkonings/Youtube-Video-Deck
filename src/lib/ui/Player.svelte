@@ -17,7 +17,6 @@
 
   import {faClone, faXmark} from "@fortawesome/free-solid-svg-icons";
   import {Fa} from "svelte-fa";
-  import {self} from "svelte/legacy";
 
   enum PlayerInitState {
     UNINITIALISED,
@@ -114,11 +113,11 @@
     }
   }
 
-  function resizePlayer() {
+  function resizePlayer(): void {
     if (player) player.setSize(...calcPlayerSize());
   }
 
-  function togglePiP() {
+  function togglePiP(): void {
     if (playerPiP) {
       backgroundVisible = true;
       playerVisible = true;
@@ -131,7 +130,7 @@
     resizePlayer();
   }
 
-  function hide() {
+  function hide(): void {
     playerPiP = false;
     playerVisible = false;
     backgroundVisible = false;
@@ -143,6 +142,7 @@
       if (!playerPiP) backgroundVisible = true;
       if (!playerInput.loading) {
         play(playerInput);
+        playerInput = undefined;
       }
     }
   });
@@ -160,7 +160,7 @@
 <div
   class="fixed inset-0 z-10 hidden bg-black/80"
   {@attach fade(() => backgroundVisible && !isEditorVisible())}
-  onclick={self(hide)}>
+  onclick={hide}>
 </div>
 <div
   class="fixed top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
