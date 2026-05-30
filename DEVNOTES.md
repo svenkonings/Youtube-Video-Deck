@@ -1,16 +1,30 @@
+# TODO
+
+- Edit playlists
+
+# Future feature ideas
+
+- Manage queue
+- Manage watch later
+- Change video sorting
+- Custom playlists
+- Custom channels
+- Manage watched videos
+- Hide/skip watched videos
+- Like/dislike/comment on videos
+- Search Deck for subscriptions/videos
+- Search YouTube
+- Manage subscriptions
+- Manage playlists
+
 # Potential improvements
 
 - Reuse animation after loading from old version
-- Fix sorting imports
 - Add support for Youtube Lounge API
 - Apply transitions where applicable
 - Check screen reader support
-- Improve editor loading animation on save
-  - Also include loading new subscription groups
-- Add ripple effect to buttons
-  - https://css-tricks.com/how-to-recreate-the-ripple-effect-of-material-design-buttons/
-- Limit refresh time of cached requests
-- Performance optimization with https://github.com/Skayo/svelte-tiny-virtual-list
+- Add backend cache for Youtube API
+- Performance optimization with virtual lists
 - Scroll per horizontal item (on small screens)
 - Editor button controls
   - Allow selecting element in right-side of editor
@@ -25,18 +39,3 @@
 
 - Requires loading entire watched videos playlist
   - Mark (previously) watched videos
-
-# Future feature ideas
-
-- Small player + manage queue
-- Add playlists to deck
-- Manage watched videos
-- Hide/skip watched videos
-- Change video sorting
-- Show description/comments
-- Like/dislike/comment on videos
-- Search Deck for subscriptions/videos
-- Search YouTube
-- Manage subscriptions
-- Manage playlists
-- Manage watch later

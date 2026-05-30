@@ -1,35 +1,34 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
+  import {enhance} from "$app/forms";
+  import {resolve} from "$app/paths";
 
   import Center from "$lib/ui/components/Center.svelte";
   import PrimaryButton from "$lib/ui/components/PrimaryButton.svelte";
+  import {showEditor} from "$lib/util/shared.svelte";
 
-  import { getContext } from "svelte";
-  import type { Writable } from "svelte/store";
+  type Props = {isSignedIn: boolean};
 
-  export let isSignedIn: boolean;
-
-  const editorVisible: Writable<boolean | undefined> = getContext("editorVisible");
-
-  function showEditor() {
-    $editorVisible = true;
-  }
+  let {isSignedIn}: Props = $props();
 </script>
 
-<header class="w-full h-12">
+<header class="h-12 w-full">
   <Center>
-    <a class="font-extrabold" href={"#"}>YouTube Video Deck</a>
-    <div slot="before" class="float-left p-1">
-      {#if $editorVisible !== undefined}
-        <PrimaryButton class="w-20 m-1" on:click={showEditor}>Edit</PrimaryButton>
-      {/if}
-    </div>
-    <div slot="after" class="float-right p-1">
+    <a class="font-extrabold" href={resolve("/")}>YouTube Video Deck</a>
+    {#snippet before()}
       {#if isSignedIn}
-        <form method="POST" action="?/logout" use:enhance>
-          <PrimaryButton type="submit" class="w-20 m-1">Sign out</PrimaryButton>
-        </form>
+        <div class="float-left p-1">
+          <PrimaryButton class="m-1 w-20" onclick={showEditor}>Edit</PrimaryButton>
+        </div>
       {/if}
-    </div>
+    {/snippet}
+    {#snippet after()}
+      {#if isSignedIn}
+        <div class="float-right p-1">
+          <form method="POST" action="?/logout" use:enhance>
+            <PrimaryButton type="submit" class="m-1 w-20">Sign out</PrimaryButton>
+          </form>
+        </div>
+      {/if}
+    {/snippet}
   </Center>
 </header>

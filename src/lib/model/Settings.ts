@@ -1,25 +1,30 @@
-import type { SubscriptionGroup } from "$lib/model/SubscriptionGroup";
+import type {ChannelGroup} from "$lib/model/ChannelGroup";
 
+/**
+ * The settings for the logged in user.
+ * The settings contain the channel groups the user has configured.
+ */
 export type Settings = {
-  subscriptionGroups: SubscriptionGroupSettings[];
+  /** The channel groups that should be displayed on the deck */
+  channelGroups: ChannelGroup[];
+  /**
+   * These are for backwards compatibility only,
+   * subscriptionGroups have been migrated to channelGroups.
+   */
+  subscriptionGroups?: SubscriptionGroupSettings[];
 };
 
-export type SubscriptionGroupSettings = {
-  name: string;
-  expanded: boolean;
-  subscriptionIds: string[];
-};
+/**
+ * These are for backwards compatibility only,
+ * SubscriptionGroupSettings have been migrated to ChannelGroup.
+ */
+export type SubscriptionGroupSettings = {name: string; expanded: boolean; subscriptionIds: string[]};
 
-export function Settings(subscriptionGroups: SubscriptionGroup[] = []): Settings {
-  return {
-    subscriptionGroups: subscriptionGroups.map(SubscriptionGroupSettings),
-  };
-}
-
-export function SubscriptionGroupSettings(subscriptionGroup: SubscriptionGroup): SubscriptionGroupSettings {
-  return {
-    name: subscriptionGroup.name,
-    expanded: subscriptionGroup.expanded,
-    subscriptionIds: subscriptionGroup.subscriptions.map(s => s.subscription.channelId),
-  };
+/**
+ * Create settings based on the provided channel groups.
+ * @param channelGroups the provided channel groups, empty by default
+ * @returns the created settings
+ */
+export function Settings(channelGroups: ChannelGroup[] = []): Settings {
+  return {channelGroups};
 }

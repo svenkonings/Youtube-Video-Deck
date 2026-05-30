@@ -1,10 +1,10 @@
-import type { RequestHandler } from "./$types";
+import type {RequestHandler} from "./$types";
 
-import { loadDescription } from "$lib/server/youtube";
+import {loadDescription} from "$lib/server/youtube";
 
-import { error, text } from "@sveltejs/kit";
+import {error, text} from "@sveltejs/kit";
 
-export const GET: RequestHandler = async ({ locals, url }) => {
+export const GET: RequestHandler = async ({locals, url}) => {
   if (!locals.user) {
     throw error(401, "User not logged in");
   }

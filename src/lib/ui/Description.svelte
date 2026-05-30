@@ -1,13 +1,11 @@
 <script lang="ts">
   import Spinner from "$lib/ui/components/Spinner.svelte";
-  import { objectToErrorMessage, responseToErrorMessage } from "$lib/util/error";
+  import {objectToErrorMessage, responseToErrorMessage} from "$lib/util/error";
 
-  export let videoId: string;
-  let descriptionPromise: Promise<string>;
+  type Props = {videoId: string};
 
-  $: if (videoId) {
-    descriptionPromise = loadDescription(videoId);
-  }
+  let {videoId}: Props = $props();
+  let descriptionPromise: Promise<string> = $derived(loadDescription(videoId));
 
   async function loadDescription(videoId: string): Promise<string> {
     let url = `/api/description?videoId=${videoId}`;
@@ -17,12 +15,12 @@
   }
 </script>
 
-<div class="bg-neutral-700 m-2 p-2 rounded-2xl">
+<div class="m-2 rounded-2xl bg-neutral-700 p-2">
   {#await descriptionPromise}
     <Spinner text="Loading description…" />
   {:then description}
     <span class="whitespace-pre-wrap">{description}</span>
   {:catch error}
-    <code class="text-red-500 whitespace-pre-wrap">{objectToErrorMessage(error)}</code>
+    <code class="whitespace-pre-wrap text-red-500">{objectToErrorMessage(error)}</code>
   {/await}
 </div>

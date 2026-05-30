@@ -1,14 +1,16 @@
 <script lang="ts">
-  export let text = "Loading…";
+  type Props = {text?: string};
+
+  let {text = "Loading…"}: Props = $props();
 </script>
 
 <div class="text-center">
-  <span class="loader" />
+  <span class="loader"></span>
   <br />
   <span class="font-extrabold">{text}</span>
 </div>
 
-<style lang="postcss">
+<style>
   .loader {
     width: 48px;
     height: 48px;

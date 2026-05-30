@@ -1,4 +1,4 @@
-import type { CommentSnippet, CommentThreadListResponse, YTComment } from "$lib/types/google";
+import type {YTComment, YTCommentSnippet, YTCommentThreadListResponse} from "$lib/types/google";
 
 export type Comment = {
   readonly authorDisplayName: string;
@@ -11,13 +11,7 @@ export type Comment = {
   readonly replies: Comment[];
 };
 
-export function Comments(commentThreads: CommentThreadListResponse): Comment[] {
-  return commentThreads.items.map(commentThread =>
-    Comment(commentThread.snippet.topLevelComment.snippet, commentThread.replies?.comments),
-  );
-}
-
-export function Comment(snippet: CommentSnippet, replies?: YTComment[]): Comment {
+export function Comment(snippet: YTCommentSnippet, replies?: YTComment[]): Comment {
   return {
     authorDisplayName: snippet.authorDisplayName,
     authorProfileImageUrl: snippet.authorProfileImageUrl,
@@ -28,4 +22,10 @@ export function Comment(snippet: CommentSnippet, replies?: YTComment[]): Comment
     updatedAt: snippet.updatedAt !== snippet.publishedAt ? snippet.updatedAt : undefined,
     replies: replies ? replies.map(reply => Comment(reply.snippet)) : [],
   };
+}
+
+export function Comments(commentThreads: YTCommentThreadListResponse): Comment[] {
+  return commentThreads.items.map(commentThread =>
+    Comment(commentThread.snippet.topLevelComment.snippet, commentThread.replies?.comments),
+  );
 }
