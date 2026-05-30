@@ -47,6 +47,7 @@
   } from "svelte-dnd-action";
   import Fa, {FaLayers} from "svelte-fa";
   import {flip} from "svelte/animate";
+  import {slide} from "svelte/transition";
 
   type Props = {channelGroups: ChannelGroup[]};
 
@@ -372,7 +373,8 @@
                             flipDurationMs,
                           }}
                           onconsider={e => handleGroupDndConsider(entry, e)}
-                          onfinalize={e => handleGroupDndFinalize(entry, e)}>
+                          onfinalize={e => handleGroupDndFinalize(entry, e)}
+                          transition:slide>
                           {#each entry.channels as child (child.id)}
                             <div
                               class="m-1 w-[calc(100%-0.5rem)] rounded-2xl bg-neutral-700 p-0.5"
