@@ -54,7 +54,12 @@
 
   let idCounter: number = 0;
   let subscriptionEntries: ChannelEntry[] | undefined = $state();
-  let settingsEntries: SettingsEntry[] = $derived(channelGroups.map(c => SettingsEntry(nextId, c)));
+  let settingsEntries: SettingsEntry[] = $derived(
+    channelGroups.map(c => {
+      const settingsEntry = $state(SettingsEntry(nextId, c));
+      return settingsEntry;
+    }),
+  );
   let searchInput: string = $state("");
   let hideAddedSubscriptions = $state(true);
   let filteredSubscriptions: ChannelEntry[] = $derived(

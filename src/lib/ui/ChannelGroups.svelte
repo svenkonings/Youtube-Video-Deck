@@ -19,7 +19,7 @@
 
   type Props = {channelGroups: ChannelGroupModel[]};
 
-  let {channelGroups}: Props = $props();
+  let {channelGroups = $bindable()}: Props = $props();
 </script>
 
 {#if channelGroups.length === 0}
@@ -33,7 +33,7 @@
     <HorizontalScroll>
       <div class="h-full w-max">
         {#each channelGroups as channelGroup, index (channelGroup)}
-          <ChannelGroup {channelGroup} {index} />
+          <ChannelGroup bind:channelGroup={channelGroups[index]} {index} />
         {/each}
       </div>
     </HorizontalScroll>

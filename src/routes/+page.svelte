@@ -24,7 +24,7 @@
 <Header isSignedIn={data.isSignedIn} />
 <section class="h-[calc(100%-3rem)] w-full">
   {#if data.isSignedIn}
-    <App settings={data.settings} />
+    <App bind:settings={data.settings} />
   {:else}
     <LoginScreen />
   {/if}

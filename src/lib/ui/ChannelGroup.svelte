@@ -41,7 +41,7 @@
     groupPlaylist?: GroupPlaylist; // playlistId in case of sinlge playlist, custom list of video ids otherwise
   };
 
-  let {channelGroup, index}: Props = $props();
+  let {channelGroup = $bindable(), index}: Props = $props();
   // Reset when channelGroup changes
   let {videos, playlistIndices, groupPlaylist}: DerivedProps = $derived.by(() => {
     const videos: Video[] = $state([]);

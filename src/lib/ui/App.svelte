@@ -6,9 +6,9 @@
 
   type Props = {settings: Settings};
 
-  let {settings}: Props = $props();
+  let {settings = $bindable()}: Props = $props();
 </script>
 
-<ChannelGroups channelGroups={settings.channelGroups} />
+<ChannelGroups bind:channelGroups={settings.channelGroups} />
 <Player />
 <ChannelGroupsEditor bind:channelGroups={settings.channelGroups} />
