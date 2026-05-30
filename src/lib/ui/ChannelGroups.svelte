@@ -21,8 +21,8 @@
   <div class="h-[calc(100%-6px)] w-full" {@attach fade(() => !isEditorVisible())}>
     <HorizontalScroll>
       <div class="h-full w-max">
-        {#each channelGroups as channelGroup, index (channelGroup)}
-          <ChannelGroup bind:channelGroup={channelGroups[index]} {index} />
+        {#each channelGroups as channelGroup, groupIndex (channelGroup)}
+          <ChannelGroup bind:channelGroup={channelGroups[groupIndex]} {groupIndex} />
         {/each}
       </div>
     </HorizontalScroll>

@@ -1,4 +1,4 @@
-import type {Channel} from "$lib/model/Channel";
+import {copyChannel, type Channel} from "$lib/model/Channel";
 import {channelGroupFromChannel, copyChannelGroup, type ChannelGroup} from "$lib/model/ChannelGroup";
 
 export type ChannelEntry = Channel & {id: string};
@@ -23,7 +23,7 @@ export function SettingsEntry(nextId: () => string, channelGroup: ChannelGroup):
 
 export function settingsEntryToChannelGroup(entry: SettingsEntry): ChannelGroup {
   if (isChannelEntry(entry)) {
-    return channelGroupFromChannel(entry);
+    return channelGroupFromChannel(copyChannel(entry));
   } else {
     return copyChannelGroup(entry);
   }

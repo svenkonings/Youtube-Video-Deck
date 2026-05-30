@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+.position-area-bottom {
+  position-area: bottom;
+}
+
 .fadeIn {
   opacity: 1;
   transition: opacity 300ms;

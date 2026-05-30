@@ -28,7 +28,7 @@ export function ChannelGroup(name: string, expanded: boolean, channels: Channel[
  * @returns the created group
  */
 export function channelGroupFromChannel(channel: Channel): ChannelGroup {
-  return ChannelGroup(channel.title, false, [copyChannel(channel)]);
+  return ChannelGroup(channel.title, false, [channel]);
 }
 
 /**

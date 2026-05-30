@@ -1,7 +1,3 @@
-# TODO
-
-- Edit playlists
-
 # Future feature ideas
 
 - Manage queue

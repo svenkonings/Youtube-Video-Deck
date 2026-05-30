@@ -15,6 +15,7 @@
   import {channelGroupFromChannel, type ChannelGroup} from "$lib/model/ChannelGroup";
   import {getPlaylistId} from "$lib/model/Playlist";
   import {PlaylistCache} from "$lib/model/PlaylistCache";
+  import {PlaylistFilter, playlistFilterToPlaylists} from "$lib/model/PlaylistFilter";
   import type {Video} from "$lib/model/Video";
   import type {PlayerInput} from "$lib/types/PlayerInput";
   import type {VideosResponse} from "$lib/types/VideosResponse";
@@ -25,7 +26,7 @@
   import VideoCard from "$lib/ui/VideoCard.svelte";
   import {objectToErrorMessage, responseToErrorMessage} from "$lib/util/error";
 
-  import {faCircle, faCompressAlt, faExpandAlt, faPlay, faUsers} from "@fortawesome/free-solid-svg-icons";
+  import {faCircle, faCompressAlt, faExpandAlt, faFilter, faPlay, faUsers} from "@fortawesome/free-solid-svg-icons";
   import Fa, {FaLayers} from "svelte-fa";
   import {inview} from "svelte-inview";
   import {backOut} from "svelte/easing";
@@ -33,7 +34,7 @@
 
   const maxPlaylistLength = 200;
 
-  type Props = {channelGroup: ChannelGroup; index: number};
+  type Props = {channelGroup: ChannelGroup; groupIndex: number; channelIndex?: number};
   type GroupPlaylist = Pick<PlayerInput, "playlistId" | "customPlaylist">;
   type DerivedProps = {
     videos: Video[]; // The merged list of videos from all active playlists
@@ -41,7 +42,7 @@
     groupPlaylist?: GroupPlaylist; // playlistId in case of sinlge playlist, custom list of video ids otherwise
   };
 
-  let {channelGroup = $bindable(), index}: Props = $props();
+  let {channelGroup = $bindable(), groupIndex, channelIndex = 0}: Props = $props();
   // Reset when channelGroup changes
   let {videos, playlistIndices, groupPlaylist}: DerivedProps = $derived.by(() => {
     const videos: Video[] = $state([]);
@@ -55,6 +56,26 @@
     }
     return {videos, playlistIndices};
   });
+
+  let playlistFilter = $derived.by(() => {
+    if (channelGroup.channels.length === 1) {
+      const filter = $state(PlaylistFilter(channelGroup.channels[0].playlists));
+      return filter;
+    } else {
+      return undefined;
+    }
+  });
+
+  function updatePlaylist(): void {
+    if (playlistFilter) {
+      channelGroup.channels[0].playlists = playlistFilterToPlaylists(playlistFilter);
+      fetch("/api/settings/channelGroups/channels/playlists", {
+        method: "PUT",
+        body: JSON.stringify({groupIndex, channelIndex, playlists: channelGroup.channels[0].playlists}),
+        headers: {"content-type": "application/json"},
+      });
+    }
+  }
 
   function allVideosLoaded(): boolean {
     return channelGroup.channels.every(channel =>
@@ -125,7 +146,7 @@
     channelGroup.expanded = !channelGroup.expanded;
     fetch("/api/settings/channelGroups/expanded", {
       method: "PUT",
-      body: JSON.stringify({groupIndex: index, expanded: channelGroup.expanded}),
+      body: JSON.stringify({groupIndex, expanded: channelGroup.expanded}),
       headers: {"content-type": "application/json"},
     });
   }
@@ -174,7 +195,7 @@
 </script>
 
 {#snippet header()}
-  <p class="mb-1 h-8 text-center font-bold">
+  <div class="mb-1 h-8 text-center font-bold">
     <!-- Show icon and link for single channel, show group icon and name otherwise -->
     {#if channelGroup.channels.length === 1}
       <a href="https://www.youtube.com/channel/UC{channelGroup.channels[0].channelId}">
@@ -201,8 +222,46 @@
       </span>
     {/if}
 
-    <!-- Show expand/collapse button when there are multiple channels -->
-    {#if channelGroup.channels.length > 1}
+    {#if playlistFilter}
+      <!-- Show filter button if there is a single channel -->
+      <button
+        type="button"
+        class="float-left -mr-8 h-8 w-8 cursor-pointer px-2"
+        title="Filter playlists"
+        popovertarget="filterPlaylists{groupIndex}{channelIndex}">
+        <Fa icon={faFilter} />
+      </button>
+      <div
+        id="filterPlaylists{groupIndex}{channelIndex}"
+        popover
+        class="text-left position-area-bottom p-2 rounded-xl text-white bg-neutral-900 border border-[#ff3d00]">
+        <label class="block">
+          <input type="checkbox" bind:checked={playlistFilter.videos} onchange={updatePlaylist} />
+          Videos
+        </label>
+        <label class="block">
+          <input type="checkbox" bind:checked={playlistFilter.liveStreams} onchange={updatePlaylist} />
+          Livestreams
+        </label>
+        <label class="block">
+          <input type="checkbox" bind:checked={playlistFilter.shorts} onchange={updatePlaylist} />
+          Shorts
+        </label>
+        <label class="block">
+          <input type="checkbox" bind:checked={playlistFilter.membersOnlyVideos} onchange={updatePlaylist} />
+          Members videos
+        </label>
+        <label class="block">
+          <input type="checkbox" bind:checked={playlistFilter.membersOnlyLiveStreams} onchange={updatePlaylist} />
+          Members livestreams
+        </label>
+        <label class="block">
+          <input type="checkbox" bind:checked={playlistFilter.membersOnlyShorts} onchange={updatePlaylist} />
+          Members shorts
+        </label>
+      </div>
+    {:else if channelGroup.channels.length > 1}
+      <!-- Show expand/collapse button when there are multiple channels -->
       {#if channelGroup.expanded}
         <button
           type="button"
@@ -239,7 +298,7 @@
         </button>
       {/if}
     {/if}
-  </p>
+  </div>
 {/snippet}
 
 {#if channelGroup.expanded && channelGroup.channels.length > 1}
@@ -248,8 +307,8 @@
     class="mr-1 ml-1 inline-block h-full w-max rounded-2xl bg-neutral-900 p-1 pb-4 align-top">
     {@render header()}
     <div class="h-[calc(100%-2.25rem)]">
-      {#each channelGroup.channels as channel (channel)}
-        <Self channelGroup={channelGroupFromChannel(channel)} {index} />
+      {#each channelGroup.channels as channel, channelIndex (channel)}
+        <Self channelGroup={channelGroupFromChannel(channel)} {groupIndex} {channelIndex} />
       {/each}
     </div>
   </div>
