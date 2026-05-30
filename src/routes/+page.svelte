@@ -7,6 +7,7 @@
   import Header from "$lib/ui/Header.svelte";
   import LoginScreen from "$lib/ui/LoginScreen.svelte";
 
+  // Clean URL after oauth redirect
   if (browser && window.location.search) {
     window.history.replaceState(null, "", window.location.pathname);
   }

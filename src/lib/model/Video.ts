@@ -1,4 +1,3 @@
-import type {Comment} from "$lib/model/Comment";
 import type {YTVideo} from "$lib/types/google";
 
 export type Video = {
@@ -12,7 +11,6 @@ export type Video = {
   readonly viewCount: string;
   readonly likeCount: string;
   readonly commentCount: string;
-  comments?: Comment[]; // Comments are loaded separately (undefined = not yet loaded)
 };
 
 export function Video(video: YTVideo): Video {
