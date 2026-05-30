@@ -8,11 +8,11 @@
 
 <script lang="ts">
   import type {PlayerInput} from "$lib/types/PlayerInput";
-  import {isEditorVisible} from "$lib/ui/ChannelGroupsEditor.svelte";
   import Comments from "$lib/ui/Comments.svelte";
   import Spinner from "$lib/ui/components/Spinner.svelte";
   import Description from "$lib/ui/Description.svelte";
   import {fade} from "$lib/util/fade.svelte";
+  import {isEditorVisible} from "$lib/util/shared.svelte";
   import {trapFocus} from "$lib/util/trapFocus.svelte";
 
   import {faClone, faXmark} from "@fortawesome/free-solid-svg-icons";

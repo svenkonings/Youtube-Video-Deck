@@ -1,23 +1,3 @@
-<script module lang="ts">
-  import {hideChannels, showChannels} from "$lib/ui/ChannelGroups.svelte";
-
-  let editorVisible: boolean = $state(false);
-
-  export function openEditor(): void {
-    hideChannels(); // Hiding channels improves drag-and-drop performance
-    editorVisible = true;
-  }
-
-  export function isEditorVisible(): boolean {
-    return editorVisible;
-  }
-
-  export function closeEditor(): void {
-    editorVisible = false;
-    showChannels();
-  }
-</script>
-
 <script lang="ts">
   import type {Channel} from "$lib/model/Channel";
   import type {ChannelGroup} from "$lib/model/ChannelGroup";
@@ -34,6 +14,7 @@
   import Spinner from "$lib/ui/components/Spinner.svelte";
   import {responseToErrorMessage} from "$lib/util/error";
   import {fade} from "$lib/util/fade.svelte";
+  import {hideEditor, isEditorVisible} from "$lib/util/shared.svelte";
   import {trapFocus} from "$lib/util/trapFocus.svelte";
 
   import {faCircle, faCompressAlt, faExpandAlt, faTimesCircle, faUsers} from "@fortawesome/free-solid-svg-icons";
@@ -132,7 +113,7 @@
         headers: {"content-type": "application/json"},
       });
       if (!response.ok) throw await responseToErrorMessage(response);
-      closeEditor();
+      hideEditor();
     } finally {
       button.disabled = false;
     }
@@ -219,10 +200,7 @@
   }
 </script>
 
-<div
-  class="fixed inset-0 z-10 hidden bg-black/80"
-  {@attach fade(() => editorVisible)}
-  {@attach trapFocus(() => editorVisible)}>
+<div class="fixed inset-0 z-10 hidden bg-black/80" {@attach fade(isEditorVisible)} {@attach trapFocus(isEditorVisible)}>
   <div
     class="x-scroll absolute inset-y-0 left-1/2 w-full max-w-160 -translate-x-1/2 overflow-x-auto rounded-2xl bg-neutral-700">
     <div class="h-full w-full min-w-82">
@@ -258,7 +236,7 @@
             <Center>Subscriptions</Center>
           </div>
           <div class="y-scroll mb-2 h-[calc(100%-2rem)] w-full overflow-y-auto">
-            {#await initSubscriptions(editorVisible)}
+            {#await initSubscriptions(isEditorVisible())}
               <Center><Spinner /></Center>
             {:then}
               <div
@@ -423,13 +401,12 @@
         </div>
       </div>
       <div class="h-12 w-full">
-        <PrimaryButton class="float-left m-1 w-20" onclick={closeEditor}>Close</PrimaryButton>
+        <PrimaryButton class="float-left m-1 w-20" onclick={hideEditor}>Close</PrimaryButton>
         <div class="m-1 inline-block w-[calc(100%-11.5rem)]">
           <input
             type="text"
             class="w-[calc(100%-6rem)] rounded-l-2xl bg-neutral-800 p-1.5"
-            bind:value={groupNameInput} /><!--
-       --><PrimaryButton class="w-24 rounded-l-none" onclick={addGroup}
+            bind:value={groupNameInput} /><PrimaryButton class="w-24 rounded-l-none" onclick={addGroup}
             >Add group</PrimaryButton>
         </div>
         <PrimaryButton class="float-right m-1 w-20" onclick={save}>Save</PrimaryButton>
