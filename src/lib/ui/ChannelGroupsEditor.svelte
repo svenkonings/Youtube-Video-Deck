@@ -119,6 +119,11 @@
     }
   }
 
+  function closeEditor(): void {
+    settingsEntries = channelGroups.map(c => SettingsEntry(nextId, c));
+    hideEditor();
+  }
+
   /*
    * Drag and drop code
    */
@@ -401,7 +406,7 @@
         </div>
       </div>
       <div class="h-12 w-full">
-        <PrimaryButton class="float-left m-1 w-20" onclick={hideEditor}>Close</PrimaryButton>
+        <PrimaryButton class="float-left m-1 w-20" onclick={closeEditor}>Close</PrimaryButton>
         <div class="m-1 inline-block w-[calc(100%-11.5rem)]">
           <input
             type="text"
