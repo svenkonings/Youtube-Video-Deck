@@ -1,5 +1,3 @@
-<svelte:options runes />
-
 <script module lang="ts">
   // eslint-disable-next-line svelte/prefer-svelte-reactivity
   const playlistCache: Map<string, PlaylistCache> = new Map<string, PlaylistCache>();

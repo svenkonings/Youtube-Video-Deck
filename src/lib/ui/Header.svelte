@@ -1,5 +1,3 @@
-<svelte:options runes />
-
 <script lang="ts">
   import {enhance} from "$app/forms";
   import {resolve} from "$app/paths";

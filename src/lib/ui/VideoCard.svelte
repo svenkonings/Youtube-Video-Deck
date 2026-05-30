@@ -1,5 +1,3 @@
-<svelte:options runes />
-
 <script lang="ts">
   import type {Video} from "$lib/model/Video";
   import {play} from "$lib/ui/Player.svelte";

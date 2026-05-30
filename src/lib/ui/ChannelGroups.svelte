@@ -1,5 +1,3 @@
-<svelte:options runes />
-
 <script module lang="ts">
   let channelsVisible: boolean = $state(true);
 

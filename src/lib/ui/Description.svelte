@@ -1,5 +1,3 @@
-<svelte:options runes />
-
 <script lang="ts">
   import Spinner from "$lib/ui/components/Spinner.svelte";
   import {objectToErrorMessage, responseToErrorMessage} from "$lib/util/error";

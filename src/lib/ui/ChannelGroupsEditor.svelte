@@ -1,5 +1,3 @@
-<svelte:options runes />
-
 <script module lang="ts">
   import {hideChannels, showChannels} from "$lib/ui/ChannelGroups.svelte";
 

@@ -1,5 +1,3 @@
-<svelte:options runes />
-
 <script lang="ts">
   import type {Comment} from "$lib/model/Comment";
   import CommentCard from "$lib/ui/CommentCard.svelte";

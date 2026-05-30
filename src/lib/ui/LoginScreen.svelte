@@ -1,5 +1,3 @@
-<svelte:options runes />
-
 <script lang="ts">
   import Center from "$lib/ui/components/Center.svelte";
   import PrimaryButton from "$lib/ui/components/PrimaryButton.svelte";

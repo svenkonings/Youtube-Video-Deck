@@ -1,5 +1,3 @@
-<svelte:options runes />
-
 <script lang="ts">
   import {type Snippet} from "svelte";
   import {cubicOut} from "svelte/easing";

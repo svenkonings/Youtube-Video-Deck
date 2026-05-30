@@ -1,5 +1,3 @@
-<svelte:options runes />
-
 <script lang="ts">
   import type {Settings} from "$lib/model/Settings";
   import ChannelGroups from "$lib/ui/ChannelGroups.svelte";
