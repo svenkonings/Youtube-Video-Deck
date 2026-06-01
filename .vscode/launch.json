@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {"command": "npm run dev", "name": "Run development server", "request": "launch", "type": "node-terminal"},
+    {
+      "name": "Launch Integrated Browser",
+      "request": "launch",
+      "type": "editor-browser",
+      "url": "http://127.0.0.1:5173",
+      "webRoot": "${workspaceFolder}"
+    }
+  ]
+}

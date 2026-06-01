@@ -18,17 +18,13 @@
   import {faClone, faXmark} from "@fortawesome/free-solid-svg-icons";
   import {Fa} from "svelte-fa";
 
-  enum PlayerInitState {
-    UNINITIALISED,
-    INITIALISING,
-    INITIALISED,
-  }
+  type PlayerInitState = "UNINITIALISED" | "INITIALISING" | "INITIALISED";
 
   let backgroundVisible = $state(false);
   let playerVisible = $state(false);
   let playerPiP = $state(false);
   let player: YT.Player | undefined = $state();
-  let playerInitState = $state(PlayerInitState.UNINITIALISED);
+  let playerInitState: PlayerInitState = $state("UNINITIALISED");
   let currentVideo: string | undefined = $state();
 
   function calcPlayerSize(): [number, number] {
@@ -51,8 +47,8 @@
   }
 
   function play(input: PlayerInput, retries = 3): void {
-    if (playerInitState === PlayerInitState.UNINITIALISED) {
-      playerInitState = PlayerInitState.INITIALISING;
+    if (playerInitState === "UNINITIALISED") {
+      playerInitState = "INITIALISING";
       const [width, height] = calcPlayerSize();
       const playerArgs: YT.PlayerOptions = {
         width,
@@ -60,7 +56,7 @@
         events: {
           onReady: () => {
             console.log("playerReady");
-            playerInitState = PlayerInitState.INITIALISED;
+            playerInitState = "INITIALISED";
             if (!playerPiP) playerVisible = true;
           },
           onStateChange: state => {
@@ -98,9 +94,9 @@
         playerArgs.playerVars.playlist = input.customPlaylist.join(",");
       }
       player = new YT.Player("player", playerArgs);
-    } else if (playerInitState === PlayerInitState.INITIALISING) {
+    } else if (playerInitState === "INITIALISING") {
       setTimeout(() => play(input), 100);
-    } else if (playerInitState === PlayerInitState.INITIALISED) {
+    } else if (playerInitState === "INITIALISED") {
       if (!player) return;
       if (input.videoId) {
         player.loadVideoById(input.videoId);
@@ -148,7 +144,7 @@
   });
 
   $effect(() => {
-    if (playerInitState === PlayerInitState.INITIALISED && !backgroundVisible && !playerPiP) {
+    if (playerInitState === "INITIALISED" && !backgroundVisible && !playerPiP) {
       player?.stopVideo();
     }
   });

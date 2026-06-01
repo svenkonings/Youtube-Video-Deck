@@ -66,6 +66,8 @@
     }
   });
 
+  let allVideosLoaded = $state(false);
+
   function updatePlaylist(): void {
     if (playlistFilter) {
       channelGroup.channels[0].playlists = playlistFilterToPlaylists(playlistFilter);
@@ -77,12 +79,12 @@
     }
   }
 
-  function allVideosLoaded(): boolean {
-    return channelGroup.channels.every(channel =>
+  function updateAllVideosLoaded(): void {
+    allVideosLoaded = channelGroup.channels.every(channel =>
       channel.playlists.every(playlist => {
         const playlistId = getPlaylistId(channel, playlist);
         const playlistCache = getPlaylistCache(playlistId);
-        const playlistIndex = playlistIndices.get(playlistId);
+        const playlistIndex = playlistIndices.get(playlistId) ?? 0;
         return playlistCache.videos.length === playlistIndex && playlistCache.nextPageToken === false;
       }),
     );
@@ -129,6 +131,7 @@
       videos.push(nextVideo);
       playlistIndices.set(nextPlaylistId, nextIndex + 1);
     }
+    updateAllVideosLoaded();
   }
 
   async function loadPlaylist(playlistId: string, playlistCache: PlaylistCache): Promise<void> {
@@ -321,7 +324,7 @@
       {#each videos as video (video)}
         <VideoCard {video} />
       {/each}
-      {#if !allVideosLoaded()}
+      {#if !allVideosLoaded}
         {#if errorCount < 3}
           <div use:inview oninview_change={e => (inView = e.detail.inView)}>
             <Spinner />
