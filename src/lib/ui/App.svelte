@@ -3,6 +3,7 @@
   import ChannelGroups from "$lib/ui/ChannelGroups.svelte";
   import ChannelGroupsEditor from "$lib/ui/ChannelGroupsEditor.svelte";
   import Player from "$lib/ui/Player.svelte";
+  import {isEditorVisible} from "$lib/util/shared.svelte";
 
   type Props = {settings: Settings};
 
@@ -11,4 +12,6 @@
 
 <ChannelGroups bind:channelGroups={settings.channelGroups} />
 <Player />
-<ChannelGroupsEditor bind:channelGroups={settings.channelGroups} />
+{#if isEditorVisible()}
+  <ChannelGroupsEditor bind:channelGroups={settings.channelGroups} />
+{/if}

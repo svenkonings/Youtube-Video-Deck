@@ -1,5 +1,10 @@
-<script lang="ts">
+<script module lang="ts">
   import type {Channel} from "$lib/model/Channel";
+
+  let subscriptions: Channel[] | undefined;
+</script>
+
+<script lang="ts">
   import type {ChannelGroup} from "$lib/model/ChannelGroup";
   import {
     ChannelEntry,
@@ -13,7 +18,6 @@
   import PrimaryButton from "$lib/ui/components/PrimaryButton.svelte";
   import Spinner from "$lib/ui/components/Spinner.svelte";
   import {responseToErrorMessage} from "$lib/util/error";
-  import {fade} from "$lib/util/fade.svelte";
   import {hideEditor, isEditorVisible} from "$lib/util/shared.svelte";
   import {trapFocus} from "$lib/util/trapFocus.svelte";
 
@@ -28,7 +32,7 @@
   } from "svelte-dnd-action";
   import Fa, {FaLayers} from "svelte-fa";
   import {flip} from "svelte/animate";
-  import {slide} from "svelte/transition";
+  import {fade, slide} from "svelte/transition";
 
   type Props = {channelGroups: ChannelGroup[]};
 
@@ -36,12 +40,7 @@
 
   let idCounter: number = 0;
   let subscriptionEntries: ChannelEntry[] | undefined = $state();
-  let settingsEntries: SettingsEntry[] = $derived(
-    channelGroups.map(c => {
-      const settingsEntry = $state(SettingsEntry(nextId, c));
-      return settingsEntry;
-    }),
-  );
+  let settingsEntries: SettingsEntry[] = $state(channelGroups.map(c => SettingsEntry(nextId, c)));
   let searchInput: string = $state("");
   let hideAddedSubscriptions = $state(true);
   let filteredSubscriptions: ChannelEntry[] = $derived(
@@ -53,14 +52,14 @@
     return (idCounter++).toString(10);
   }
 
-  async function initSubscriptions(editorVisible: boolean): Promise<void> {
-    // Only load subscriptions after opening editor
-    if (editorVisible && subscriptionEntries === undefined) {
-      const subscriptions = await loadSubscriptions();
+  async function initSubscriptions(): Promise<void> {
+    if (subscriptions === undefined) {
+      subscriptions = await loadSubscriptions();
       await updateChannels(subscriptions);
-      subscriptionEntries = subscriptions.map(s => ChannelEntry(nextId, s));
     }
+    subscriptionEntries = subscriptions.map(s => ChannelEntry(nextId, s));
   }
+  initSubscriptions();
 
   async function loadSubscriptions(): Promise<Channel[]> {
     const response = await fetch("/api/subscriptions");
@@ -172,10 +171,6 @@
   }
 
   function closeEditor(): void {
-    settingsEntries = channelGroups.map(c => {
-      const settingsEntry = $state(SettingsEntry(nextId, c));
-      return settingsEntry;
-    });
     hideEditor();
   }
 
@@ -260,7 +255,7 @@
   }
 </script>
 
-<div class="fixed inset-0 z-10 hidden bg-black/80" {@attach fade(isEditorVisible)} {@attach trapFocus(isEditorVisible)}>
+<div class="fixed inset-0 z-10 bg-black/80" transition:fade={{duration: 300}} {@attach trapFocus(isEditorVisible)}>
   <div
     class="x-scroll absolute inset-y-0 left-1/2 w-full max-w-160 -translate-x-1/2 overflow-x-auto rounded-2xl bg-neutral-700">
     <div class="h-full w-full min-w-82">
@@ -296,9 +291,9 @@
             <Center>Subscriptions</Center>
           </div>
           <div class="y-scroll mb-2 h-[calc(100%-2rem)] w-full overflow-y-auto">
-            {#await initSubscriptions(isEditorVisible())}
+            {#if subscriptionEntries === undefined}
               <Center><Spinner /></Center>
-            {:then}
+            {:else}
               <div
                 class="mx-0.5 h-max min-h-[calc(100%-0.5rem)] w-[calc(100%-4px)] rounded-xl"
                 aria-label="Subscriptions"
@@ -324,7 +319,7 @@
                   </div>
                 {/each}
               </div>
-            {/await}
+            {/if}
           </div>
         </div>
         <div class="m-1 inline-block h-[calc(100%-0.5rem)] w-[calc(50%-0.65rem)] min-w-38 rounded-xl bg-neutral-800">

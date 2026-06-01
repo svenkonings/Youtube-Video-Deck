@@ -34,39 +34,41 @@
 
   const maxPlaylistLength = 200;
 
-  type Props = {channelGroup: ChannelGroup; groupIndex: number; channelIndex?: number};
+  type Props = {channelGroup: ChannelGroup; groupIndex: number; channelIndex?: number; resetParent?: () => void};
   type GroupPlaylist = Pick<PlayerInput, "playlistId" | "customPlaylist">;
-  type DerivedProps = {
-    videos: Video[]; // The merged list of videos from all active playlists
-    playlistIndices: Map<string, number>; // Mapping from playlistId to the index of the next video to be merged
-    groupPlaylist?: GroupPlaylist; // playlistId in case of sinlge playlist, custom list of video ids otherwise
-  };
 
-  let {channelGroup = $bindable(), groupIndex, channelIndex = 0}: Props = $props();
-  // Reset when channelGroup changes
-  let {videos, playlistIndices, groupPlaylist}: DerivedProps = $derived.by(() => {
-    const videos: Video[] = $state([]);
-    const playlistIndices = new Map<string, number>();
+  const {channelGroup = $bindable(), groupIndex, channelIndex = 0, resetParent}: Props = $props();
+  // The merged list of videos from all active playlists
+  let videos: Video[] = $state([]);
+  // Mapping from playlistId to the index of the next video to be merged
+  // eslint-disable-next-line svelte/prefer-svelte-reactivity
+  const playlistIndices = new Map<string, number>();
+  // Boolean indicating all videos for all active playlists have been loaded
+  let allVideosLoaded = $state(false);
+  // Contains the active playlists for a single channel
+  let playlistFilter: PlaylistFilter | undefined = $state();
+  // playlistId in case of sinlge playlist, custom list of video ids otherwise
+  let groupPlaylist: GroupPlaylist | undefined = $state();
+
+  function reset() {
+    videos = [];
+    playlistIndices.clear();
+    allVideosLoaded = false;
     if (channelGroup.channels.length === 1) {
       const channel = channelGroup.channels[0];
+      playlistFilter = PlaylistFilter(channel.playlists);
       if (channel.playlists.length === 1) {
         const playlist = channel.playlists[0];
-        return {videos, playlistIndices, groupPlaylist: {playlistId: playlist.playlistPrefix + channel.channelId}};
+        groupPlaylist = {playlistId: playlist.playlistPrefix + channel.channelId};
+      } else {
+        groupPlaylist = undefined;
       }
-    }
-    return {videos, playlistIndices};
-  });
-
-  let playlistFilter = $derived.by(() => {
-    if (channelGroup.channels.length === 1) {
-      const filter = $state(PlaylistFilter(channelGroup.channels[0].playlists));
-      return filter;
     } else {
-      return undefined;
+      playlistFilter = undefined;
     }
-  });
-
-  let allVideosLoaded = $state(false);
+    resetParent?.();
+  }
+  reset();
 
   function updatePlaylist(): void {
     if (playlistFilter) {
@@ -76,18 +78,8 @@
         body: JSON.stringify({groupIndex, channelIndex, playlists: channelGroup.channels[0].playlists}),
         headers: {"content-type": "application/json"},
       });
+      reset();
     }
-  }
-
-  function updateAllVideosLoaded(): void {
-    allVideosLoaded = channelGroup.channels.every(channel =>
-      channel.playlists.every(playlist => {
-        const playlistId = getPlaylistId(channel, playlist);
-        const playlistCache = getPlaylistCache(playlistId);
-        const playlistIndex = playlistIndices.get(playlistId) ?? 0;
-        return playlistCache.videos.length === playlistIndex && playlistCache.nextPageToken === false;
-      }),
-    );
   }
 
   async function loadCustomPlaylist(): Promise<void> {
@@ -134,6 +126,17 @@
     updateAllVideosLoaded();
   }
 
+  function updateAllVideosLoaded(): void {
+    allVideosLoaded = channelGroup.channels.every(channel =>
+      channel.playlists.every(playlist => {
+        const playlistId = getPlaylistId(channel, playlist);
+        const playlistCache = getPlaylistCache(playlistId);
+        const playlistIndex = playlistIndices.get(playlistId) ?? 0;
+        return playlistCache.videos.length === playlistIndex && playlistCache.nextPageToken === false;
+      }),
+    );
+  }
+
   async function loadPlaylist(playlistId: string, playlistCache: PlaylistCache): Promise<void> {
     const response = await fetch(
       "/api/videos?" +
@@ -169,7 +172,7 @@
   let lastError: unknown = $state();
 
   async function loadWhileInView() {
-    if (inView && errorCount < 3) {
+    if (channelGroup && inView && errorCount < 3) {
       await loadMore();
       setTimeout(loadWhileInView, 100);
     }
@@ -311,7 +314,7 @@
     {@render header()}
     <div class="h-[calc(100%-2.25rem)]">
       {#each channelGroup.channels as channel, channelIndex (channel)}
-        <Self channelGroup={channelGroupFromChannel(channel)} {groupIndex} {channelIndex} />
+        <Self channelGroup={channelGroupFromChannel(channel)} {groupIndex} {channelIndex} resetParent={reset} />
       {/each}
     </div>
   </div>
