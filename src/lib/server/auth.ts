@@ -4,21 +4,28 @@ import {User} from "$lib/server/model/User";
 import {env} from "$env/dynamic/private";
 
 import google from "@googleapis/youtube";
-import type {OAuth2Client} from "google-auth-library";
+import {CodeChallengeMethod, type CodeVerifierResults, type OAuth2Client} from "google-auth-library";
+
+let codes: CodeVerifierResults;
 
 export function initClient(): OAuth2Client {
   return new google.auth.OAuth2(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET, env.GOOGLE_REDIRECT_URL);
 }
 
-export function generateAuthUrl(client: OAuth2Client): string {
+export async function generateAuthUrl(client: OAuth2Client): Promise<string> {
+  if (codes === undefined) {
+    codes = await client.generateCodeVerifierAsync();
+  }
   return client.generateAuthUrl({
     access_type: "offline",
     scope: ["profile", "https://www.googleapis.com/auth/youtube.force-ssl"],
+    code_challenge_method: CodeChallengeMethod.S256,
+    code_challenge: codes.codeChallenge,
   });
 }
 
 export async function login(client: OAuth2Client, code: string): Promise<User> {
-  const {tokens} = await client.getToken(code);
+  const {tokens} = await client.getToken({code, codeVerifier: codes.codeVerifier});
   if (!tokens.id_token) {
     throw new Error("Missing ID token");
   }

@@ -13,8 +13,8 @@ export const load: PageServerLoad = ({locals}) => {
 };
 
 export const actions: Actions = {
-  login: ({locals}) => {
-    const authUrl = generateAuthUrl(locals.auth);
+  login: async ({locals}) => {
+    const authUrl = await generateAuthUrl(locals.auth);
     throw redirect(303, authUrl);
   },
   logout: async ({locals}) => {
