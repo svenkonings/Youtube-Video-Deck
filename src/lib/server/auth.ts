@@ -6,14 +6,14 @@ import {env} from "$env/dynamic/private";
 import google from "@googleapis/youtube";
 import {CodeChallengeMethod, type CodeVerifierResults, type OAuth2Client} from "google-auth-library";
 
-let codes: CodeVerifierResults;
+let codes: CodeVerifierResults | undefined;
 
 export function initClient(): OAuth2Client {
   return new google.auth.OAuth2(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET, env.GOOGLE_REDIRECT_URL);
 }
 
 export async function generateAuthUrl(client: OAuth2Client): Promise<string> {
-  if (codes === undefined) {
+  if (!codes) {
     codes = await client.generateCodeVerifierAsync();
   }
   return client.generateAuthUrl({
@@ -25,6 +25,9 @@ export async function generateAuthUrl(client: OAuth2Client): Promise<string> {
 }
 
 export async function login(client: OAuth2Client, code: string): Promise<User> {
+  if (!codes) {
+    throw new Error("Missing code verifier");
+  }
   const {tokens} = await client.getToken({code, codeVerifier: codes.codeVerifier});
   if (!tokens.id_token) {
     throw new Error("Missing ID token");
